@@ -1,0 +1,399 @@
+diff --git a/src/activities/ActivityManager.cpp b/src/activities/ActivityManager.cpp
+index fee0c4f..aaa9f8a 100644
+--- a/src/activities/ActivityManager.cpp
++++ b/src/activities/ActivityManager.cpp
+@@ -29,6 +29,7 @@
+ #include "reader/ReaderActivity.h"
+ #include "settings/OpdsServerListActivity.h"
+ #include "settings/SettingsActivity.h"
++#include "x4plus/X4PlusListActivity.h"
+ #include "util/BmpViewerActivity.h"
+ #include "util/FrontlightPanelActivity.h"
+ #include "util/FullScreenMessageActivity.h"
+@@ -317,6 +318,25 @@ void ActivityManager::goToLibrary() {
+   replaceActivity(std::move(activity));
+ }
+ 
++namespace {
++void openX4PlusList(ActivityManager& manager, GfxRenderer& renderer, MappedInputManager& mappedInput,
++                    X4PlusListActivity::Mode mode) {
++  auto activity = makeUniqueNoThrow<X4PlusListActivity>(renderer, mappedInput, mode);
++  if (!activity) {
++    LOG_ERR("ACT", "OOM: X4 Pro+ activity");
++    return;
++  }
++  manager.replaceActivity(std::move(activity));
++}
++}  // namespace
++
++void ActivityManager::goToX4PlusCalendar() {
++  openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Calendar);
++}
++void ActivityManager::goToX4PlusTasks() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Tasks); }
++void ActivityManager::goToX4PlusNotes() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Notes); }
++void ActivityManager::goToX4PlusCards() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Cards); }
++
+ void ActivityManager::goToBrowser() {
+@@ -393,6 +413,9 @@ void ActivityManager::goHome(HomeMenuItem initialMenuItem, bool cleanInitialRefr
+       initialMenuItem = HomeMenuItem::LIBRARY;
+     } else if (activityName == "OpdsBookBrowser") {
+       initialMenuItem = HomeMenuItem::OPDS_BROWSER;
++    } else if (activityName == "X4Plus") {
++      initialMenuItem = HomeMenuItem::CALENDAR;
+     } else if (activityName == "CrossPointWebServer") {
+       initialMenuItem = HomeMenuItem::FILE_TRANSFER;
+diff --git a/src/activities/ActivityManager.h b/src/activities/ActivityManager.h
+index b5597e7..d038d12 100644
+--- a/src/activities/ActivityManager.h
++++ b/src/activities/ActivityManager.h
+@@ -22,7 +22,19 @@
+ class Activity;    // forward declaration
+ class RenderLock;  // forward declaration
+ 
+-enum class HomeMenuItem { NONE, FILE_BROWSER, LIBRARY, OPDS_BROWSER, READING_STATS, FILE_TRANSFER, SETTINGS_MENU };
++enum class HomeMenuItem {
++  NONE,
++  FILE_BROWSER,
++  LIBRARY,
++  OPDS_BROWSER,
++  READING_STATS,
++  CALENDAR,
++  TASKS,
++  NOTES,
++  CARDS,
++  FILE_TRANSFER,
++  SETTINGS_MENU
++};
+@@ -92,6 +104,10 @@ class ActivityManager {
+   void goToFileBrowser(std::string path = {});
+   void goToLibrary();
+   void goToBrowser();
++  void goToX4PlusCalendar();
++  void goToX4PlusTasks();
++  void goToX4PlusNotes();
++  void goToX4PlusCards();
+   void goToReader(std::string path, bool allowFastInitialRefresh = false);
+diff --git a/src/activities/home/HomeActivity.cpp b/src/activities/home/HomeActivity.cpp
+index abed854..b9ac87e 100644
+--- a/src/activities/home/HomeActivity.cpp
++++ b/src/activities/home/HomeActivity.cpp
+@@ -26,7 +26,7 @@
+ #include "fontIds.h"
+ 
+ int HomeActivity::getMenuItemCount() const {
+-  int count = 4;  // File Browser, Library, File transfer, Settings
++  int count = 8;  // File Browser, Library, Calendar, Tasks, Notes, Cards, File transfer, Settings
+@@ -233,6 +233,18 @@ void HomeActivity::loop() {
+         onReadingStatsOpen();
+         break;
+ #endif
++      case HomeMenuItem::CALENDAR:
++        onCalendarOpen();
++        break;
++      case HomeMenuItem::TASKS:
++        onTasksOpen();
++        break;
++      case HomeMenuItem::NOTES:
++        onNotesOpen();
++        break;
++      case HomeMenuItem::CARDS:
++        onCardsOpen();
++        break;
+       case HomeMenuItem::FILE_TRANSFER:
+@@ -354,12 +366,13 @@ void HomeActivity::render(RenderLock&&) {
+ #ifdef READING_STATS_ENABLED
+                                         tr(STR_READING_STATS),
+ #endif
++                                        tr(STR_X4P_CALENDAR), tr(STR_X4P_TASKS), tr(STR_X4P_NOTES), tr(STR_X4P_CARDS),
+                                         tr(STR_FILE_TRANSFER), tr(STR_SETTINGS_TITLE)};
+   std::vector<UIIcon> menuIcons = {Folder, Library,
+ #ifdef READING_STATS_ENABLED
+                                    Chart,
+ #endif
+-                                   Transfer, Settings};
++                                   Blocks, Blocks, Blocks, Blocks, Transfer, Settings};
+@@ -406,6 +419,10 @@ void HomeActivity::onLibraryOpen() { activityManager.goToLibrary(); }
+ 
+ void HomeActivity::onSettingsOpen() { activityManager.goToSettings(); }
+ 
++void HomeActivity::onCalendarOpen() { activityManager.goToX4PlusCalendar(); }
++void HomeActivity::onTasksOpen() { activityManager.goToX4PlusTasks(); }
++void HomeActivity::onNotesOpen() { activityManager.goToX4PlusNotes(); }
++void HomeActivity::onCardsOpen() { activityManager.goToX4PlusCards(); }
+ void HomeActivity::onFileTransferOpen() { activityManager.goToFileTransfer(); }
+diff --git a/src/activities/home/HomeActivity.h b/src/activities/home/HomeActivity.h
+index 92f4a8f..14ce718 100644
+--- a/src/activities/home/HomeActivity.h
++++ b/src/activities/home/HomeActivity.h
+@@ -48,6 +48,14 @@ class HomeActivity final : public Activity {
+     if (item == HomeMenuItem::READING_STATS) return i;
+     ++i;
+ #endif
++    if (item == HomeMenuItem::CALENDAR) return i;
++    ++i;
++    if (item == HomeMenuItem::TASKS) return i;
++    ++i;
++    if (item == HomeMenuItem::NOTES) return i;
++    ++i;
++    if (item == HomeMenuItem::CARDS) return i;
++    ++i;
+     if (item == HomeMenuItem::FILE_TRANSFER) return i;
+@@ -63,6 +71,10 @@ class HomeActivity final : public Activity {
+ #ifdef READING_STATS_ENABLED
+     if (idx == i++) return HomeMenuItem::READING_STATS;
+ #endif
++    if (idx == i++) return HomeMenuItem::CALENDAR;
++    if (idx == i++) return HomeMenuItem::TASKS;
++    if (idx == i++) return HomeMenuItem::NOTES;
++    if (idx == i++) return HomeMenuItem::CARDS;
+     if (idx == i++) return HomeMenuItem::FILE_TRANSFER;
+@@ -71,6 +83,10 @@ class HomeActivity final : public Activity {
+   void onFileBrowserOpen();
+   void onLibraryOpen();
+   void onSettingsOpen();
++  void onCalendarOpen();
++  void onTasksOpen();
++  void onNotesOpen();
++  void onCardsOpen();
+   void onFileTransferOpen();
+diff --git a/lib/I18n/translations/english.yaml b/lib/I18n/translations/english.yaml
+index 90057e3..1d98de4 100644
+--- a/lib/I18n/translations/english.yaml
++++ b/lib/I18n/translations/english.yaml
+@@ -611,3 +611,11 @@ STR_MARK_FINISHED_PROMPT: "Mark as finished?"
+ STR_PREVIOUS_SHORT: "Prev"
+ STR_NEXT_SHORT: "Next"
+ STR_MORE: "More"
++STR_X4P_CALENDAR: "Calendar"
++STR_X4P_TASKS: "Tasks"
++STR_X4P_NOTES: "Notes"
++STR_X4P_CARDS: "Cards"
++STR_X4P_ADD_EVENT: "+ Add event"
++STR_X4P_ADD_TASK: "+ Add task"
++STR_X4P_ADD_NOTE: "+ Add note"
++STR_X4P_ADD_CARD: "+ Add card"
+diff --git a/src/activities/x4plus/X4PlusListActivity.cpp b/src/activities/x4plus/X4PlusListActivity.cpp
+new file mode 100644
+index 0000000..4ae0f8a
+--- /dev/null
++++ b/src/activities/x4plus/X4PlusListActivity.cpp
+@@ -0,0 +1,179 @@
++#include "X4PlusListActivity.h"
++
++#include <ArduinoJson.h>
++#include <I18n.h>
++#include <Logging.h>
++#include <Memory.h>
++#include <PersistableStore.h>
++
++#include "activities/ActivityManager.h"
++#include "activities/ActivityResult.h"
++#include "activities/util/KeyboardEntryActivity.h"
++#include "components/UITheme.h"
++
++namespace fui = freeink::ui;
++
++X4PlusListActivity::X4PlusListActivity(GfxRenderer& renderer, MappedInputManager& mappedInput, const Mode mode)
++    : UiListActivity("X4Plus", renderer, mappedInput, true), mode(mode) {}
++
++void X4PlusListActivity::onEnter() {
++  UiListActivity::onEnter();
++  load();
++  rebuildRows();
++}
++
++const char* X4PlusListActivity::filePath() const {
++  switch (mode) {
++    case Mode::Calendar: return "/.crosspoint/x4plus-calendar.json";
++    case Mode::Tasks: return "/.crosspoint/x4plus-tasks.json";
++    case Mode::Notes: return "/.crosspoint/x4plus-notes.json";
++    case Mode::Cards: return "/.crosspoint/x4plus-cards.json";
++  }
++  return "/.crosspoint/x4plus.json";
++}
++
++const char* X4PlusListActivity::headerTitle() const {
++  switch (mode) {
++    case Mode::Calendar: return tr(STR_X4P_CALENDAR);
++    case Mode::Tasks: return tr(STR_X4P_TASKS);
++    case Mode::Notes: return tr(STR_X4P_NOTES);
++    case Mode::Cards: return tr(STR_X4P_CARDS);
++  }
++  return tr(STR_CROSSPOINT);
++}
++
++const char* X4PlusListActivity::addLabel() const {
++  switch (mode) {
++    case Mode::Calendar: return tr(STR_X4P_ADD_EVENT);
++    case Mode::Tasks: return tr(STR_X4P_ADD_TASK);
++    case Mode::Notes: return tr(STR_X4P_ADD_NOTE);
++    case Mode::Cards: return tr(STR_X4P_ADD_CARD);
++  }
++  return tr(STR_X4P_ADD_NOTE);
++}
++
++void X4PlusListActivity::load() {
++  items.clear();
++  completed.clear();
++  JsonDocument doc;
++  if (!PersistableStoreBase::readDocFromFile(filePath(), doc)) return;
++  JsonArrayConst values = doc["items"].as<JsonArrayConst>();
++  items.reserve(values.size());
++  completed.reserve(values.size());
++  for (JsonVariantConst value : values) {
++    const char* text = value["text"] | "";
++    if (!text[0]) continue;
++    items.emplace_back(text);
++    completed.push_back(value["done"] | false);
++  }
++}
++
++void X4PlusListActivity::save() const {
++  JsonDocument doc;
++  JsonArray values = doc["items"].to<JsonArray>();
++  for (size_t i = 0; i < items.size(); ++i) {
++    JsonObject value = values.add<JsonObject>();
++    value["text"] = items[i];
++    value["done"] = mode == Mode::Tasks && i < completed.size() ? completed[i] : false;
++  }
++  if (!PersistableStoreBase::writeDocToFile(filePath(), doc)) {
++    LOG_ERR("X4P", "Failed to save %s", filePath());
++  }
++}
++
++void X4PlusListActivity::rebuildRows() {
++  rows.clear();
++  displayLabels.clear();
++  rows.reserve(items.size() + 1);
++  displayLabels.reserve(items.size());
++  for (size_t i = 0; i < items.size(); ++i) {
++    if (mode == Mode::Tasks) {
++      displayLabels.emplace_back((i < completed.size() && completed[i] ? "[x] " : "[ ] ") + items[i]);
++    } else {
++      displayLabels.push_back(items[i]);
++    }
++  }
++  for (size_t i = 0; i < displayLabels.size(); ++i) {
++    fui::ListItem row;
++    row.label = displayLabels[i].c_str();
++    row.actionValue = static_cast<int16_t>(i);
++    row.inputMask = fui::InputTouch | fui::InputLongPress;
++    rows.push_back(row);
++  }
++  fui::ListItem add;
++  add.label = addLabel();
++  add.actionValue = static_cast<int16_t>(items.size());
++  add.inputMask = fui::InputTouch;
++  rows.push_back(add);
++}
++
++int X4PlusListActivity::listCount() const { return static_cast<int>(items.size() + 1); }
++
++void X4PlusListActivity::buildScreen(UiScreen& screen) {
++  const auto& metrics = UITheme::getInstance().getMetrics();
++  const Rect safe = UITheme::getInstance().getScreenSafeArea(renderer, true, false);
++  screen.setContentMarginFromScreen(
++      fui::Insets{static_cast<int16_t>(safe.y + metrics.topPadding + metrics.headerHeight),
++                  static_cast<int16_t>(renderer.getScreenWidth() - (safe.x + safe.width)),
++                  static_cast<int16_t>(renderer.getScreenHeight() - (safe.y + safe.height) + metrics.buttonHintsHeight),
++                  static_cast<int16_t>(safe.x)});
++  screen.spacer(static_cast<int16_t>(metrics.verticalSpacing));
++  fui::ListProps props;
++  props.items = rows.data();
++  props.count = static_cast<uint16_t>(rows.size());
++  props.action = ACTION_ROW;
++  props.inputMask = fui::InputTouch | fui::InputLongPress;
++  syncListViewport(screen, props);
++  screen.list(props);
++}
++
++void X4PlusListActivity::openEditor(const int index) {
++  const bool creating = index >= static_cast<int>(items.size());
++  const std::string initial = creating ? std::string{} : items[index];
++  auto editor = makeUniqueNoThrow<KeyboardEntryActivity>(renderer, mappedInput, addLabel(), initial, 512, InputType::Text);
++  if (!editor) {
++    LOG_ERR("X4P", "OOM: keyboard editor");
++    return;
++  }
++  startActivityForResult(std::move(editor), [this, index, creating](const ActivityResult& result) {
++    if (result.isCancelled || !std::holds_alternative<KeyboardResult>(result.data)) return;
++    std::string text = std::get<KeyboardResult>(result.data).text;
++    if (text.empty()) return;
++    if (creating) {
++      items.push_back(std::move(text));
++      completed.push_back(false);
++    } else if (index >= 0 && index < static_cast<int>(items.size())) {
++      items[index] = std::move(text);
++    }
++    save();
++    rebuildRows();
++    requestUpdate();
++  });
++}
++
++void X4PlusListActivity::activateIndex(const int index) {
++  app.clearTapFlash();
++  if (index == static_cast<int>(items.size())) {
++    openEditor(index);
++    return;
++  }
++  if (index < 0 || index >= static_cast<int>(items.size())) return;
++  if (mode == Mode::Tasks) {
++    completed[index] = !completed[index];
++    save();
++    rebuildRows();
++    requestUpdate();
++    return;
++  }
++  openEditor(index);
++}
++
++void X4PlusListActivity::onRowLongPress(const int index) {
++  if (index < 0 || index >= static_cast<int>(items.size())) return;
++  items.erase(items.begin() + index);
++  if (index < static_cast<int>(completed.size())) completed.erase(completed.begin() + index);
++  save();
++  rebuildRows();
++  nav.selected = std::min(index, static_cast<int>(items.size()));
++  requestUpdate();
++}
+diff --git a/src/activities/x4plus/X4PlusListActivity.h b/src/activities/x4plus/X4PlusListActivity.h
+new file mode 100644
+index 0000000..7ab42be
+--- /dev/null
++++ b/src/activities/x4plus/X4PlusListActivity.h
+@@ -0,0 +1,34 @@
++#pragma once
++
++#include <string>
++#include <vector>
++
++#include "activities/UiListActivity.h"
++
++class X4PlusListActivity final : public UiListActivity {
++ public:
++  enum class Mode : uint8_t { Calendar, Tasks, Notes, Cards };
++
++  X4PlusListActivity(GfxRenderer& renderer, MappedInputManager& mappedInput, Mode mode);
++  void onEnter() override;
++
++ private:
++  int listCount() const override;
++  void buildScreen(UiScreen& screen) override;
++  void activateIndex(int index) override;
++  void onRowLongPress(int index) override;
++  const char* headerTitle() const override;
++
++  void load();
++  void save() const;
++  void rebuildRows();
++  void openEditor(int index);
++  const char* filePath() const;
++  const char* addLabel() const;
++
++  Mode mode;
++  std::vector<std::string> items;
++  std::vector<bool> completed;
++  std::vector<freeink::ui::ListItem> rows;
++  std::vector<std::string> displayLabels;
++};
