@@ -29,6 +29,7 @@
 #include "reader/ReaderActivity.h"
 #include "settings/OpdsServerListActivity.h"
 #include "settings/SettingsActivity.h"
+#include "x4plus/X4PlusListActivity.h"
 #include "util/BmpViewerActivity.h"
 #include "util/FrontlightPanelActivity.h"
 #include "util/FullScreenMessageActivity.h"
@@ -317,6 +318,19 @@ void ActivityManager::goToLibrary() {
   replaceActivity(std::move(activity));
 }
 
+namespace {
+void openX4PlusList(ActivityManager& manager, GfxRenderer& renderer, MappedInputManager& mappedInput,
+                    X4PlusListActivity::Mode mode) {
+  auto activity = makeUniqueNoThrow<X4PlusListActivity>(renderer, mappedInput, mode);
+  if (!activity) { LOG_ERR("ACT", "OOM: X4 Pro+ activity"); return; }
+  manager.replaceActivity(std::move(activity));
+}
+}
+void ActivityManager::goToX4PlusCalendar() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Calendar); }
+void ActivityManager::goToX4PlusTasks() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Tasks); }
+void ActivityManager::goToX4PlusNotes() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Notes); }
+void ActivityManager::goToX4PlusCards() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Cards); }
+
 void ActivityManager::goToBrowser() {
   const auto& servers = OPDS_STORE.getServers();
   // Skip the server picker when there's only one server configured
@@ -393,6 +407,8 @@ void ActivityManager::goHome(HomeMenuItem initialMenuItem, bool cleanInitialRefr
       initialMenuItem = HomeMenuItem::LIBRARY;
     } else if (activityName == "OpdsBookBrowser") {
       initialMenuItem = HomeMenuItem::OPDS_BROWSER;
+    } else if (activityName == "X4Plus") {
+      initialMenuItem = HomeMenuItem::CALENDAR;
     } else if (activityName == "CrossPointWebServer") {
       initialMenuItem = HomeMenuItem::FILE_TRANSFER;
     } else if (activityName == "Settings") {
