@@ -67,10 +67,10 @@ void X4PlusListActivity::rebuildRows() {
   }
   for (size_t i = 0; i < displayLabels.size(); ++i) {
     fui::ListItem row; row.label = displayLabels[i].c_str(); row.actionValue = static_cast<int16_t>(i);
-    row.inputMask = fui::InputTouch | fui::InputLongPress; rows.push_back(row);
+    rows.push_back(row);
   }
   fui::ListItem add; add.label = addLabel(); add.actionValue = static_cast<int16_t>(items.size());
-  add.inputMask = fui::InputTouch; rows.push_back(add);
+  rows.push_back(add);
 }
 int X4PlusListActivity::listCount() const { return static_cast<int>(items.size() + 1); }
 void X4PlusListActivity::buildScreen(UiScreen& screen) {
