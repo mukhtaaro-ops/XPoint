@@ -30,6 +30,7 @@
 #include "settings/OpdsServerListActivity.h"
 #include "settings/SettingsActivity.h"
 #include "x4plus/X4PlusListActivity.h"
+#include "x4plus/X4PlusMenuActivity.h"
 #include "util/BmpViewerActivity.h"
 #include "util/FrontlightPanelActivity.h"
 #include "util/FullScreenMessageActivity.h"
@@ -315,6 +316,12 @@ void ActivityManager::goToLibrary() {
     LOG_ERR("ACT", "OOM: library activity");
     return;
   }
+  replaceActivity(std::move(activity));
+}
+
+void ActivityManager::goToX4PlusMenu() {
+  auto activity = makeUniqueNoThrow<X4PlusMenuActivity>(renderer, mappedInput);
+  if (!activity) { LOG_ERR("ACT", "OOM: X4 Pro+ menu"); return; }
   replaceActivity(std::move(activity));
 }
 
