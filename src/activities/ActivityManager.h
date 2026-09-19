@@ -24,7 +24,7 @@ class RenderLock;  // forward declaration
 
 enum class HomeMenuItem {
   NONE, FILE_BROWSER, LIBRARY, OPDS_BROWSER, READING_STATS,
-  CALENDAR, TASKS, NOTES, CARDS, FILE_TRANSFER, SETTINGS_MENU
+  X4PLUS_TOOLS, FILE_TRANSFER, SETTINGS_MENU
 };
 
 /**
@@ -95,6 +95,7 @@ class ActivityManager {
   void goToFileBrowser(std::string path = {});
   void goToLibrary();
   void goToBrowser();
+  void goToX4PlusMenu();
   void goToX4PlusCalendar();
   void goToX4PlusTasks();
   void goToX4PlusNotes();
