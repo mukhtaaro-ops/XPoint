@@ -23,6 +23,7 @@
 #include "components/UIThemeTokens.h"
 #include "components/UiAppHelpers.h"
 #include "components/icons/bookmark.h"
+#include "components/icons/IconRegistry.h"
 #include "fontIds.h"
 #include "util/ClockFormat.h"
 
@@ -712,12 +713,20 @@ void BaseTheme::drawButtonMenu(GfxRenderer& renderer, Rect rect, int buttonCount
 
     std::string labelStr = buttonLabel(i);
     const char* label = labelStr.c_str();
-    const int textWidth = renderer.getTextWidth(UI_10_FONT_ID, label);
-    const int textX = rect.x + (rect.width - textWidth) / 2;
     const int lineHeight = renderer.getLineHeight(UI_10_FONT_ID);
     const int textY =
-        tileY + (BaseMetrics::values.menuRowHeight - lineHeight) / 2;  // vertically centered assuming y is top of text
-    // Invert text when the tile is selected, to contrast with the filled background
+        tileY + (BaseMetrics::values.menuRowHeight - lineHeight) / 2;
+    const uint8_t* iconBitmap = rowIcon ? xpointIconBitmap(rowIcon(i)) : nullptr;
+    constexpr int iconSize = 32;
+    constexpr int iconGap = 10;
+    const int textWidth = renderer.getTextWidth(UI_10_FONT_ID, label);
+    const int groupWidth = textWidth + (iconBitmap ? iconSize + iconGap : 0);
+    int textX = rect.x + (rect.width - groupWidth) / 2;
+    if (iconBitmap) {
+      renderer.drawIcon(iconBitmap, textX, tileY + (BaseMetrics::values.menuRowHeight - iconSize) / 2, iconSize);
+      textX += iconSize + iconGap;
+    }
+    // Invert text when the tile is selected, to contrast with the filled background.
     renderer.drawText(UI_10_FONT_ID, textX, textY, label, selectedIndex != i);
   }
 }
