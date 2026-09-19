@@ -12,6 +12,7 @@
 
 #include "RecentBooksStore.h"
 #include "components/UITheme.h"
+#include "components/icons/IconRegistry.h"
 #include "components/icons/cover.h"
 #include "fontIds.h"
 
@@ -163,7 +164,6 @@ int RoundedRaffTheme::getMenuRowHeight(const GfxRenderer& renderer) const {
 void RoundedRaffTheme::drawButtonMenu(GfxRenderer& renderer, Rect rect, int buttonCount, int selectedIndex,
                                       const std::function<std::string(int index)>& buttonLabel,
                                       const std::function<UIIcon(int index)>& rowIcon) const {
-  (void)rowIcon;
   const int sidePadding = RoundedRaffMetrics::values.contentSidePadding;
   const int rowX = rect.x + sidePadding;
   const int rowHeight = getMenuRowHeight(renderer);  // shared with HomeActivity's touch grid
@@ -180,15 +180,24 @@ void RoundedRaffTheme::drawButtonMenu(GfxRenderer& renderer, Rect rect, int butt
     const std::string label = buttonLabel(i);
     const int rowY = menuTop + (i - pageStartIndex) * rowStep;
     constexpr int kRowPaddingX = 40;  // 20px L/R
-    const int maxLabelWidth = std::max(0, menuMaxWidth - kRowPaddingX);
+    constexpr int kIconSize = 32;
+    constexpr int kIconGap = 10;
+    const uint8_t* iconBitmap = rowIcon ? xpointIconBitmap(rowIcon(i)) : nullptr;
+    const int iconReserve = iconBitmap ? kIconSize + kIconGap : 0;
+    const int maxLabelWidth = std::max(0, menuMaxWidth - kRowPaddingX - iconReserve);
     const std::string truncatedLabel =
         renderer.truncatedText(kTitleFontId, label.c_str(), maxLabelWidth, EpdFontFamily::BOLD);
     const int rowWidth = std::min(
-        menuMaxWidth, renderer.getTextWidth(kTitleFontId, truncatedLabel.c_str(), EpdFontFamily::BOLD) + kRowPaddingX);
+        menuMaxWidth, renderer.getTextWidth(kTitleFontId, truncatedLabel.c_str(), EpdFontFamily::BOLD) +
+                          kRowPaddingX + iconReserve);
     const bool isSelected = selectedIndex == i;
     renderer.fillRoundedRect(rowX, rowY, rowWidth, rowHeight, kMenuRadius, isSelected ? Color::Black : Color::White);
     const int textY = rowY + (rowHeight - textLineHeight) / 2;
-    const int textX = rowX + kInteractiveInsetX;
+    int textX = rowX + kInteractiveInsetX;
+    if (iconBitmap) {
+      renderer.drawIcon(iconBitmap, textX, rowY + (rowHeight - kIconSize) / 2, kIconSize);
+      textX += kIconSize + kIconGap;
+    }
     if (selectedIndex == i) {
       renderer.drawText(kTitleFontId, textX, textY, truncatedLabel.c_str(), false, EpdFontFamily::BOLD);
     } else {
