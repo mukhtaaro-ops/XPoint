@@ -26,7 +26,7 @@
 #include "fontIds.h"
 
 int HomeActivity::getMenuItemCount() const {
-  int count = 4;  // File Browser, Library, File transfer, Settings
+  int count = 8;  // File Browser, Library, X4 Pro+ tools, File transfer, Settings
 #ifdef READING_STATS_ENABLED
   count++;  // Reading Stats
 #endif
@@ -233,6 +233,10 @@ void HomeActivity::loop() {
         onReadingStatsOpen();
         break;
 #endif
+      case HomeMenuItem::CALENDAR: onCalendarOpen(); break;
+      case HomeMenuItem::TASKS: onTasksOpen(); break;
+      case HomeMenuItem::NOTES: onNotesOpen(); break;
+      case HomeMenuItem::CARDS: onCardsOpen(); break;
       case HomeMenuItem::FILE_TRANSFER:
         onFileTransferOpen();
         break;
@@ -354,12 +358,13 @@ void HomeActivity::render(RenderLock&&) {
 #ifdef READING_STATS_ENABLED
                                         tr(STR_READING_STATS),
 #endif
+                                        tr(STR_X4P_CALENDAR), tr(STR_X4P_TASKS), tr(STR_X4P_NOTES), tr(STR_X4P_CARDS),
                                         tr(STR_FILE_TRANSFER), tr(STR_SETTINGS_TITLE)};
   std::vector<UIIcon> menuIcons = {Folder, Library,
 #ifdef READING_STATS_ENABLED
                                    Chart,
 #endif
-                                   Transfer, Settings};
+                                   Blocks, Blocks, Blocks, Blocks, Transfer, Settings};
 
   if (hasOpdsServers) {
     menuItems.insert(menuItems.begin() + 2, tr(STR_OPDS_BROWSER));
@@ -405,6 +410,11 @@ void HomeActivity::onFileBrowserOpen() { activityManager.goToFileBrowser(); }
 void HomeActivity::onLibraryOpen() { activityManager.goToLibrary(); }
 
 void HomeActivity::onSettingsOpen() { activityManager.goToSettings(); }
+
+void HomeActivity::onCalendarOpen() { activityManager.goToX4PlusCalendar(); }
+void HomeActivity::onTasksOpen() { activityManager.goToX4PlusTasks(); }
+void HomeActivity::onNotesOpen() { activityManager.goToX4PlusNotes(); }
+void HomeActivity::onCardsOpen() { activityManager.goToX4PlusCards(); }
 
 void HomeActivity::onFileTransferOpen() { activityManager.goToFileTransfer(); }
 
