@@ -48,10 +48,7 @@ class HomeActivity final : public Activity {
     if (item == HomeMenuItem::READING_STATS) return i;
     ++i;
 #endif
-    if (item == HomeMenuItem::CALENDAR) return i; ++i;
-    if (item == HomeMenuItem::TASKS) return i; ++i;
-    if (item == HomeMenuItem::NOTES) return i; ++i;
-    if (item == HomeMenuItem::CARDS) return i; ++i;
+    if (item == HomeMenuItem::X4PLUS_TOOLS) return i; ++i;
     if (item == HomeMenuItem::FILE_TRANSFER) return i;
     ++i;
     if (item == HomeMenuItem::SETTINGS_MENU) return i;
@@ -67,10 +64,7 @@ class HomeActivity final : public Activity {
 #ifdef READING_STATS_ENABLED
     if (idx == i++) return HomeMenuItem::READING_STATS;
 #endif
-    if (idx == i++) return HomeMenuItem::CALENDAR;
-    if (idx == i++) return HomeMenuItem::TASKS;
-    if (idx == i++) return HomeMenuItem::NOTES;
-    if (idx == i++) return HomeMenuItem::CARDS;
+    if (idx == i++) return HomeMenuItem::X4PLUS_TOOLS;
     if (idx == i++) return HomeMenuItem::FILE_TRANSFER;
     if (idx == i) return HomeMenuItem::SETTINGS_MENU;
     return HomeMenuItem::NONE;
@@ -79,10 +73,7 @@ class HomeActivity final : public Activity {
   void onFileBrowserOpen();
   void onLibraryOpen();
   void onSettingsOpen();
-  void onCalendarOpen();
-  void onTasksOpen();
-  void onNotesOpen();
-  void onCardsOpen();
+  void onX4PlusOpen();
   void onFileTransferOpen();
   void onOpdsBrowserOpen();
   void onReadingStatsOpen();
