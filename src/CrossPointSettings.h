@@ -316,7 +316,7 @@ class CrossPointSettings : public PersistableStore<CrossPointSettings> {
   // Long-press page turn button behavior
   uint8_t longPressButtonBehavior = OFF;
   // UI Theme
-  uint8_t uiTheme = LYRA;
+  uint8_t uiTheme = LYRA_3_COVERS;
   // Sunlight fading compensation
   uint8_t fadingFix = 0;
   // Power button return from footnotes (1 = enabled, 0 = disabled)

@@ -1,132 +1,191 @@
 #include "Lyra3CoversTheme.h"
 
+#include <Bitmap.h>
 #include <GfxRenderer.h>
 #include <HalStorage.h>
 
-#include <cstdint>
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "RecentBooksStore.h"
 #include "components/UITheme.h"
+#include "components/icons/blocks.h"
+#include "components/icons/book.h"
+#include "components/icons/bookmark.h"
+#include "components/icons/chartbar.h"
 #include "components/icons/cover.h"
+#include "components/icons/folder.h"
+#include "components/icons/library.h"
+#include "components/icons/recent.h"
+#include "components/icons/settings2.h"
+#include "components/icons/transfer.h"
 #include "fontIds.h"
 
-// Internal constants
 namespace {
-constexpr int hPaddingInSelection = 8;
-constexpr int cornerRadius = 6;
+constexpr int kCornerRadius = 7;
+constexpr int kCentreCoverW = 150;
+constexpr int kCentreCoverH = 208;
+constexpr int kSideCoverW = 92;
+constexpr int kSideCoverH = 146;
+constexpr int kCentreOutline = 3;
+constexpr int kMenuIconSize = 32;
+constexpr int kMenuSidePadding = 18;
+constexpr int kMenuTextGap = 10;
+
+const uint8_t* iconForName(UIIcon icon) {
+  switch (icon) {
+    case UIIcon::Folder: return FolderIcon;
+    case UIIcon::Book: return BookIcon;
+    case UIIcon::Recent: return RecentIcon;
+    case UIIcon::Settings: return Settings2Icon;
+    case UIIcon::Transfer: return TransferIcon;
+    case UIIcon::Library: return LibraryIcon;
+    case UIIcon::Bookmark: return BookmarkIcon;
+    case UIIcon::Chart: return ChartBarIcon;
+    case UIIcon::Blocks: return BlocksIcon;
+    default: return nullptr;
+  }
+}
+
+void drawFallbackCover(GfxRenderer& renderer, int x, int y, int w, int h, bool selected) {
+  renderer.fillRoundedRect(x, y, w, h, kCornerRadius, Color::White);
+  renderer.drawRoundedRect(x, y, w, h, selected ? kCentreOutline : 1, kCornerRadius, true);
+  renderer.fillRoundedRect(x, y + h / 3, w, (h * 2) / 3, kCornerRadius, false, false, true, true, Color::Black);
+  renderer.drawIcon(CoverIcon, x + (w - 32) / 2, y + 20, 32);
+}
+
+bool drawBookCover(GfxRenderer& renderer, const RecentBook& book, int x, int y, int w, int h, bool selected) {
+  if (!book.coverBmpPath.empty()) {
+    const std::string thumbPath = UITheme::getCoverThumbPath(book.coverBmpPath, Lyra3CoversMetrics::values.homeCoverHeight);
+    HalFile file;
+    if (Storage.openFileForRead("HOME", thumbPath, file)) {
+      Bitmap bitmap(file);
+      if (bitmap.parseHeaders() == BmpReaderError::Ok && bitmap.getWidth() > 0 && bitmap.getHeight() > 0) {
+        const float srcRatio = static_cast<float>(bitmap.getWidth()) / static_cast<float>(bitmap.getHeight());
+        const float dstRatio = static_cast<float>(w) / static_cast<float>(h);
+        const float cropX = srcRatio > dstRatio ? std::max(0.0f, 1.0f - (dstRatio / srcRatio)) : 0.0f;
+        const float cropY = srcRatio < dstRatio ? std::max(0.0f, 1.0f - (srcRatio / dstRatio)) : 0.0f;
+        renderer.drawBitmap(bitmap, x, y, w, h, cropX, cropY);
+        renderer.maskRoundedRectOutsideCorners(x, y, w, h, kCornerRadius, Color::White);
+        renderer.drawRoundedRect(x, y, w, h, selected ? kCentreOutline : 1, kCornerRadius, true);
+        file.close();
+        return true;
+      }
+      file.close();
+    }
+  }
+  drawFallbackCover(renderer, x, y, w, h, selected);
+  return false;
+}
 }  // namespace
 
-void Lyra3CoversTheme::drawRecentBookCover(GfxRenderer& renderer, Rect rect, const std::vector<RecentBook>& recentBooks,
-                                           const int selectorIndex, bool& coverRendered, bool& coverBufferStored,
-                                           bool& bufferRestored, std::function<bool()> storeCoverBuffer,
+int Lyra3CoversTheme::getMenuRowHeight(const GfxRenderer&) const {
+  return Lyra3CoversMetrics::values.menuRowHeight;
+}
+
+void Lyra3CoversTheme::drawButtonMenu(GfxRenderer& renderer, Rect rect, int buttonCount, int selectedIndex,
+                                      const std::function<std::string(int index)>& buttonLabel,
+                                      const std::function<UIIcon(int index)>& rowIcon) const {
+  const int rowH = Lyra3CoversMetrics::values.menuRowHeight;
+  const int gap = Lyra3CoversMetrics::values.menuSpacing;
+  const int tileW = rect.width - 2 * kMenuSidePadding;
+  for (int i = 0; i < buttonCount; ++i) {
+    const Rect tile{rect.x + kMenuSidePadding, rect.y + i * (rowH + gap), tileW, rowH};
+    const bool selected = selectedIndex == i;
+    if (selected) renderer.fillRoundedRect(tile.x, tile.y, tile.width, tile.height, kCornerRadius, Color::LightGray);
+
+    int textX = tile.x + 12;
+    if (rowIcon) {
+      const uint8_t* bmp = iconForName(rowIcon(i));
+      if (bmp) {
+        const int iconY = tile.y + (rowH - kMenuIconSize) / 2;
+        renderer.drawIcon(bmp, textX, iconY, kMenuIconSize);
+        textX += kMenuIconSize + kMenuTextGap;
+      }
+    }
+
+    const std::string label = buttonLabel(i);
+    const int lineH = renderer.getLineHeight(UI_12_FONT_ID);
+    const int textY = tile.y + (rowH - lineH) / 2;
+    renderer.drawText(UI_12_FONT_ID, textX, textY, label.c_str(), true);
+  }
+}
+
+void Lyra3CoversTheme::drawRecentBookCover(GfxRenderer& renderer, Rect rect,
+                                           const std::vector<RecentBook>& recentBooks, int selectorIndex,
+                                           bool& coverRendered, bool& coverBufferStored, bool& bufferRestored,
+                                           std::function<bool()> storeCoverBuffer,
                                            const std::vector<std::string>& recentBookProgressLines) const {
-  const int tileWidth = (rect.width - 2 * Lyra3CoversMetrics::values.contentSidePadding) / 3;
-  const int tileY = rect.y;
-  const bool hasContinueReading = !recentBooks.empty();
-
-  // Draw book card regardless, fill with message based on `hasContinueReading`
-  // Draw cover image as background if available (inside the box)
-  // Only load from SD on first render, then use stored buffer
-  if (hasContinueReading) {
-    if (!coverRendered) {
-      for (int i = 0;
-           i < std::min(static_cast<int>(recentBooks.size()), Lyra3CoversMetrics::values.homeRecentBooksCount); i++) {
-        std::string coverPath = recentBooks[i].coverBmpPath;
-        bool hasCover = true;
-        int tileX = Lyra3CoversMetrics::values.contentSidePadding + tileWidth * i;
-        if (coverPath.empty()) {
-          hasCover = false;
-        } else {
-          const std::string coverBmpPath =
-              UITheme::getCoverThumbPath(coverPath, Lyra3CoversMetrics::values.homeCoverHeight);
-
-          // First time: load cover from SD and render
-          HalFile file;
-          if (Storage.openFileForRead("HOME", coverBmpPath, file)) {
-            Bitmap bitmap(file);
-            if (bitmap.parseHeaders() == BmpReaderError::Ok) {
-              float coverHeight = static_cast<float>(bitmap.getHeight());
-              float coverWidth = static_cast<float>(bitmap.getWidth());
-              float ratio = coverWidth / coverHeight;
-              const float tileRatio = static_cast<float>(tileWidth - 2 * hPaddingInSelection) /
-                                      static_cast<float>(Lyra3CoversMetrics::values.homeCoverHeight);
-              float cropX = 1.0f - (tileRatio / ratio);
-
-              renderer.drawBitmap(bitmap, tileX + hPaddingInSelection, tileY + hPaddingInSelection,
-                                  tileWidth - 2 * hPaddingInSelection, Lyra3CoversMetrics::values.homeCoverHeight,
-                                  cropX);
-            } else {
-              hasCover = false;
-            }
-            file.close();
-          }
-        }
-        // Draw either way
-        renderer.drawRect(tileX + hPaddingInSelection, tileY + hPaddingInSelection, tileWidth - 2 * hPaddingInSelection,
-                          Lyra3CoversMetrics::values.homeCoverHeight, true);
-
-        if (!hasCover) {
-          // Render empty cover
-          renderer.fillRect(tileX + hPaddingInSelection,
-                            tileY + hPaddingInSelection + (Lyra3CoversMetrics::values.homeCoverHeight / 3),
-                            tileWidth - 2 * hPaddingInSelection, 2 * Lyra3CoversMetrics::values.homeCoverHeight / 3,
-                            true);
-          renderer.drawIcon(CoverIcon, tileX + hPaddingInSelection + 24, tileY + hPaddingInSelection + 24, 32);
-        }
-      }
-
-      coverBufferStored = storeCoverBuffer();
-      coverRendered = coverBufferStored;  // Only consider it rendered if we successfully stored the buffer
-    }
-
-    for (int i = 0; i < std::min(static_cast<int>(recentBooks.size()), Lyra3CoversMetrics::values.homeRecentBooksCount);
-         i++) {
-      bool bookSelected = (selectorIndex == i);
-
-      int tileX = Lyra3CoversMetrics::values.contentSidePadding + tileWidth * i;
-
-      const int maxLineWidth = tileWidth - 2 * hPaddingInSelection;
-
-      static constexpr std::string_view kEmptyProgressLine = "";
-      const std::string_view progressLine =
-          static_cast<int>(recentBookProgressLines.size()) > i ? recentBookProgressLines[i] : kEmptyProgressLine;
-      const bool hasProgressLine = !progressLine.empty() && progressLine != "-";
-
-      auto titleLines = renderer.wrappedText(SMALL_FONT_ID, recentBooks[i].title.c_str(), maxLineWidth, 3);
-
-      const int titleLineHeight = renderer.getLineHeight(SMALL_FONT_ID);
-      const int dynamicBlockHeight =
-          static_cast<int>(titleLines.size()) * titleLineHeight + (hasProgressLine ? titleLineHeight * 3 / 2 : 0);
-      // Add a little padding below the text inside the selection box just like the top padding (5 + hPaddingSelection)
-      const int dynamicTitleBoxHeight = dynamicBlockHeight + hPaddingInSelection + 5;
-
-      if (bookSelected) {
-        // Draw selection box
-        renderer.fillRoundedRect(tileX, tileY, tileWidth, hPaddingInSelection, cornerRadius, true, true, false, false,
-                                 Color::LightGray);
-        renderer.fillRectDither(tileX, tileY + hPaddingInSelection, hPaddingInSelection,
-                                Lyra3CoversMetrics::values.homeCoverHeight, Color::LightGray);
-        renderer.fillRectDither(tileX + tileWidth - hPaddingInSelection, tileY + hPaddingInSelection,
-                                hPaddingInSelection, Lyra3CoversMetrics::values.homeCoverHeight, Color::LightGray);
-        renderer.fillRoundedRect(tileX, tileY + Lyra3CoversMetrics::values.homeCoverHeight + hPaddingInSelection,
-                                 tileWidth, dynamicTitleBoxHeight, cornerRadius, false, false, true, true,
-                                 Color::LightGray);
-      }
-
-      int currentY = tileY + Lyra3CoversMetrics::values.homeCoverHeight + hPaddingInSelection + 5;
-      for (const auto& line : titleLines) {
-        renderer.drawText(SMALL_FONT_ID, tileX + hPaddingInSelection, currentY, line.c_str(), true);
-        currentY += titleLineHeight;
-      }
-      if (hasProgressLine) {
-        currentY += titleLineHeight / 2;
-        renderer.drawText(SMALL_FONT_ID, tileX + hPaddingInSelection, currentY, progressLine.data(), true);
-      }
-    }
-  } else {
+  (void)bufferRestored;
+  if (recentBooks.empty()) {
     drawEmptyRecents(renderer, rect);
+    return;
+  }
+
+  const int count = static_cast<int>(recentBooks.size());
+  const bool carouselFocused = selectorIndex >= 0 && selectorIndex < count;
+  int centre = carouselFocused ? selectorIndex : (-selectorIndex - 1);
+  centre = std::clamp(centre, 0, count - 1);
+
+  // The entire carousel composition changes when the centre book changes, so
+  // HomeActivity invalidates this cached region on every carousel movement.
+  if (!coverRendered) {
+    renderer.fillRect(rect.x, rect.y, rect.width, rect.height, false);
+
+    const int titleMaxW = std::max(100, rect.width - 80);
+    const auto titleLines = renderer.wrappedText(UI_12_FONT_ID, recentBooks[centre].title.c_str(), titleMaxW, 2,
+                                                 EpdFontFamily::BOLD);
+    const int titleLineH = renderer.getLineHeight(UI_12_FONT_ID);
+    int titleY = rect.y + 2;
+    for (const auto& line : titleLines) {
+      const int lineW = renderer.getTextWidth(UI_12_FONT_ID, line.c_str(), EpdFontFamily::BOLD);
+      renderer.drawText(UI_12_FONT_ID, (renderer.getScreenWidth() - lineW) / 2, titleY, line.c_str(), true,
+                        EpdFontFamily::BOLD);
+      titleY += titleLineH;
+    }
+
+    const int centreX = (renderer.getScreenWidth() - kCentreCoverW) / 2;
+    const int centreY = rect.y + 44;
+    const int sideY = centreY + (kCentreCoverH - kSideCoverH) / 2 + 4;
+    const int leftX = std::max(10, centreX - kSideCoverW + 10);
+    const int rightX = std::min(renderer.getScreenWidth() - kSideCoverW - 10,
+                                centreX + kCentreCoverW - 10);
+
+    if (count > 1) {
+      const int left = (centre + count - 1) % count;
+      drawBookCover(renderer, recentBooks[left], leftX, sideY, kSideCoverW, kSideCoverH, false);
+    }
+    if (count > 2) {
+      const int right = (centre + 1) % count;
+      drawBookCover(renderer, recentBooks[right], rightX, sideY, kSideCoverW, kSideCoverH, false);
+    }
+
+    drawBookCover(renderer, recentBooks[centre], centreX, centreY, kCentreCoverW, kCentreCoverH, carouselFocused);
+
+    static constexpr std::string_view kEmpty = "";
+    const std::string_view progress =
+        centre < static_cast<int>(recentBookProgressLines.size()) ? recentBookProgressLines[centre] : kEmpty;
+    if (!progress.empty() && progress != "-") {
+      const int progressW = renderer.getTextWidth(UI_10_FONT_ID, progress.data());
+      renderer.drawText(UI_10_FONT_ID, (renderer.getScreenWidth() - progressW) / 2,
+                        centreY + kCentreCoverH + 7, progress.data(), true);
+    }
+
+    // Small page dots make it obvious that the covers are a circular carousel.
+    constexpr int dot = 5;
+    constexpr int gap = 5;
+    const int dotsW = count * dot + (count - 1) * gap;
+    int dotX = (renderer.getScreenWidth() - dotsW) / 2;
+    const int dotsY = rect.y + rect.height - 9;
+    for (int i = 0; i < count; ++i) {
+      if (i == centre) renderer.fillRect(dotX, dotsY, dot, dot, true);
+      else renderer.drawRect(dotX, dotsY, dot, dot, true);
+      dotX += dot + gap;
+    }
+
+    coverBufferStored = storeCoverBuffer();
+    coverRendered = coverBufferStored;
   }
 }

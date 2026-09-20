@@ -1,0 +1,99 @@
+# X4 Pro+ Product Specification
+
+X4 Pro+ is the custom XTEINK X4 Pro firmware being built on the existing XPoint/X4 Pro hardware and reader foundation. The objective is one coherent firmware rather than a collection of disconnected forks.
+
+## Product principles
+
+- X4 Pro first: ESP32-S3, touchscreen, frontlight, USB Serial/JTAG, PSRAM and USB Drive must remain first-class.
+- Reader quality first: no app feature is allowed to make EPUB rendering, page turns, sleep/wake or recovery unreliable.
+- Cover-first library: books should feel visual, not like a filesystem.
+- Useful offline: core reading, statistics, notes, tasks, cards and utilities work without Wi-Fi.
+- Recoverable: every release keeps the documented factory-backup / ROM-loader recovery route.
+- E-ink native: layouts favour low ghosting, low redraw area and deliberate touch targets.
+
+## Home and library
+
+- [x] X4 Pro+ native tools entry on Home.
+- [x] Calendar, Tasks, Notes and Cards persistence.
+- [x] Per-book progress line on Home.
+- [x] X4 Pro+ Cover Carousel: focused centre cover, adjacent covers, circular navigation, progress and page dots.
+- [ ] 3x3 cover-grid Library.
+- [ ] Collections / shelves: Recent, Unopened, Finished, custom collections.
+- [ ] Sorting and filtering.
+- [ ] Search from the visual library.
+- [ ] Finished-book handling from the library.
+
+## Reading
+
+- [x] EPUB / TXT / XTC reader foundation.
+- [x] Touch gestures and X4 Pro Home/frontlight controls.
+- [x] Bookmarks, dictionary, footnotes and chapter navigation.
+- [x] Custom fonts / TTF reader work.
+- [x] Focus-reading mode.
+- [ ] Bionic Reading presentation mode.
+- [ ] Highlights and clippings browser.
+- [ ] Flashcards generated from highlights.
+- [ ] Auto page turn controls.
+- [ ] Better end-of-book recommendations.
+
+## Reading intelligence
+
+- [x] Per-book reading statistics foundation.
+- [x] Global stats / Reading Rhythm / Finished Books foundation.
+- [ ] Daily and weekly heatmaps.
+- [ ] Reading streaks and personal records.
+- [ ] Daily / weekly reading goals.
+- [ ] Reading-speed history and ETA.
+- [ ] Achievement system.
+- [ ] Stats-first sleep screens.
+- [ ] Cover-centric per-book analytics browser.
+
+## Connectivity
+
+- [x] Wi-Fi web transfer.
+- [x] OPDS.
+- [x] WebDAV / Calibre / KOReader sync foundation where supported by the base.
+- [x] USB Drive.
+- [ ] LocalSend receiver.
+- [ ] Phone-first send-to-reader workflow.
+- [ ] Instapaper/read-later import.
+- [ ] Wikipedia article send/read workflow.
+- [ ] OTA channel for X4 Pro+ stable / beta builds.
+
+## X4 Pro+ apps
+
+- [x] Calendar shell with persistence.
+- [x] Tasks shell with completion state.
+- [x] Notes shell.
+- [x] Cards shell.
+- [ ] Study / spaced repetition (FSRS-style).
+- [ ] Calculator.
+- [ ] Pomodoro / focus timer.
+- [ ] QR / boarding-pass / membership-card wallet.
+- [ ] Prayer times and simple prayer dashboard.
+- [ ] Qur'an utility / saved ayat and reading shortcuts.
+- [ ] Weather snapshot when online.
+- [ ] Selected e-ink games: Sudoku, 2048, Minesweeper, Solitaire/FreeCell, Chess and simple puzzles.
+
+## UX
+
+- [x] X4 Pro+ Carousel becomes the fresh-install default.
+- [x] Carousel touch zones: previous / open / next.
+- [x] Compact carousel-home menu to preserve screen space.
+- [ ] Quick Actions panel.
+- [ ] Unified icon system across reader and apps.
+- [ ] Dashboard mode with current book, tasks/calendar and reading goal.
+- [ ] Configurable Home layout.
+- [ ] Better first-run onboarding.
+
+## Development / test
+
+- [x] Dedicated `x4-pro-plus` branch.
+- [x] GitHub Actions X4 Pro build artifact.
+- [ ] Real firmware simulator based on the source tree rather than a fake HTML mock.
+- [ ] Automated smoke tests for Home, reader navigation, stats persistence and settings migration.
+- [ ] Release manifest with SHA-256 and exact flash/recovery instructions.
+
+## Source inspirations
+
+Feature ideas are being selectively reimplemented or ported only when technically and license compatible from the CrossPoint ecosystem: XPoint, CrossInk, CrossInk Carousel/CrumBLE, CPR-vCodex, CrossPlay, PapyriX and CrossMux. The finished product remains one X4 Pro-specific UX and codebase.

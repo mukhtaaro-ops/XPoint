@@ -245,24 +245,38 @@ void HomeActivity::loop() {
     }
   };
 
-  buttonNavigator.onNext([this, menuCount] {
+  auto syncCarouselSelection = [this] {
+    if (SETTINGS.uiTheme != CrossPointSettings::UI_THEME::LYRA_3_COVERS) return;
+    if (selectorIndex < 0 || selectorIndex >= static_cast<int>(recentBooks.size())) return;
+    if (carouselBookIndex == selectorIndex) return;
+    carouselBookIndex = selectorIndex;
+    freeCoverBuffer();
+    coverRendered = false;
+    requestUpdate();
+  };
+
+  buttonNavigator.onNext([this, menuCount, &syncCarouselSelection] {
     selectorIndex = ButtonNavigator::nextIndex(selectorIndex, menuCount);
+    syncCarouselSelection();
     requestUpdate();
   });
 
-  buttonNavigator.onPrevious([this, menuCount] {
+  buttonNavigator.onPrevious([this, menuCount, &syncCarouselSelection] {
     selectorIndex = ButtonNavigator::previousIndex(selectorIndex, menuCount);
+    syncCarouselSelection();
     requestUpdate();
   });
 
   const auto swipe = mappedInput.wasSwipe();
   if (swipe == MappedInputManager::SwipeDir::Up) {
     selectorIndex = ButtonNavigator::nextIndex(selectorIndex, menuCount);
+    syncCarouselSelection();
     requestUpdate();
     return;
   }
   if (swipe == MappedInputManager::SwipeDir::Down) {
     selectorIndex = ButtonNavigator::previousIndex(selectorIndex, menuCount);
+    syncCarouselSelection();
     requestUpdate();
     return;
   }
@@ -275,24 +289,58 @@ void HomeActivity::loop() {
     return;
   }
 
-  const int coverColumnCount = std::max(1, metrics.homeRecentBooksCount);
-  const int recentCount = std::min(static_cast<int>(recentBooks.size()), coverColumnCount);
-  const int coverColumnWidth = (renderer.getScreenWidth() - 2 * metrics.contentSidePadding) / coverColumnCount;
-  int touchedBook = -1;
-  const auto coverTouch = mappedInput.colTouch(touchedBook, metrics.contentSidePadding, coverColumnWidth, recentCount,
-                                               metrics.homeTopPadding,
-                                               metrics.homeTopPadding + metrics.homeCoverTileHeight, coverColumnWidth);
-  if (coverTouch != MappedInputManager::RowTouch::None) {
-    if (coverTouch == MappedInputManager::RowTouch::Down) {
-      if (selectorIndex != touchedBook) {
-        selectorIndex = touchedBook;
+  if (SETTINGS.uiTheme == CrossPointSettings::UI_THEME::LYRA_3_COVERS && !recentBooks.empty()) {
+    // X4 Pro+ Carousel: side zones rotate the cover-flow; the centre zone opens
+    // the focused book. This keeps touch targets aligned with the visual layout.
+    const int carouselZoneWidth = renderer.getScreenWidth() / 3;
+    int touchedZone = -1;
+    const auto coverTouch = mappedInput.colTouch(touchedZone, 0, carouselZoneWidth, 3, metrics.homeTopPadding,
+                                                 metrics.homeTopPadding + metrics.homeCoverTileHeight,
+                                                 carouselZoneWidth);
+    if (coverTouch != MappedInputManager::RowTouch::None) {
+      if (coverTouch == MappedInputManager::RowTouch::Down) {
+        const int count = static_cast<int>(recentBooks.size());
+        if (touchedZone == 0 && count > 1) {
+          carouselBookIndex = (carouselBookIndex + count - 1) % count;
+          selectorIndex = carouselBookIndex;
+          freeCoverBuffer();
+          coverRendered = false;
+        } else if (touchedZone == 2 && count > 1) {
+          carouselBookIndex = (carouselBookIndex + 1) % count;
+          selectorIndex = carouselBookIndex;
+          freeCoverBuffer();
+          coverRendered = false;
+        } else if (touchedZone == 1) {
+          selectorIndex = carouselBookIndex;
+        }
         requestUpdate();
+      } else if (touchedZone == 1) {
+        selectorIndex = carouselBookIndex;
+        activateSelection();
       }
-    } else {
-      selectorIndex = touchedBook;
-      activateSelection();
+      return;
     }
-    return;
+  } else {
+    const int coverColumnCount = std::max(1, metrics.homeRecentBooksCount);
+    const int recentCount = std::min(static_cast<int>(recentBooks.size()), coverColumnCount);
+    const int coverColumnWidth = (renderer.getScreenWidth() - 2 * metrics.contentSidePadding) / coverColumnCount;
+    int touchedBook = -1;
+    const auto coverTouch = mappedInput.colTouch(touchedBook, metrics.contentSidePadding, coverColumnWidth, recentCount,
+                                                 metrics.homeTopPadding,
+                                                 metrics.homeTopPadding + metrics.homeCoverTileHeight,
+                                                 coverColumnWidth);
+    if (coverTouch != MappedInputManager::RowTouch::None) {
+      if (coverTouch == MappedInputManager::RowTouch::Down) {
+        if (selectorIndex != touchedBook) {
+          selectorIndex = touchedBook;
+          requestUpdate();
+        }
+      } else {
+        selectorIndex = touchedBook;
+        activateSelection();
+      }
+      return;
+    }
   }
 
   const int menuTop = metrics.homeTopPadding + metrics.homeCoverTileHeight + metrics.homeMenuTopOffset;
@@ -346,8 +394,13 @@ void HomeActivity::render(RenderLock&&) {
   coverRectW = pageWidth;
   coverRectH = metrics.homeCoverTileHeight;
 
+  int coverSelectorIndex = selectorIndex;
+  if (SETTINGS.uiTheme == CrossPointSettings::UI_THEME::LYRA_3_COVERS &&
+      selectorIndex >= static_cast<int>(recentBooks.size())) {
+    coverSelectorIndex = -(carouselBookIndex + 1);
+  }
   GUI.drawRecentBookCover(renderer, Rect{0, metrics.homeTopPadding, pageWidth, metrics.homeCoverTileHeight},
-                          recentBooks, selectorIndex, coverRendered, coverBufferStored, bufferRestored,
+                          recentBooks, coverSelectorIndex, coverRendered, coverBufferStored, bufferRestored,
                           std::bind(&HomeActivity::storeCoverBuffer, this), recentBookProgressLines);
 
   // Build menu items dynamically

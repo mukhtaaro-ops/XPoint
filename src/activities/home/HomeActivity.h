@@ -13,6 +13,8 @@ struct Rect;
 class HomeActivity final : public Activity {
   ButtonNavigator buttonNavigator;
   int selectorIndex = 0;
+  // X4 Pro+ carousel keeps the last focused book while the menu row is active.
+  int carouselBookIndex = 0;
   bool recentsLoading = false;
   bool recentsLoaded = false;
   bool firstRenderDone = false;
