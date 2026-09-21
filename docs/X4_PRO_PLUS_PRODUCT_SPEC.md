@@ -95,7 +95,7 @@ X4 Pro+ is the custom XTEINK X4 Pro firmware being built on the existing XPoint/
 - [x] X4 Pro+ Carousel becomes the fresh-install default.
 - [x] Carousel touch zones: previous / open / next.
 - [x] Compact carousel-home menu to preserve screen space.
-- [x] Quick Actions foundation: direct Library and Phone / PC Transfer actions in X4 Pro+ dashboard.
+- [x] Clean sectioned X4 Pro+ dashboard with direct Library, Qur'an, Study, Prayer, Focus and Phone / PC Transfer actions plus nested Organizer, Utilities and Games pages.
 - [ ] Enrich dashboard with current-book progress, streak/goal and next-prayer summary.
 - [ ] Unified icon system across reader and apps.
 - [ ] Dashboard mode with current book, tasks/calendar and reading goal.
