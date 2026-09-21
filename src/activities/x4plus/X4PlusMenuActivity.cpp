@@ -10,7 +10,7 @@
 #include "components/UITheme.h"
 
 namespace {
-constexpr std::array<UIIcon, 7> kIcons = {Recent, Bookmark, Text, Blocks, Bookmark, Book, Bookmark};
+constexpr std::array<UIIcon, 8> kIcons = {Recent, Bookmark, Text, Blocks, Bookmark, Book, Bookmark, Text};
 }
 
 X4PlusMenuActivity::X4PlusMenuActivity(GfxRenderer& renderer, MappedInputManager& mappedInput)
@@ -25,6 +25,7 @@ void X4PlusMenuActivity::activateSelection() {
     case 4: activityManager.goToX4PlusStudy(); break;
     case 5: activityManager.goToX4PlusQuran(); break;
     case 6: activityManager.goToX4PlusQuranNotes(); break;
+    case 7: activityManager.goToX4PlusClippings(); break;
     default: break;
   }
 }
@@ -81,9 +82,9 @@ void X4PlusMenuActivity::render(RenderLock&&) {
   renderer.clearScreen();
   GUI.drawHeader(renderer, Rect{0, metrics.topPadding, width, metrics.headerHeight}, tr(STR_X4P_TOOLS));
 
-  const std::array<const char*, 7> labels = {
+  const std::array<const char*, 8> labels = {
       tr(STR_X4P_CALENDAR), tr(STR_X4P_TASKS), tr(STR_X4P_NOTES), tr(STR_X4P_CARDS),
-      "Study Cards", "Qur'an Reader", "Saved Ayat / Notes"};
+      "Study Cards", "Qur'an Reader", "Saved Ayat / Notes", "Clippings"};
 
   const int menuTop = metrics.topPadding + metrics.headerHeight + metrics.verticalSpacing;
   GUI.drawButtonMenu(renderer,
