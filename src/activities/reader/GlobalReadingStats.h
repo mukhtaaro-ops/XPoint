@@ -50,4 +50,9 @@ struct GlobalReadingStats {
   uint16_t longestReadingStreakDays() const;
   // Real recorded minutes for a calendar day (0 when absent/outside the 91-day window).
   uint16_t readingMinutesOnDay(uint32_t dayIndex) const;
+  // X4 Pro+ reading-intelligence helpers. These are derived from the existing
+  // persisted 91-day minute history, so no stats-file migration is required.
+  uint32_t recentReadingMinutes(uint16_t days = 7) const;
+  uint16_t activeReadingDays(uint16_t days = 7) const;
+  uint16_t averageReadingMinutesPerActiveDay(uint16_t days = 7) const;
 };
