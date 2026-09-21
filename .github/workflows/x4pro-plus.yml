@@ -46,11 +46,11 @@ jobs:
       - name: Preserve exact firmware and record memory budget
         run: |
           mkdir -p dist
+          cp .pio/build/x4pro/firmware.bin dist/x4-pro-plus-firmware.bin
           pio run -e x4pro -j1 -t size | tee dist/MEMORY_REPORT.txt
       - name: Package exact flash build
         run: |
           mkdir -p dist
-          cp .pio/build/x4pro/firmware.bin dist/x4-pro-plus-firmware.bin
           cp .pio/build/x4pro/bootloader.bin dist/
           cp .pio/build/x4pro/partitions.bin dist/
           cp .pio/build/x4pro/firmware.elf dist/
