@@ -10,7 +10,7 @@ checks = {
     "src/CrossPointSettings.h": ["LYRA_3_COVERS"],
     "src/activities/home/HomeActivity.cpp": ["X4PLUS_TOOLS", "LYRA_3_COVERS"],
     "src/activities/library/LibraryListActivity.cpp": ["buildHeader", "buildTabBar", "openSearch", "LibraryListActivity"],
-    "src/activities/x4plus/X4PlusListActivity.cpp": ["Mode::Study", "Mode::Quran", "Mode::Clippings", "Question :: Answer", "x4plus-study.json", "x4plus-quran.json", "x4plus-clippings.json"],
+    "src/activities/x4plus/X4PlusListActivity.cpp": ["Mode::Study", "Mode::Quran", "Mode::Clippings", "Question :: Answer", "createStudyCardFromClipping", "x4plus-study.json", "x4plus-quran.json", "x4plus-clippings.json"],
     "src/activities/x4plus/X4PlusMenuActivity.cpp": ["Study Cards", "Qur'an", "Clippings", "goToX4PlusStudy", "goToX4PlusQuran", "goToX4PlusClippings"],
     "src/activities/reader/EpubReaderMenuActivity.cpp": ["SAVE_CLIPPING", "Save clipping"],
     "src/activities/reader/EpubReaderActivity.cpp": ["saveCurrentPageClipping", "x4plus-clippings.json", "Clipping saved"],
