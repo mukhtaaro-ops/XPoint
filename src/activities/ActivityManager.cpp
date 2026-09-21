@@ -354,6 +354,9 @@ void ActivityManager::goToX4PlusQuranNotes() {
 void ActivityManager::goToX4PlusClippings() {
   openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Clippings);
 }
+void ActivityManager::goToX4PlusPrayer() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Prayer); }
+void ActivityManager::goToX4PlusFocus() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Focus); }
+void ActivityManager::goToX4PlusWallet() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Wallet); }
 
 void ActivityManager::goToBrowser() {
   const auto& servers = OPDS_STORE.getServers();
