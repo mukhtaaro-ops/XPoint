@@ -23,7 +23,9 @@ checks = {
     "docs/X4_PRO_PLUS_PRODUCT_SPEC.md": ["X4 Pro+ Cover Carousel", "Qur'an", "Arabic", "Visual library foundation"],
     "docs/X4_PRO_PLUS_RELEASE_CHECKLIST.md": ["PDF stock-parity", "forced ESP32-S3 ROM-download", "Do **not** flash"],
     "docs/X4_PRO_PLUS_FACTORY_RECOVERY.md": ["16,777,216 bytes", "0x00000000", "0x00010000"],
-    "scripts/x4pro_plus_preflash.py": ["FACTORY_BYTES", "Physical release gates are NOT checked"],\n    "scripts/x4pro_plus_release_audit.py": ["MIN_FLASH_HEADROOM_BYTES", "pdf_runtime_implementation", "safe_to_flash=no"],\n    "tools/x4pro_plus_phone_simulator.html": ["X4 Pro+ UX simulator", "Minesweeper", "Phone / PC Transfer", "Prayer", "Qur’an"],
+    "scripts/x4pro_plus_preflash.py": ["FACTORY_BYTES", "Physical release gates are NOT checked"],
+    "scripts/x4pro_plus_release_audit.py": ["MIN_FLASH_HEADROOM_BYTES", "pdf_runtime_implementation", "safe_to_flash=no"],
+    "tools/x4pro_plus_phone_simulator.html": ["X4 Pro+ UX simulator", "Minesweeper", "Phone / PC Transfer", "Prayer", "Qur’an"],
 }
 
 failed = False
