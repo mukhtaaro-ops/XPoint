@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <cstdio>
+#include <cstdlib>
 
 #include "MappedInputManager.h"
 #include "components/UITheme.h"
