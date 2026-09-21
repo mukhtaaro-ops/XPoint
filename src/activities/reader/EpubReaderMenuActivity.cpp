@@ -31,7 +31,7 @@ EpubReaderMenuActivity::EpubReaderMenuActivity(GfxRenderer& renderer, MappedInpu
 void EpubReaderMenuActivity::buildMenuRowItems() {
   for (size_t i = 0; i < menuItems.size() && i < MAX_MENU_ITEMS; i++) {
     fui::ListItem item;
-    item.label = I18N.get(menuItems[i].labelId);
+    item.label = menuItems[i].action == MenuAction::SAVE_CLIPPING ? "Save clipping" : I18N.get(menuItems[i].labelId);
     item.actionValue = static_cast<int16_t>(i);
 #ifdef READING_STATS_ENABLED
     // Stats rows dim when tracking is off (design §7.1); enabled=false gates
@@ -55,6 +55,7 @@ void EpubReaderMenuActivity::buildMenuItems(std::vector<MenuItem>& items, bool h
     items.push_back({MenuAction::BOOKMARKS, StrId::STR_BOOKMARKS});
   }
   items.push_back({MenuAction::TOGGLE_BOOKMARK, StrId::STR_TOGGLE_BOOKMARK});
+  items.push_back({MenuAction::SAVE_CLIPPING, StrId::STR_X4P_NOTES});
   items.push_back({MenuAction::NIGHT_MODE, StrId::STR_NIGHT_MODE});
   if (Frontlight.present()) {
     items.push_back({MenuAction::FRONTLIGHT, StrId::STR_FRONTLIGHT});
