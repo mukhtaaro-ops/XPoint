@@ -10,7 +10,7 @@
 #include "components/UITheme.h"
 
 namespace {
-constexpr std::array<UIIcon, 12> kIcons = {Recent, Bookmark, Text, Blocks, Bookmark, Book, Bookmark, Text, Recent, Recent, Blocks, Text};
+constexpr std::array<UIIcon, 14> kIcons = {Book, Blocks, Recent, Bookmark, Text, Blocks, Bookmark, Book, Bookmark, Text, Recent, Recent, Blocks, Text};
 }
 
 X4PlusMenuActivity::X4PlusMenuActivity(GfxRenderer& renderer, MappedInputManager& mappedInput)
@@ -18,18 +18,20 @@ X4PlusMenuActivity::X4PlusMenuActivity(GfxRenderer& renderer, MappedInputManager
 
 void X4PlusMenuActivity::activateSelection() {
   switch (selectedIndex) {
-    case 0: activityManager.goToX4PlusCalendar(); break;
-    case 1: activityManager.goToX4PlusTasks(); break;
-    case 2: activityManager.goToX4PlusNotes(); break;
-    case 3: activityManager.goToX4PlusCards(); break;
-    case 4: activityManager.goToX4PlusStudy(); break;
-    case 5: activityManager.goToX4PlusQuran(); break;
-    case 6: activityManager.goToX4PlusQuranNotes(); break;
-    case 7: activityManager.goToX4PlusClippings(); break;
-    case 8: activityManager.goToX4PlusPrayer(); break;
-    case 9: activityManager.goToX4PlusFocus(); break;
-    case 10: activityManager.goToX4PlusWallet(); break;
-    case 11: activityManager.goToX4PlusCalculator(); break;
+    case 0: activityManager.goToLibrary(); break;
+    case 1: activityManager.goToFileTransfer(); break;
+    case 2: activityManager.goToX4PlusCalendar(); break;
+    case 3: activityManager.goToX4PlusTasks(); break;
+    case 4: activityManager.goToX4PlusNotes(); break;
+    case 5: activityManager.goToX4PlusCards(); break;
+    case 6: activityManager.goToX4PlusStudy(); break;
+    case 7: activityManager.goToX4PlusQuran(); break;
+    case 8: activityManager.goToX4PlusQuranNotes(); break;
+    case 9: activityManager.goToX4PlusClippings(); break;
+    case 10: activityManager.goToX4PlusPrayer(); break;
+    case 11: activityManager.goToX4PlusFocus(); break;
+    case 12: activityManager.goToX4PlusWallet(); break;
+    case 13: activityManager.goToX4PlusCalculator(); break;
     default: break;
   }
 }
@@ -86,7 +88,8 @@ void X4PlusMenuActivity::render(RenderLock&&) {
   renderer.clearScreen();
   GUI.drawHeader(renderer, Rect{0, metrics.topPadding, width, metrics.headerHeight}, tr(STR_X4P_TOOLS));
 
-  const std::array<const char*, 12> labels = {
+  const std::array<const char*, 14> labels = {
+      "Library", "Phone / PC Transfer",
       tr(STR_X4P_CALENDAR), tr(STR_X4P_TASKS), tr(STR_X4P_NOTES), tr(STR_X4P_CARDS),
       "Study Cards", "Qur'an Reader", "Saved Ayat / Notes", "Clippings",
       "Prayer", "Focus / Pomodoro", "QR Wallet", "Calculator"};
