@@ -351,6 +351,9 @@ void ActivityManager::goToX4PlusQuran() {
 void ActivityManager::goToX4PlusQuranNotes() {
   openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Quran);
 }
+void ActivityManager::goToX4PlusClippings() {
+  openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Clippings);
+}
 
 void ActivityManager::goToBrowser() {
   const auto& servers = OPDS_STORE.getServers();
