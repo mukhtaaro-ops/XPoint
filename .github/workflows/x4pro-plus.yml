@@ -22,6 +22,8 @@ jobs:
         with:
           version: latest
           enable-cache: false
+      - name: X4 Pro+ source smoke checks
+        run: python scripts/x4pro_plus_smoke.py
       - name: Install PlatformIO Core
         run: |
           uv pip install --system -U https://github.com/pioarduino/platformio-core/archive/refs/tags/v6.2.0.zip
@@ -42,6 +44,25 @@ jobs:
           cp .pio/build/x4pro/firmware.elf dist/
           cp .pio/build/x4pro/firmware.map dist/
           sha256sum dist/* > dist/SHA256SUMS.txt
+          {
+            echo "X4 Pro+ build manifest"
+            echo "commit=${GITHUB_SHA}"
+            echo "target=x4pro"
+            echo "board=ESP32-S3 XTEINK X4 Pro"
+            echo "artifact=x4-pro-plus-x4pro"
+            echo "factory_backup_required=yes"
+            echo "physical_hardware_tested=no"
+            echo ""
+            cat dist/SHA256SUMS.txt
+          } > dist/BUILD_MANIFEST.txt
+      - name: Verify packaged firmware
+        run: |
+          test -s dist/x4-pro-plus-firmware.bin
+          test -s dist/bootloader.bin
+          test -s dist/partitions.bin
+          test -s dist/firmware.elf
+          test -s dist/firmware.map
+          (cd dist && sha256sum -c SHA256SUMS.txt)
       - uses: actions/upload-artifact@v7
         with:
           name: x4-pro-plus-x4pro
