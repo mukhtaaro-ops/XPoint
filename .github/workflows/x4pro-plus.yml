@@ -43,7 +43,7 @@ jobs:
           ctest --test-dir test/build --output-on-failure
       - name: Build X4 Pro+
         run: pio run -e x4pro -j1
-      - name: Record memory budget
+      - name: Preserve exact firmware and record memory budget
         run: |
           mkdir -p dist
           pio run -e x4pro -j1 -t size | tee dist/MEMORY_REPORT.txt
