@@ -337,6 +337,8 @@ void ActivityManager::goToX4PlusCalendar() { openX4PlusList(*this, renderer, map
 void ActivityManager::goToX4PlusTasks() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Tasks); }
 void ActivityManager::goToX4PlusNotes() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Notes); }
 void ActivityManager::goToX4PlusCards() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Cards); }
+void ActivityManager::goToX4PlusStudy() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Study); }
+void ActivityManager::goToX4PlusQuran() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Quran); }
 
 void ActivityManager::goToBrowser() {
   const auto& servers = OPDS_STORE.getServers();
