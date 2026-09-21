@@ -37,7 +37,8 @@ X4 Pro+ is the custom XTEINK X4 Pro firmware being built on the existing XPoint/
 - [ ] Physical X4 Pro validation of Arabic font rendering, joining and tashkil/diacritics.
 - [ ] Bionic Reading presentation mode.
 - [x] Persistent Clippings browser foundation.
-- [ ] Reader text-selection/highlight capture into Clippings.
+- [x] Reader `Save clipping` action persists a page-text summary into Clippings.
+- [ ] Fine-grained text-selection/highlight capture (beyond page-summary clipping).
 - [x] Persistent question/answer flashcard surface.
 - [ ] One-tap flashcard generation from captured highlights/clippings.
 - [ ] Auto page turn controls.
