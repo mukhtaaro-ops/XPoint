@@ -3,6 +3,7 @@
 #include <BoardConfig.h>
 #include <FontCacheManager.h>
 #include <FsHelpers.h>
+#include <HalStorage.h>
 #include <HalClock.h>
 #include <HalDisplay.h>
 #include <HalPowerManager.h>
@@ -338,7 +339,18 @@ void ActivityManager::goToX4PlusTasks() { openX4PlusList(*this, renderer, mapped
 void ActivityManager::goToX4PlusNotes() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Notes); }
 void ActivityManager::goToX4PlusCards() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Cards); }
 void ActivityManager::goToX4PlusStudy() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Study); }
-void ActivityManager::goToX4PlusQuran() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Quran); }
+void ActivityManager::goToX4PlusQuran() {
+  static constexpr const char* kQuranDir = "/Books/Quran";
+  if (!Storage.exists(kQuranDir) && !Storage.ensureDirectoryExists(kQuranDir)) {
+    LOG_ERR("ACT", "Unable to create Quran books directory");
+    goToFileBrowser("/Books");
+    return;
+  }
+  goToFileBrowser(kQuranDir);
+}
+void ActivityManager::goToX4PlusQuranNotes() {
+  openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Quran);
+}
 
 void ActivityManager::goToBrowser() {
   const auto& servers = OPDS_STORE.getServers();
