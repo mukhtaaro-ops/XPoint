@@ -19,6 +19,7 @@ X4 Pro+ is the custom XTEINK X4 Pro firmware being built on the existing XPoint/
 - [x] Per-book progress line on Home.
 - [x] X4 Pro+ Cover Carousel: focused centre cover, adjacent covers, circular navigation, progress and page dots.
 - [ ] 3x3 cover-grid Library.
+- [x] Visual library foundation: indexed library, Recent/Title/Author shelves, sorting, search, grouped navigation and file-type visual rows.
 - [ ] Collections / shelves: Recent, Unopened, Finished, custom collections.
 - [ ] Sorting and filtering.
 - [ ] Search from the visual library.
