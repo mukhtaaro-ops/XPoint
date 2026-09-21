@@ -25,7 +25,7 @@ checks = {
     "docs/X4_PRO_PLUS_FACTORY_RECOVERY.md": ["16,777,216 bytes", "0x00000000", "0x00010000"],
     "scripts/x4pro_plus_preflash.py": ["FACTORY_BYTES", "Physical release gates are NOT checked"],
     "scripts/x4pro_plus_release_audit.py": ["MIN_FLASH_HEADROOM_BYTES", "pdf_runtime_implementation", "safe_to_flash=no"],
-    "tools/x4pro_plus_phone_simulator.html": ["X4 Pro+ UX simulator", "Minesweeper", "Phone / PC Transfer", "Prayer", "Qur’an"],
+    "tools/x4pro_plus_phone_simulator.html": ["width:480px", "height:800px", "homeCarousel", "Minesweeper", "Phone / PC Transfer", "Prayer", "Qur'an Reader", "data-act=\"readerMenu\""],
 }
 
 failed = False
