@@ -99,7 +99,7 @@ void X4PlusMenuActivity::activateSelection() {
         case 5: openPage(Page::Games); break;
         case 6: openPage(Page::Organizer); break;
         case 7: openPage(Page::Utilities); break;
-        case 8: activityManager.goToFileTransfer(); break;
+        case 8: activityManager.goToPhoneTransfer(); break;
         default: break;
       }
       break;
