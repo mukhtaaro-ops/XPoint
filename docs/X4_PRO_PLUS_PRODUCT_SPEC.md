@@ -77,12 +77,12 @@ X4 Pro+ is the custom XTEINK X4 Pro firmware being built on the existing XPoint/
 - [x] Cards shell.
 - [x] Persistent question/answer Study Cards with tap-to-reveal.
 - [ ] FSRS-style scheduling / spaced-repetition queue.
-- [ ] Calculator.
-- [x] Persistent Focus / Pomodoro presets and goals foundation.
+- [x] Calculator expression engine with persistent history.
+- [x] Functional Focus / Pomodoro timer: 25/5 presets, start/pause/resume/reset, persisted completed-session count.
 - [ ] Live countdown/timer engine and completion alert.
-- [x] Persistent QR / pass payload wallet foundation.
-- [ ] Render stored wallet payload as scannable QR from wallet row.
-- [ ] Prayer times and simple prayer dashboard.
+- [x] Persistent QR / pass payload wallet.
+- [x] Render stored wallet payload as scannable QR from wallet row.
+- [x] Calculated Fajr/Dhuhr/Asr/Maghrib/Isha dashboard with editable latitude, longitude, UTC offset and Fajr/Isha angles.
 - [x] Qur'an reader shortcut with dedicated `/Books/Quran` folder plus persistent Saved Ayat / Notes.
 - [ ] Mark Qur'an rendering release-ready only after physical Arabic shaping/RTL/tashkil validation.
 - [ ] Weather snapshot when online.
@@ -93,7 +93,7 @@ X4 Pro+ is the custom XTEINK X4 Pro firmware being built on the existing XPoint/
 - [x] X4 Pro+ Carousel becomes the fresh-install default.
 - [x] Carousel touch zones: previous / open / next.
 - [x] Compact carousel-home menu to preserve screen space.
-- [ ] Quick Actions panel.
+- [x] Quick Actions foundation: direct Library and Phone / PC Transfer actions in X4 Pro+ dashboard.\n- [ ] Enrich dashboard with current-book progress, streak/goal and next-prayer summary.
 - [ ] Unified icon system across reader and apps.
 - [ ] Dashboard mode with current book, tasks/calendar and reading goal.
 - [ ] Configurable Home layout.
