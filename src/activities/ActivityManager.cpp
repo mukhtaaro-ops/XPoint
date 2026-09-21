@@ -363,6 +363,11 @@ void ActivityManager::goToX4PlusMinesweeper() {
   if (!activity) return;
   replaceActivity(std::move(activity));
 }
+void ActivityManager::goToX4Plus2048() {
+  auto activity = makeUniqueNoThrow<X4Plus2048Activity>(renderer, mappedInput);
+  if (!activity) return;
+  replaceActivity(std::move(activity));
+}
 
 void ActivityManager::goToBrowser() {
   const auto& servers = OPDS_STORE.getServers();
