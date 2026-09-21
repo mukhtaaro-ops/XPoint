@@ -1,6 +1,7 @@
 #include "LibraryListActivity.h"
 
 #include <FreeInkUIIcon.h>
+#include <BoardConfig.h>
 #include <GfxRenderer.h>
 #include <HalStorage.h>
 #include <I18n.h>
@@ -794,6 +795,58 @@ void LibraryListActivity::buildRows(UiScreen& screen) {
           rows > 0 ? winItems[0].label : "<none>");
 }
 
+void LibraryListActivity::buildCoverGrid(UiScreen& screen) {
+  // First X4 Pro+ grid pass: preserve the proven library data/navigation engine
+  // and render three compact book cards per visual band. The card surface is
+  // intentionally text-backed until indexed cover-path plumbing is available;
+  // this keeps search, sorting, deletion and opening behaviour identical.
+  auto& nav = activeNav();
+  const int count = listCount();
+  constexpr int columns = 3;
+  constexpr int cardGap = 8;
+  const auto body = screen.body();
+  const int cardW = std::max(72, (body.width - (columns - 1) * cardGap) / columns);
+  const int cardH = 118;
+  const int first = std::max(0, nav.top);
+  const int visible = std::min(count - first, 9);
+
+  for (int slot = 0; slot < visible; ++slot) {
+    const int entry = first + slot;
+    const int col = slot % columns;
+    const int row = slot / columns;
+    const int x = body.x + col * (cardW + cardGap);
+    const int y = body.y + row * (cardH + cardGap);
+    std::string title;
+    std::string author;
+    std::string fileName;
+    if (!rowTextFor(entry, title, author, &fileName)) continue;
+
+    const bool selected = !tabsFocused() && selectedEntry() == entry;
+    if (selected) renderer.fillRoundedRect(x, y, cardW, cardH, 6, Color::LightGray);
+    renderer.drawRoundedRect(x, y, cardW, cardH, selected ? 3 : 1, 6, true);
+
+    // Book-spine/cover cue. Real cover thumbnails replace this fallback once
+    // the index exposes a stable cached-cover path for every row.
+    renderer.drawIcon(listIconFor(UITheme::getFileIcon(fileName), 32), x + (cardW - 32) / 2, y + 10, 32);
+    const auto lines = renderer.wrappedText(UI_10_FONT_ID, title.c_str(), cardW - 10, 2, EpdFontFamily::BOLD);
+    int ty = y + 48;
+    for (const auto& line : lines) {
+      const int tw = renderer.getTextWidth(UI_10_FONT_ID, line.c_str(), EpdFontFamily::BOLD);
+      renderer.drawText(UI_10_FONT_ID, x + std::max(4, (cardW - tw) / 2), ty, line.c_str(), true,
+                        EpdFontFamily::BOLD);
+      ty += renderer.getLineHeight(UI_10_FONT_ID);
+    }
+    if (!author.empty()) {
+      const auto authorLines = renderer.wrappedText(UI_10_FONT_ID, author.c_str(), cardW - 10, 1);
+      if (!authorLines.empty()) {
+        const int aw = renderer.getTextWidth(UI_10_FONT_ID, authorLines[0].c_str());
+        renderer.drawText(UI_10_FONT_ID, x + std::max(4, (cardW - aw) / 2), y + cardH - 22,
+                          authorLines[0].c_str(), true);
+      }
+    }
+  }
+}
+
 void LibraryListActivity::formatInitialHeading(uint32_t initial, std::string& out) {
   out.clear();
   if (initial == 0) {
@@ -864,7 +917,12 @@ void LibraryListActivity::buildScreen(UiScreen& screen) {
     screen.centeredText(message);
     return;
   }
-  buildRows(screen);
+  // X4 Pro+ uses the visual 3-column shelf on touch X4 Pro while the original
+  // list remains the safe fallback for button-only/other targets.
+  if (BoardConfig::isX4Pro() && mappedInput.hasTouch() && !groupsCollapsed)
+    buildCoverGrid(screen);
+  else
+    buildRows(screen);
 }
 
 // "12/69 books" at the bottom right: which book is selected, out of how many.
