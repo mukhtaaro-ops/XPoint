@@ -48,4 +48,5 @@ class X4PlusListActivity final : public UiListActivity {
   int prayerUtcOffsetMinutes = 120;
   double prayerFajrAngle = 18.0;
   double prayerIshaAngle = 17.0;
+  double prayerAsrShadowFactor = 1.0;  // 1 = standard, 2 = Hanafi
 };
