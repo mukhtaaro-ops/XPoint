@@ -17,6 +17,7 @@ class X4PlusListActivity final : public UiListActivity {
   void save() const;
   void rebuildRows();
   void openEditor(int index);
+  void createStudyCardFromClipping(int index);
   const char* filePath() const;
   const char* addLabel() const;
   Mode mode;
