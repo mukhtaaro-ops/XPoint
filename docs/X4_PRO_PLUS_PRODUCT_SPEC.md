@@ -108,7 +108,8 @@ X4 Pro+ is the custom XTEINK X4 Pro firmware being built on the existing XPoint/
 - [x] GitHub Actions X4 Pro build artifact.
 - [x] Source smoke checks for X4 Pro target, carousel default/navigation, native tools, Study/Qur'an wiring and Arabic invariants.
 - [x] Full host regression suite runs before X4 Pro firmware compilation.
-- [ ] Real firmware simulator based on the source tree rather than a fake HTML mock.
+- [x] Phone-playable UX simulator covering Home/carousel, 3x3 Library, reader, stats, Qur'an, prayer, Focus, utilities, games and transfer flows.
+- [ ] Real firmware/runtime simulator based on the source tree; the HTML simulator is UX validation only.
 - [ ] Automated runtime smoke tests for Home, reader navigation, stats persistence and settings migration.
 - [x] Release artifact manifest with SHA-256, exact factory/application offsets, recovery guide and explicit unsafe-to-flash flags.
 - [ ] Clear `safe_to_flash=no` only after PDF parity and forced-ROM recovery are physically verified.
