@@ -18,6 +18,8 @@ const char* X4PlusListActivity::filePath() const {
     case Mode::Tasks: return "/.crosspoint/x4plus-tasks.json";
     case Mode::Notes: return "/.crosspoint/x4plus-notes.json";
     case Mode::Cards: return "/.crosspoint/x4plus-cards.json";
+    case Mode::Study: return "/.crosspoint/x4plus-study.json";
+    case Mode::Quran: return "/.crosspoint/x4plus-quran.json";
   }
   return "/.crosspoint/x4plus.json";
 }
@@ -27,6 +29,8 @@ const char* X4PlusListActivity::headerTitle() const {
     case Mode::Tasks: return tr(STR_X4P_TASKS);
     case Mode::Notes: return tr(STR_X4P_NOTES);
     case Mode::Cards: return tr(STR_X4P_CARDS);
+    case Mode::Study: return "Study Cards";
+    case Mode::Quran: return "Qur'an";
   }
   return tr(STR_CROSSPOINT);
 }
@@ -36,18 +40,20 @@ const char* X4PlusListActivity::addLabel() const {
     case Mode::Tasks: return tr(STR_X4P_ADD_TASK);
     case Mode::Notes: return tr(STR_X4P_ADD_NOTE);
     case Mode::Cards: return tr(STR_X4P_ADD_CARD);
+    case Mode::Study: return "Add card: Question :: Answer";
+    case Mode::Quran: return "Add ayah / note";
   }
   return tr(STR_X4P_ADD_NOTE);
 }
 void X4PlusListActivity::load() {
-  items.clear(); completed.clear(); JsonDocument doc;
+  items.clear(); completed.clear(); revealed.clear(); JsonDocument doc;
   if (!PersistableStoreBase::readDocFromFile(filePath(), doc)) return;
   JsonArrayConst values = doc["items"].as<JsonArrayConst>();
   items.reserve(values.size()); completed.reserve(values.size());
   for (JsonVariantConst value : values) {
     const char* text = value["text"] | "";
     if (!text[0]) continue;
-    items.emplace_back(text); completed.push_back(value["done"] | false);
+    items.emplace_back(text); completed.push_back(value["done"] | false); revealed.push_back(false);
   }
 }
 void X4PlusListActivity::save() const {
@@ -61,9 +67,21 @@ void X4PlusListActivity::save() const {
 }
 void X4PlusListActivity::rebuildRows() {
   rows.clear(); displayLabels.clear(); rows.reserve(items.size() + 1); displayLabels.reserve(items.size());
+  if (revealed.size() < items.size()) revealed.resize(items.size(), false);
   for (size_t i = 0; i < items.size(); ++i) {
-    if (mode == Mode::Tasks) displayLabels.emplace_back((i < completed.size() && completed[i] ? "[x] " : "[ ] ") + items[i]);
-    else displayLabels.push_back(items[i]);
+    if (mode == Mode::Tasks) {
+      displayLabels.emplace_back((i < completed.size() && completed[i] ? "[x] " : "[ ] ") + items[i]);
+    } else if (mode == Mode::Study) {
+      const size_t split = items[i].find("::");
+      const std::string front = split == std::string::npos ? items[i] : items[i].substr(0, split);
+      const std::string back = split == std::string::npos ? std::string{} : items[i].substr(split + 2);
+      if (i < revealed.size() && revealed[i] && !back.empty())
+        displayLabels.emplace_back("A: " + back);
+      else
+        displayLabels.emplace_back("Q: " + front);
+    } else {
+      displayLabels.push_back(items[i]);
+    }
   }
   for (size_t i = 0; i < displayLabels.size(); ++i) {
     fui::ListItem row; row.label = displayLabels[i].c_str(); row.actionValue = static_cast<int16_t>(i);
@@ -92,7 +110,7 @@ void X4PlusListActivity::openEditor(const int index) {
   startActivityForResult(std::move(editor), [this, index, creating](const ActivityResult& result) {
     if (result.isCancelled || !std::holds_alternative<KeyboardResult>(result.data)) return;
     std::string text = std::get<KeyboardResult>(result.data).text; if (text.empty()) return;
-    if (creating) { items.push_back(std::move(text)); completed.push_back(false); }
+    if (creating) { items.push_back(std::move(text)); completed.push_back(false); revealed.push_back(false); }
     else if (index >= 0 && index < static_cast<int>(items.size())) items[index] = std::move(text);
     save(); rebuildRows(); requestUpdate();
   });
@@ -102,10 +120,16 @@ void X4PlusListActivity::activateIndex(const int index) {
   if (index == static_cast<int>(items.size())) { openEditor(index); return; }
   if (index < 0 || index >= static_cast<int>(items.size())) return;
   if (mode == Mode::Tasks) { completed[index] = !completed[index]; save(); rebuildRows(); requestUpdate(); return; }
+  if (mode == Mode::Study) {
+    if (revealed.size() < items.size()) revealed.resize(items.size(), false);
+    revealed[index] = !revealed[index];
+    rebuildRows(); requestUpdate(); return;
+  }
   openEditor(index);
 }
 void X4PlusListActivity::onRowLongPress(const int index) {
   if (index < 0 || index >= static_cast<int>(items.size())) return;
   items.erase(items.begin() + index); if (index < static_cast<int>(completed.size())) completed.erase(completed.begin() + index);
+  if (index < static_cast<int>(revealed.size())) revealed.erase(revealed.begin() + index);
   save(); rebuildRows(); nav.selected = std::min(index, static_cast<int>(items.size())); requestUpdate();
 }
