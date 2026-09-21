@@ -1,6 +1,7 @@
 #pragma once
 #include "activities/Activity.h"
 #include "util/ButtonNavigator.h"
+#include "components/UITheme.h"
 
 class X4PlusMenuActivity final : public Activity {
  public:
