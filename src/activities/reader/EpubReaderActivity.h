@@ -52,11 +52,13 @@ class EpubReaderActivity final : public ReaderActivity {
   bool skipNextButtonCheck = false;
   bool automaticPageTurnActive = false;
   bool showBookmarkMessage = false;
+  bool showClippingMessage = false;
   bool showDictionaryMessage = false;
   // When set, the dictionary popup shows the TTF-path "not available" string
   // instead of the no-dictionary one (kody, PR #113).
   bool dictionaryMessageTtf = false;
   unsigned long dictionaryMessageTime = 0UL;
+  unsigned long clippingMessageTime = 0UL;
   bool currentPageBookmarked = false;
   int idlePrewarmSpine = -1;
   int idlePrewarmPage = -1;
@@ -308,6 +310,7 @@ class EpubReaderActivity final : public ReaderActivity {
   void toggleAutoPageTurn(uint8_t selectedPageTurnOption);
   void loadCachedBookmarks();
   void addBookmark();
+  void saveCurrentPageClipping();
   void updateBookmarkFlag();
 
   void navigateToHref(const std::string& href, bool savePosition = false);
