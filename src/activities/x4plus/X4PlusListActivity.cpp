@@ -7,6 +7,7 @@
 #include "activities/ActivityManager.h"
 #include "activities/ActivityResult.h"
 #include "activities/util/KeyboardEntryActivity.h"
+#include "activities/reader/QrDisplayActivity.h"
 #include "components/UITheme.h"
 namespace fui = freeink::ui;
 X4PlusListActivity::X4PlusListActivity(GfxRenderer& renderer, MappedInputManager& mappedInput, const Mode mode)
@@ -164,6 +165,12 @@ void X4PlusListActivity::activateIndex(const int index) {
     rebuildRows(); requestUpdate(); return;
   }
   if (mode == Mode::Clippings) { createStudyCardFromClipping(index); return; }
+  if (mode == Mode::Wallet) {
+    auto qr = makeUniqueNoThrow<QrDisplayActivity>(renderer, mappedInput, items[index]);
+    if (!qr) { LOG_ERR("X4P", "OOM: QR wallet display"); return; }
+    activityManager.pushActivity(std::move(qr));
+    return;
+  }
   openEditor(index);
 }
 void X4PlusListActivity::onRowLongPress(const int index) {
