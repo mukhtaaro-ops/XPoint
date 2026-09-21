@@ -31,6 +31,8 @@
 #include "settings/OpdsServerListActivity.h"
 #include "settings/SettingsActivity.h"
 #include "x4plus/X4PlusListActivity.h"
+#include "x4plus/X4PlusMinesweeperActivity.h"
+#include "x4plus/X4Plus2048Activity.h"
 #include "x4plus/X4PlusMenuActivity.h"
 #include "util/BmpViewerActivity.h"
 #include "util/FrontlightPanelActivity.h"
