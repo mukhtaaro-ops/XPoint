@@ -21,6 +21,9 @@ const char* X4PlusListActivity::filePath() const {
     case Mode::Study: return "/.crosspoint/x4plus-study.json";
     case Mode::Quran: return "/.crosspoint/x4plus-quran.json";
     case Mode::Clippings: return "/.crosspoint/x4plus-clippings.json";
+    case Mode::Prayer: return "/.crosspoint/x4plus-prayer.json";
+    case Mode::Focus: return "/.crosspoint/x4plus-focus.json";
+    case Mode::Wallet: return "/.crosspoint/x4plus-wallet.json";
   }
   return "/.crosspoint/x4plus.json";
 }
@@ -33,6 +36,9 @@ const char* X4PlusListActivity::headerTitle() const {
     case Mode::Study: return "Study Cards";
     case Mode::Quran: return "Qur'an";
     case Mode::Clippings: return "Clippings";
+    case Mode::Prayer: return "Prayer";
+    case Mode::Focus: return "Focus / Pomodoro";
+    case Mode::Wallet: return "QR Wallet";
   }
   return tr(STR_CROSSPOINT);
 }
@@ -45,6 +51,9 @@ const char* X4PlusListActivity::addLabel() const {
     case Mode::Study: return "Add card: Question :: Answer";
     case Mode::Quran: return "Add ayah / note";
     case Mode::Clippings: return "Add clipping";
+    case Mode::Prayer: return "Add prayer / reminder";
+    case Mode::Focus: return "Add focus preset / goal";
+    case Mode::Wallet: return "Add QR / pass payload";
   }
   return tr(STR_X4P_ADD_NOTE);
 }
