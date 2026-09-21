@@ -38,7 +38,7 @@ jobs:
           cp .pio/build/x4pro/partitions.bin dist/
           cp .pio/build/x4pro/firmware.elf dist/
           cp .pio/build/x4pro/firmware.map dist/
-          sha256sum dist/* > dist/SHA256SUMS.txt
+          (cd dist && sha256sum bootloader.bin firmware.elf firmware.map partitions.bin x4-pro-plus-firmware.bin > SHA256SUMS.txt)
           {
             echo "X4 Pro+ build manifest"
             echo "commit=${GITHUB_SHA}"
