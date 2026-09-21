@@ -357,6 +357,7 @@ void ActivityManager::goToX4PlusClippings() {
 void ActivityManager::goToX4PlusPrayer() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Prayer); }
 void ActivityManager::goToX4PlusFocus() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Focus); }
 void ActivityManager::goToX4PlusWallet() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Wallet); }
+void ActivityManager::goToX4PlusCalculator() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Calculator); }
 
 void ActivityManager::goToBrowser() {
   const auto& servers = OPDS_STORE.getServers();
