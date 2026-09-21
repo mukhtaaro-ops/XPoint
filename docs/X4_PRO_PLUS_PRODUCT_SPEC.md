@@ -64,7 +64,7 @@ X4 Pro+ is the custom XTEINK X4 Pro firmware being built on the existing XPoint/
 - [x] WebDAV / Calibre / KOReader sync foundation where supported by the base.
 - [x] USB Drive.
 - [ ] LocalSend receiver.
-- [x] Phone-first browser send-to-reader workflow surfaced directly from the X4 Pro+ dashboard.
+- [x] One-tap phone-first transfer: X4 Pro+ starts its hotspot directly, then shows Wi-Fi/URL QR codes for browser upload from a phone.
 - [ ] Native LocalSend-compatible receiver.
 - [ ] Instapaper/read-later import.
 - [ ] Wikipedia article send/read workflow.
