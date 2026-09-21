@@ -1,7 +1,7 @@
 name: X4 Pro+ Build
 on:
   push:
-    branches: [x4-pro-plus, x4-pro-plus-build29, x4-pro-plus-build30]
+    branches: [x4-pro-plus, x4-pro-plus-build29, x4-pro-plus-build30, x4-pro-plus-pdf]
   workflow_dispatch:
 concurrency:
   group: x4-pro-plus-${{ github.ref }}
