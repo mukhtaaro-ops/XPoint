@@ -450,3 +450,25 @@ uint16_t GlobalReadingStats::longestReadingStreakDays() const {
 uint16_t GlobalReadingStats::readingMinutesOnDay(const uint32_t dayIndex) const {
   return readingMinutesForDay(readingHistoryAnchorDay, dailyReadingMinutes, dayIndex);
 }
+
+uint32_t GlobalReadingStats::recentReadingMinutes(const uint16_t days) const {
+  const uint16_t count = std::min<uint16_t>(days, READING_MINUTE_HISTORY_DAYS);
+  uint32_t total = 0;
+  for (uint16_t i = 0; i < count; ++i) total += dailyReadingMinutes[i];
+  return total;
+}
+
+uint16_t GlobalReadingStats::activeReadingDays(const uint16_t days) const {
+  const uint16_t count = std::min<uint16_t>(days, READING_MINUTE_HISTORY_DAYS);
+  uint16_t active = 0;
+  for (uint16_t i = 0; i < count; ++i) {
+    if (dailyReadingMinutes[i] > 0) ++active;
+  }
+  return active;
+}
+
+uint16_t GlobalReadingStats::averageReadingMinutesPerActiveDay(const uint16_t days) const {
+  const uint16_t active = activeReadingDays(days);
+  if (active == 0) return 0;
+  return static_cast<uint16_t>((recentReadingMinutes(days) + active / 2u) / active);
+}
