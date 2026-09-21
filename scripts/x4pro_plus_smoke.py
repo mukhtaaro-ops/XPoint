@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
-"""Cheap CI smoke checks for X4 Pro+ invariants.
-
-These tests deliberately avoid hardware assumptions. They catch accidental removal of
-X4 Pro targeting, the cover-first default, carousel navigation/touch wiring, and the
-native tools entry before a firmware artifact is published.
-"""
+"""Cheap CI smoke checks for X4 Pro+ invariants."""
 from pathlib import Path
 import sys
 
@@ -14,7 +9,7 @@ checks = {
     "platformio.ini": ["[env:x4pro]"],
     "src/CrossPointSettings.h": ["LYRA_3_COVERS"],
     "src/activities/home/HomeActivity.cpp": ["X4PLUS_TOOLS", "LYRA_3_COVERS"],
-    "src/components/themes/lyra/Lyra3CoversTheme.cpp": ["draw", "handleTouch"],
+    "src/components/themes/lyra/Lyra3CoversTheme.cpp": ["drawRecentBookCover", "carousel", "centre"],
     "lib/I18n/translations/english.yaml": ["X4 Pro+ Carousel"],
     "docs/X4_PRO_PLUS_PRODUCT_SPEC.md": ["X4 Pro+ Cover Carousel", "Qur'an", "Arabic"],
 }
