@@ -12,6 +12,8 @@ checks = {
     "src/activities/library/LibraryListActivity.cpp": ["buildHeader", "buildTabBar", "openSearch", "LibraryListActivity"],
     "src/activities/x4plus/X4PlusListActivity.cpp": ["Mode::Study", "Mode::Quran", "Mode::Clippings", "Question :: Answer", "x4plus-study.json", "x4plus-quran.json", "x4plus-clippings.json"],
     "src/activities/x4plus/X4PlusMenuActivity.cpp": ["Study Cards", "Qur'an", "Clippings", "goToX4PlusStudy", "goToX4PlusQuran", "goToX4PlusClippings"],
+    "src/activities/reader/EpubReaderMenuActivity.cpp": ["SAVE_CLIPPING", "Save clipping"],
+    "src/activities/reader/EpubReaderActivity.cpp": ["saveCurrentPageClipping", "x4plus-clippings.json", "Clipping saved"],
     "test/minibidi_arabic/MiniBidiArabicTest.cpp": ["0x06D6", "isTransparentMark"],
     "src/components/themes/lyra/Lyra3CoversTheme.cpp": ["drawRecentBookCover", "carousel", "centre"],
     "lib/I18n/translations/english.yaml": ["X4 Pro+ Carousel"],
