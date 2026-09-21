@@ -78,8 +78,10 @@ X4 Pro+ is the custom XTEINK X4 Pro firmware being built on the existing XPoint/
 - [x] Persistent question/answer Study Cards with tap-to-reveal.
 - [ ] FSRS-style scheduling / spaced-repetition queue.
 - [ ] Calculator.
-- [ ] Pomodoro / focus timer.
-- [ ] QR / boarding-pass / membership-card wallet.
+- [x] Persistent Focus / Pomodoro presets and goals foundation.
+- [ ] Live countdown/timer engine and completion alert.
+- [x] Persistent QR / pass payload wallet foundation.
+- [ ] Render stored wallet payload as scannable QR from wallet row.
 - [ ] Prayer times and simple prayer dashboard.
 - [x] Qur'an reader shortcut with dedicated `/Books/Quran` folder plus persistent Saved Ayat / Notes.
 - [ ] Mark Qur'an rendering release-ready only after physical Arabic shaping/RTL/tashkil validation.
