@@ -63,7 +63,6 @@ X4 Pro+ is the custom XTEINK X4 Pro firmware being built on the existing XPoint/
 - [x] OPDS.
 - [x] WebDAV / Calibre / KOReader sync foundation where supported by the base.
 - [x] USB Drive.
-- [ ] LocalSend receiver.
 - [x] One-tap phone-first transfer: X4 Pro+ starts its hotspot directly, then shows Wi-Fi/URL QR codes for browser upload from a phone.
 - [ ] Native LocalSend-compatible receiver.
 - [ ] Instapaper/read-later import.
@@ -80,7 +79,8 @@ X4 Pro+ is the custom XTEINK X4 Pro firmware being built on the existing XPoint/
 - [ ] FSRS-style scheduling / spaced-repetition queue.
 - [x] Calculator expression engine with persistent history.
 - [x] Functional Focus / Pomodoro timer: 25/5 presets, start/pause/resume/reset, persisted completed-session count.
-- [ ] Live countdown/timer engine and completion alert.
+- [x] Live countdown/timer engine with e-ink-friendly periodic refresh.
+- [ ] Completion popup/alert polish and physical timing validation.
 - [x] Persistent QR / pass payload wallet.
 - [x] Render stored wallet payload as scannable QR from wallet row.
 - [x] Calculated Fajr/Dhuhr/Asr/Maghrib/Isha dashboard with editable latitude, longitude, UTC offset and Fajr/Isha angles.
@@ -110,7 +110,8 @@ X4 Pro+ is the custom XTEINK X4 Pro firmware being built on the existing XPoint/
 - [x] Full host regression suite runs before X4 Pro firmware compilation.
 - [ ] Real firmware simulator based on the source tree rather than a fake HTML mock.
 - [ ] Automated runtime smoke tests for Home, reader navigation, stats persistence and settings migration.
-- [ ] Release manifest with SHA-256 and exact flash/recovery instructions.
+- [x] Release artifact manifest with SHA-256, exact factory/application offsets, recovery guide and explicit unsafe-to-flash flags.
+- [ ] Clear `safe_to_flash=no` only after PDF parity and forced-ROM recovery are physically verified.
 
 ## Source inspirations
 
