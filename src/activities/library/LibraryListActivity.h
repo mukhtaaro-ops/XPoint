@@ -97,6 +97,9 @@ class LibraryListActivity final : public UiTabListActivity {
   void buildHeader(UiScreen& screen);
   // Materializes ListItems and their strings for the visible window only.
   void buildRows(UiScreen& screen);
+  // X4 Pro+ visual shelf: a compact 3-column card grid on touch X4 Pro.
+  // It deliberately reuses the existing indexed rows/search/sort engine.
+  void buildCoverGrid(UiScreen& screen);
   static void formatInitialHeading(uint32_t initial, std::string& out);
   void formatAuthorHeading(const std::string& author, std::string& out) const;
   void drawPositionReadout() const;
