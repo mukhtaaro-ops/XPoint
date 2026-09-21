@@ -40,7 +40,8 @@ X4 Pro+ is the custom XTEINK X4 Pro firmware being built on the existing XPoint/
 - [x] Reader `Save clipping` action persists a page-text summary into Clippings.
 - [ ] Fine-grained text-selection/highlight capture (beyond page-summary clipping).
 - [x] Persistent question/answer flashcard surface.
-- [ ] One-tap flashcard generation from captured highlights/clippings.
+- [x] Tap a saved clipping to create an editable Study Card.
+- [ ] Fine-grained selected-text highlight -> flashcard conversion.
 - [ ] Auto page turn controls.
 - [ ] Better end-of-book recommendations.
 
