@@ -64,7 +64,8 @@ X4 Pro+ is the custom XTEINK X4 Pro firmware being built on the existing XPoint/
 - [x] WebDAV / Calibre / KOReader sync foundation where supported by the base.
 - [x] USB Drive.
 - [ ] LocalSend receiver.
-- [ ] Phone-first send-to-reader workflow.
+- [x] One-tap phone-first transfer: X4 Pro+ starts its hotspot directly, then shows Wi-Fi/URL QR codes for browser upload from a phone.
+- [ ] Native LocalSend-compatible receiver.
 - [ ] Instapaper/read-later import.
 - [ ] Wikipedia article send/read workflow.
 - [ ] OTA channel for X4 Pro+ stable / beta builds.
@@ -86,14 +87,16 @@ X4 Pro+ is the custom XTEINK X4 Pro firmware being built on the existing XPoint/
 - [x] Qur'an reader shortcut with dedicated `/Books/Quran` folder plus persistent Saved Ayat / Notes.
 - [ ] Mark Qur'an rendering release-ready only after physical Arabic shaping/RTL/tashkil validation.
 - [ ] Weather snapshot when online.
-- [ ] Selected e-ink games: Sudoku, 2048, Minesweeper, Solitaire/FreeCell, Chess and simple puzzles.
+- [x] First playable e-ink games: Minesweeper and 2048, with persistent game stats.
+- [ ] Expand game shelf with Sudoku, Solitaire/FreeCell, Chess and additional puzzle games.
 
 ## UX
 
 - [x] X4 Pro+ Carousel becomes the fresh-install default.
 - [x] Carousel touch zones: previous / open / next.
 - [x] Compact carousel-home menu to preserve screen space.
-- [x] Quick Actions foundation: direct Library and Phone / PC Transfer actions in X4 Pro+ dashboard.\n- [ ] Enrich dashboard with current-book progress, streak/goal and next-prayer summary.
+- [x] Clean sectioned X4 Pro+ dashboard with direct Library, Qur'an, Study, Prayer, Focus and Phone / PC Transfer actions plus nested Organizer, Utilities and Games pages.
+- [ ] Enrich dashboard with current-book progress, streak/goal and next-prayer summary.
 - [ ] Unified icon system across reader and apps.
 - [ ] Dashboard mode with current book, tasks/calendar and reading goal.
 - [ ] Configurable Home layout.

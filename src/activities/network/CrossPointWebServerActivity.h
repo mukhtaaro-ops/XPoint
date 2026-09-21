@@ -58,6 +58,7 @@ class CrossPointWebServerActivity final : public Activity {
   // check, which was unreliable because Arduino-ESP32 keeps WiFi.mode latched
   // after WiFi.disconnect().
   bool wifiStartedByUs = false;
+  bool startHotspotDirect = false;
 
   void renderServerRunning() const;
   void renderWifiIndicator(int subHeaderTop) const;
@@ -68,8 +69,9 @@ class CrossPointWebServerActivity final : public Activity {
   void startWebServer();
 
  public:
-  explicit CrossPointWebServerActivity(GfxRenderer& renderer, MappedInputManager& mappedInput)
-      : Activity("CrossPointWebServer", renderer, mappedInput) {}
+  explicit CrossPointWebServerActivity(GfxRenderer& renderer, MappedInputManager& mappedInput,
+                                       bool startHotspotDirect = false)
+      : Activity("CrossPointWebServer", renderer, mappedInput), startHotspotDirect(startHotspotDirect) {}
   void onEnter() override;
   void onExit() override;
   void loop() override;

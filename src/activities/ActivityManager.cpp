@@ -31,6 +31,8 @@
 #include "settings/OpdsServerListActivity.h"
 #include "settings/SettingsActivity.h"
 #include "x4plus/X4PlusListActivity.h"
+#include "x4plus/X4PlusMinesweeperActivity.h"
+#include "x4plus/X4Plus2048Activity.h"
 #include "x4plus/X4PlusMenuActivity.h"
 #include "util/BmpViewerActivity.h"
 #include "util/FrontlightPanelActivity.h"
@@ -268,6 +270,9 @@ void ActivityManager::replaceActivity(std::unique_ptr<Activity>&& newActivity) {
 void ActivityManager::goToFileTransfer() {
   replaceActivity(std::make_unique<CrossPointWebServerActivity>(renderer, mappedInput));
 }
+void ActivityManager::goToPhoneTransfer() {
+  replaceActivity(std::make_unique<CrossPointWebServerActivity>(renderer, mappedInput, true));
+}
 
 void ActivityManager::goToUsbDrive() {
 #if FREEINK_CAP_USB_MSC
@@ -317,7 +322,7 @@ void ActivityManager::goToLibrary() {
     LOG_ERR("ACT", "OOM: library activity");
     return;
   }
-  replaceActivity(std::move(activity));
+  pushActivity(std::move(activity));
 }
 
 void ActivityManager::goToX4PlusMenu() {
@@ -331,7 +336,7 @@ void openX4PlusList(ActivityManager& manager, GfxRenderer& renderer, MappedInput
                     X4PlusListActivity::Mode mode) {
   auto activity = makeUniqueNoThrow<X4PlusListActivity>(renderer, mappedInput, mode);
   if (!activity) { LOG_ERR("ACT", "OOM: X4 Pro+ activity"); return; }
-  manager.replaceActivity(std::move(activity));
+  manager.pushActivity(std::move(activity));
 }
 }
 void ActivityManager::goToX4PlusCalendar() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Calendar); }
@@ -358,6 +363,16 @@ void ActivityManager::goToX4PlusPrayer() { openX4PlusList(*this, renderer, mappe
 void ActivityManager::goToX4PlusFocus() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Focus); }
 void ActivityManager::goToX4PlusWallet() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Wallet); }
 void ActivityManager::goToX4PlusCalculator() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Calculator); }
+void ActivityManager::goToX4PlusMinesweeper() {
+  auto activity = makeUniqueNoThrow<X4PlusMinesweeperActivity>(renderer, mappedInput);
+  if (!activity) return;
+  pushActivity(std::move(activity));
+}
+void ActivityManager::goToX4Plus2048() {
+  auto activity = makeUniqueNoThrow<X4Plus2048Activity>(renderer, mappedInput);
+  if (!activity) return;
+  pushActivity(std::move(activity));
+}
 
 void ActivityManager::goToBrowser() {
   const auto& servers = OPDS_STORE.getServers();

@@ -85,6 +85,12 @@ void CrossPointWebServerActivity::onEnter() {
   lastHandleClientTime = 0;
   requestUpdate();
 
+  if (startHotspotDirect) {
+    LOG_DBG("WEBACT", "Phone-first transfer: starting hotspot directly");
+    onNetworkModeSelected(NetworkMode::CREATE_HOTSPOT);
+    return;
+  }
+
   // Launch network mode selection subactivity
   LOG_DBG("WEBACT", "Launching NetworkModeSelectionActivity...");
   startActivityForResult(std::make_unique<NetworkModeSelectionActivity>(renderer, mappedInput),
