@@ -4,7 +4,7 @@
 #include "activities/UiListActivity.h"
 class X4PlusListActivity final : public UiListActivity {
  public:
-  enum class Mode : uint8_t { Calendar, Tasks, Notes, Cards };
+  enum class Mode : uint8_t { Calendar, Tasks, Notes, Cards, Study, Quran };
   X4PlusListActivity(GfxRenderer& renderer, MappedInputManager& mappedInput, Mode mode);
   void onEnter() override;
  private:
@@ -22,6 +22,7 @@ class X4PlusListActivity final : public UiListActivity {
   Mode mode;
   std::vector<std::string> items;
   std::vector<bool> completed;
+  std::vector<bool> revealed;
   std::vector<freeink::ui::ListItem> rows;
   std::vector<std::string> displayLabels;
 };
