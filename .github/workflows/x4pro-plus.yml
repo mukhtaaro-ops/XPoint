@@ -38,20 +38,14 @@ jobs:
           ctest --test-dir test/build --output-on-failure
       - name: Build X4 Pro+
         run: pio run -e x4pro -j1
-      - name: Package exact flash build
-        run: |
-          mkdir -p dist
-          cp .pio/build/x4pro/firmware.bin dist/x4-pro-plus-firmware.bin
+      - name: Record memory budget\n        run: |\n          mkdir -p dist\n          pio run -e x4pro -j1 -t size | tee dist/MEMORY_REPORT.txt\n      - name: Package exact flash build\n        run: |\n          mkdir -p dist\n          cp .pio/build/x4pro/firmware.bin dist/x4-pro-plus-firmware.bin
           cp .pio/build/x4pro/bootloader.bin dist/
           cp .pio/build/x4pro/partitions.bin dist/
           cp .pio/build/x4pro/firmware.elf dist/
           cp .pio/build/x4pro/firmware.map dist/
           cp docs/X4_PRO_PLUS_RELEASE_CHECKLIST.md dist/
           cp docs/X4_PRO_PLUS_FACTORY_RECOVERY.md dist/
-          cp scripts/x4pro_plus_preflash.py dist/
-          cp tools/x4pro_plus_phone_simulator.html dist/
-          (cd dist && sha256sum bootloader.bin firmware.elf firmware.map partitions.bin x4-pro-plus-firmware.bin X4_PRO_PLUS_RELEASE_CHECKLIST.md X4_PRO_PLUS_FACTORY_RECOVERY.md x4pro_plus_preflash.py x4pro_plus_phone_simulator.html > SHA256SUMS.txt)
-          {
+          cp scripts/x4pro_plus_preflash.py dist/\n          cp scripts/x4pro_plus_release_audit.py dist/\n          cp tools/x4pro_plus_phone_simulator.html dist/\n          python scripts/x4pro_plus_release_audit.py --root . --firmware dist/x4-pro-plus-firmware.bin --output dist/RELEASE_STATUS.txt\n          (cd dist && sha256sum bootloader.bin firmware.elf firmware.map partitions.bin x4-pro-plus-firmware.bin X4_PRO_PLUS_RELEASE_CHECKLIST.md X4_PRO_PLUS_FACTORY_RECOVERY.md x4pro_plus_preflash.py x4pro_plus_release_audit.py x4pro_plus_phone_simulator.html MEMORY_REPORT.txt RELEASE_STATUS.txt > SHA256SUMS.txt)\n          {
             echo "X4 Pro+ build manifest"
             echo "commit=${GITHUB_SHA}"
             echo "target=x4pro"
@@ -66,8 +60,7 @@ jobs:
             echo "physical_hardware_tested=no"
             echo "pdf_stock_parity_verified=no"
             echo "forced_rom_recovery_verified=no"
-            echo "safe_to_flash=no"
-            echo ""
+            echo "software_release_audit=PASS"\n            echo "safe_to_flash=no"\n            echo ""
             cat dist/SHA256SUMS.txt
           } > dist/BUILD_MANIFEST.txt
       - name: Verify packaged firmware
@@ -79,14 +72,34 @@ jobs:
           test -s dist/firmware.map
           test -s dist/X4_PRO_PLUS_RELEASE_CHECKLIST.md
           test -s dist/X4_PRO_PLUS_FACTORY_RECOVERY.md
-          test -s dist/x4pro_plus_preflash.py
-          test -s dist/x4pro_plus_phone_simulator.html
-          test "$(stat -c%s dist/x4-pro-plus-firmware.bin)" -le 6553600
+          test -s dist/x4pro_plus_preflash.py\n          test -s dist/x4pro_plus_release_audit.py\n          test -s dist/x4pro_plus_phone_simulator.html\n          test -s dist/MEMORY_REPORT.txt\n          test -s dist/RELEASE_STATUS.txt\n          test "$(stat -c%s dist/x4-pro-plus-firmware.bin)" -le 6553600
           grep -q '^safe_to_flash=no$' dist/BUILD_MANIFEST.txt
           grep -q '^pdf_stock_parity_verified=no$' dist/BUILD_MANIFEST.txt
-          grep -q '^forced_rom_recovery_verified=no$' dist/BUILD_MANIFEST.txt
-          python dist/x4pro_plus_preflash.py --help >/dev/null
-          (cd dist && sha256sum -c SHA256SUMS.txt)
+          grep -q '^forced_rom_recovery_verified=no          (cd dist && sha256sum -c SHA256SUMS.txt)
+      - uses: actions/upload-artifact@v7
+        with:
+          name: x4-pro-plus-x4pro
+          path: dist/
+          if-no-files-found: error
+ dist/BUILD_MANIFEST.txt\n          grep -q '^software_release_audit=PASS          (cd dist && sha256sum -c SHA256SUMS.txt)
+      - uses: actions/upload-artifact@v7
+        with:
+          name: x4-pro-plus-x4pro
+          path: dist/
+          if-no-files-found: error
+ dist/BUILD_MANIFEST.txt\n          grep -q '^software_release_gates=PASS          (cd dist && sha256sum -c SHA256SUMS.txt)
+      - uses: actions/upload-artifact@v7
+        with:
+          name: x4-pro-plus-x4pro
+          path: dist/
+          if-no-files-found: error
+ dist/RELEASE_STATUS.txt\n          grep -q '^safe_to_flash=no          (cd dist && sha256sum -c SHA256SUMS.txt)
+      - uses: actions/upload-artifact@v7
+        with:
+          name: x4-pro-plus-x4pro
+          path: dist/
+          if-no-files-found: error
+ dist/RELEASE_STATUS.txt\n          python dist/x4pro_plus_preflash.py --help >/dev/null\n          python dist/x4pro_plus_release_audit.py --help >/dev/null\n          (cd dist && sha256sum -c SHA256SUMS.txt)
       - uses: actions/upload-artifact@v7
         with:
           name: x4-pro-plus-x4pro
