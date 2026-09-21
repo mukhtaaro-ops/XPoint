@@ -53,7 +53,7 @@ struct PrayerTimes {
 
 PrayerTimes calculatePrayerTimes(const int year, const int month, const int day, const double latitude,
                                  const double longitude, const int utcOffsetMinutes, const double fajrAngle,
-                                 const double ishaAngle) {
+                                 const double ishaAngle, const double asrShadowFactor) {
   const int n = dayOfYear(year, month, day);
   const double gamma = 2.0 * kPi / 365.0 * (static_cast<double>(n) - 1.0);
   const double eqTime =
@@ -71,7 +71,7 @@ PrayerTimes calculatePrayerTimes(const int year, const int month, const int day,
 
   const double latitudeRad = degToRad(latitude);
   const double asrAltitude =
-      radToDeg(std::atan(1.0 / (1.0 + std::tan(std::abs(latitudeRad - declination)))));
+      radToDeg(std::atan(1.0 / (asrShadowFactor + std::tan(std::abs(latitudeRad - declination)))));
   const double asrH = hourAngleDegrees(latitude, declination, asrAltitude);
 
   PrayerTimes result;
@@ -264,6 +264,7 @@ void X4PlusListActivity::load() {
     prayerUtcOffsetMinutes = doc["utcOffsetMinutes"] | prayerUtcOffsetMinutes;
     prayerFajrAngle = doc["fajrAngle"] | prayerFajrAngle;
     prayerIshaAngle = doc["ishaAngle"] | prayerIshaAngle;
+    prayerAsrShadowFactor = doc["asrShadowFactor"] | prayerAsrShadowFactor;
   }
 
   JsonArrayConst values = doc["items"].as<JsonArrayConst>();
@@ -287,6 +288,7 @@ void X4PlusListActivity::save() const {
     doc["utcOffsetMinutes"] = prayerUtcOffsetMinutes;
     doc["fajrAngle"] = prayerFajrAngle;
     doc["ishaAngle"] = prayerIshaAngle;
+    doc["asrShadowFactor"] = prayerAsrShadowFactor;
   }
 
   JsonArray values = doc["items"].to<JsonArray>();
@@ -340,7 +342,8 @@ bool X4PlusListActivity::handleCustomInput() {
     return false;
   }
 
-  const uint32_t bucket = remaining / 10u;
+  // One redraw per minute is deliberate on e-ink; controls still react immediately.
+  const uint32_t bucket = remaining / 60u;
   if (bucket != focusLastBucket) {
     focusLastBucket = bucket;
     rebuildRows();
@@ -386,14 +389,16 @@ void X4PlusListActivity::rebuildRows() {
     }
 
     const PrayerTimes times = calculatePrayerTimes(year, month, day, prayerLatitude, prayerLongitude,
-                                                   prayerUtcOffsetMinutes, prayerFajrAngle, prayerIshaAngle);
+                                                   prayerUtcOffsetMinutes, prayerFajrAngle, prayerIshaAngle,
+                                                   prayerAsrShadowFactor);
     char location[72];
     std::snprintf(location, sizeof(location), "Location %.3f, %.3f  UTC%+.1f", prayerLatitude, prayerLongitude,
                   static_cast<double>(prayerUtcOffsetMinutes) / 60.0);
     displayLabels.emplace_back(location);
     displayLabels.emplace_back("Fajr      " + formatClockMinutes(times.fajr));
     displayLabels.emplace_back("Dhuhr     " + formatClockMinutes(times.dhuhr));
-    displayLabels.emplace_back("Asr       " + formatClockMinutes(times.asr));
+    displayLabels.emplace_back("Asr       " + formatClockMinutes(times.asr) +
+                               (prayerAsrShadowFactor >= 1.5 ? "  (2x)" : "  (1x)"));
     displayLabels.emplace_back("Maghrib   " + formatClockMinutes(times.maghrib));
     displayLabels.emplace_back("Isha      " + formatClockMinutes(times.isha));
     displayLabels.emplace_back("Edit location / calculation method");
@@ -448,10 +453,10 @@ void X4PlusListActivity::buildScreen(UiScreen& screen) {
 
 void X4PlusListActivity::openPrayerConfigEditor() {
   char initial[96];
-  std::snprintf(initial, sizeof(initial), "%.4f,%.4f,%d,%.1f,%.1f", prayerLatitude, prayerLongitude,
-                prayerUtcOffsetMinutes, prayerFajrAngle, prayerIshaAngle);
+  std::snprintf(initial, sizeof(initial), "%.4f,%.4f,%d,%.1f,%.1f,%.0f", prayerLatitude, prayerLongitude,
+                prayerUtcOffsetMinutes, prayerFajrAngle, prayerIshaAngle, prayerAsrShadowFactor);
   auto editor = makeUniqueNoThrow<KeyboardEntryActivity>(renderer, mappedInput,
-                                                          "lat,lon,UTCmin,FajrAngle,IshaAngle", initial, 96,
+                                                          "lat,lon,UTCmin,FajrAngle,IshaAngle,AsrShadow(1/2)", initial, 96,
                                                           InputType::Text);
   if (!editor) {
     LOG_ERR("X4P", "OOM: prayer config editor");
@@ -460,17 +465,20 @@ void X4PlusListActivity::openPrayerConfigEditor() {
   startActivityForResult(std::move(editor), [this](const ActivityResult& result) {
     if (result.isCancelled || !std::holds_alternative<KeyboardResult>(result.data)) return;
     const std::string text = std::get<KeyboardResult>(result.data).text;
-    double lat = 0.0, lon = 0.0, fajr = 0.0, isha = 0.0;
+    double lat = 0.0, lon = 0.0, fajr = 0.0, isha = 0.0, asrShadow = 0.0;
     int utc = 0;
-    if (std::sscanf(text.c_str(), "%lf,%lf,%d,%lf,%lf", &lat, &lon, &utc, &fajr, &isha) != 5) return;
+    if (std::sscanf(text.c_str(), "%lf,%lf,%d,%lf,%lf,%lf", &lat, &lon, &utc, &fajr, &isha, &asrShadow) != 6)
+      return;
     if (lat < -90.0 || lat > 90.0 || lon < -180.0 || lon > 180.0 || utc < -720 || utc > 840 ||
-        fajr < 10.0 || fajr > 25.0 || isha < 10.0 || isha > 25.0)
+        fajr < 10.0 || fajr > 25.0 || isha < 10.0 || isha > 25.0 ||
+        (std::abs(asrShadow - 1.0) > 0.01 && std::abs(asrShadow - 2.0) > 0.01))
       return;
     prayerLatitude = lat;
     prayerLongitude = lon;
     prayerUtcOffsetMinutes = utc;
     prayerFajrAngle = fajr;
     prayerIshaAngle = isha;
+    prayerAsrShadowFactor = asrShadow;
     save();
     rebuildRows();
     requestUpdate();
