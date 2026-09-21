@@ -8,7 +8,7 @@ This checklist is intentionally stricter than a green firmware compile. X4 Pro+ 
 - [ ] Full host regression suite passes.
 - [ ] `pio run -e x4pro -j1` succeeds.
 - [ ] Packaged firmware SHA-256 verification succeeds.
-- [ ] Firmware image is no larger than the X4 Pro app0 partition (0x640000 / 6,553,600 bytes).
+- [ ] Firmware image is no larger than the X4 Pro app0 partition (0x640000 / 6,553,600 bytes).\n- [ ] Firmware keeps at least 512 KiB flash headroom and the packaged `MEMORY_REPORT.txt` is reviewed.\n- [ ] `RELEASE_STATUS.txt` reports `software_release_gates=PASS` and `safe_to_flash=no` until the physical gates are completed.
 - [ ] Build artifact contains firmware, bootloader, partition table, ELF, map, manifest, recovery guide and this checklist.
 
 ## Stock-parity gates
@@ -16,7 +16,7 @@ This checklist is intentionally stricter than a green firmware compile. X4 Pro+ 
 - [ ] EPUB opens, renders and page-turns reliably.
 - [ ] TXT opens and navigates reliably.
 - [ ] XTC opens and navigates reliably.
-- [ ] PDF opens, renders and supports practical page navigation at stock-equivalent quality.
+- [ ] Native PDF runtime support exists in the firmware.\n- [ ] PDF opens, renders and supports practical page navigation at stock-equivalent quality.
 - [ ] SD-card library/index refresh works after file transfer.
 - [ ] USB Drive works for bulk PC transfer.
 - [ ] Phone-first hotspot/browser upload works and new books appear after refresh.
