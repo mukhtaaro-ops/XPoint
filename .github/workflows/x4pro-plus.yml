@@ -27,7 +27,13 @@ jobs:
           enable-cache: false
       - name: X4 Pro+ source smoke checks
         run: python scripts/x4pro_plus_smoke.py
-      - name: Validate release tooling\n        run: |\n          python -m py_compile scripts/x4pro_plus_preflash.py scripts/x4pro_plus_release_audit.py\n          python scripts/x4pro_plus_preflash.py --help >/dev/null\n          python scripts/x4pro_plus_release_audit.py --help >/dev/null\n      - name: Install PlatformIO Core\n        run: |
+      - name: Validate release tooling
+        run: |
+          python -m py_compile scripts/x4pro_plus_preflash.py scripts/x4pro_plus_release_audit.py
+          python scripts/x4pro_plus_preflash.py --help >/dev/null
+          python scripts/x4pro_plus_release_audit.py --help >/dev/null
+      - name: Install PlatformIO Core
+        run: |
           uv pip install --system -U https://github.com/pioarduino/platformio-core/archive/refs/tags/v6.2.0.zip
           uv pip install --system -U "littlefs-python>=0.16.0" "fatfs-ng>=0.1.14" "pyyaml>=6.0.2" "rich-click>=1.8.6" "zopfli>=0.2.2" "intelhex>=2.3.0" "rich>=14.0.0" "urllib3<2" "cryptography>=45.0.3" "certifi>=2025.8.3" "ecdsa>=0.19.1" "bitstring>=4.3.1" "reedsolo>=1.5.3,<1.8" "esp-idf-size>=2.0.0" "esp-coredump>=1.14.0"
       - name: X4 Pro+ host regression tests
