@@ -11,7 +11,7 @@ checks = {
     "src/activities/home/HomeActivity.cpp": ["X4PLUS_TOOLS", "LYRA_3_COVERS"],
     "src/activities/library/LibraryListActivity.cpp": ["buildHeader", "buildTabBar", "openSearch", "LibraryListActivity"],
     "src/activities/x4plus/X4PlusListActivity.cpp": ["Mode::Study", "Mode::Quran", "Mode::Clippings", "Mode::Prayer", "Mode::Focus", "Mode::Wallet", "Mode::Calculator", "Question :: Answer", "createStudyCardFromClipping", "x4plus-study.json", "x4plus-quran.json", "x4plus-clippings.json", "x4plus-prayer.json", "x4plus-focus.json", "x4plus-wallet.json", "x4plus-calculator.json", "QrDisplayActivity", "calculatePrayerTimes", "focusRemainingSeconds", "evaluateExpression"],
-    "src/activities/x4plus/X4PlusMenuActivity.cpp": ["Study Cards", "Qur'an", "Clippings", "goToX4PlusStudy", "goToX4PlusQuran", "goToX4PlusClippings", "Prayer", "Focus / Pomodoro", "QR Wallet", "Calculator", "Phone / PC Transfer", "goToFileTransfer", "goToLibrary", "Games: Minesweeper", "Games: 2048", "goToX4PlusMinesweeper", "goToX4Plus2048"],
+    "src/activities/x4plus/X4PlusMenuActivity.cpp": ["Study Cards", "Qur'an", "Clippings", "goToX4PlusStudy", "goToX4PlusQuran", "goToX4PlusClippings", "Prayer", "Focus / Pomodoro", "QR Wallet", "Calculator", "Phone / PC Transfer", "goToFileTransfer", "goToLibrary", "Games", "Minesweeper", "2048", "Organizer", "Utilities", "goToX4PlusMinesweeper", "goToX4Plus2048"],
     "src/activities/x4plus/X4PlusMinesweeperActivity.cpp": ["First tap is safe", "minesweeperWins", "toggleFlag", "allSafeRevealed"],
     "src/activities/x4plus/X4Plus2048Activity.cpp": ["Swipe the board to move tiles", "best2048", "moveBoard", "spawnTile"],
     "src/activities/reader/EpubReaderMenuActivity.cpp": ["SAVE_CLIPPING", "Save clipping"],
