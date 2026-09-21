@@ -21,6 +21,9 @@ checks = {
     "src/components/themes/lyra/Lyra3CoversTheme.cpp": ["drawRecentBookCover", "carousel", "centre"],
     "lib/I18n/translations/english.yaml": ["X4 Pro+ Carousel"],
     "docs/X4_PRO_PLUS_PRODUCT_SPEC.md": ["X4 Pro+ Cover Carousel", "Qur'an", "Arabic", "Visual library foundation"],
+    "docs/X4_PRO_PLUS_RELEASE_CHECKLIST.md": ["PDF stock-parity", "forced ESP32-S3 ROM-download", "Do **not** flash"],
+    "docs/X4_PRO_PLUS_FACTORY_RECOVERY.md": ["16,777,216 bytes", "0x00000000", "0x00010000"],
+    "scripts/x4pro_plus_preflash.py": ["FACTORY_BYTES", "Physical release gates are NOT checked"],
 }
 
 failed = False
