@@ -12,6 +12,7 @@ import hashlib
 from pathlib import Path
 
 FACTORY_BYTES = 16 * 1024 * 1024
+APP_PARTITION_BYTES = 0x640000
 
 
 def sha256(path: Path) -> str:
@@ -60,6 +61,12 @@ def main() -> int:
     if not args.firmware.is_file():
         print("FAIL: X4 Pro+ firmware does not exist")
         return 2
+    firmware_size = args.firmware.stat().st_size
+    if firmware_size > APP_PARTITION_BYTES:
+        print(f"FAIL: firmware is {firmware_size} bytes; app0 partition allows {APP_PARTITION_BYTES}")
+        ok = False
+    else:
+        print(f"PASS: firmware size {firmware_size} <= app0 partition {APP_PARTITION_BYTES}")
     ok = verify(args.firmware, args.firmware_sha256, "X4 Pro+ firmware") and ok
 
     print()
