@@ -2,96 +2,349 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>X4 Pro+ Phone Simulator</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#111111">
+<title>X4 Pro+</title>
 <style>
-:root{--ink:#111;--paper:#f4f1e8;--gray:#d8d5cc;--mid:#a6a39b}
-*{box-sizing:border-box}body{margin:0;background:#161616;color:#eee;font-family:system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh;display:grid;place-items:center;padding:16px}
-.shell{width:min(100%,430px)}.note{font-size:12px;color:#aaa;margin:0 0 10px;text-align:center}.device{background:#222;border-radius:24px;padding:14px;box-shadow:0 20px 70px #0008}
-.screen{aspect-ratio:3/5;background:var(--paper);color:var(--ink);border-radius:8px;overflow:hidden;position:relative;user-select:none;touch-action:manipulation}
-.header{height:54px;border-bottom:2px solid var(--ink);display:flex;align-items:center;justify-content:space-between;padding:0 14px;font-weight:800;letter-spacing:.03em}
-.header small{font-size:11px;font-weight:650}.content{height:calc(100% - 96px);overflow:auto;padding:12px}.footer{height:42px;border-top:2px solid var(--ink);position:absolute;bottom:0;left:0;right:0;display:flex;align-items:center;justify-content:space-around;font-size:11px;font-weight:700;background:var(--paper)}
-.row{min-height:52px;border:2px solid var(--ink);border-radius:8px;margin:0 0 8px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;font-weight:750;background:var(--paper)}.row:active,.tile:active,.pill:active{background:#111;color:#fff}
-.sub{font-size:11px;font-weight:500;color:#555}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.cover{aspect-ratio:2/3;border:2px solid var(--ink);border-radius:5px;padding:7px;display:flex;align-items:end;font-size:10px;font-weight:800;background:linear-gradient(145deg,#eee,#bbb)}
-.cover.active{outline:3px solid var(--ink);outline-offset:2px}.bar{height:7px;border:1px solid var(--ink);border-radius:4px;overflow:hidden;margin-top:5px}.bar>i{display:block;height:100%;background:var(--ink)}
-.hero{text-align:center;padding:8px 0 14px}.carousel{height:245px;display:flex;align-items:center;justify-content:center;gap:9px;overflow:hidden}.carousel .cover{width:92px;flex:0 0 auto}.carousel .cover.focus{width:128px}.dots{text-align:center;letter-spacing:4px;margin:8px}
-.quick{display:grid;grid-template-columns:1fr 1fr;gap:8px}.tile{border:2px solid var(--ink);border-radius:8px;min-height:72px;padding:10px;font-weight:800}.tile b{display:block;font-size:22px;margin-bottom:4px}
-.reader{font-family:Georgia,serif;font-size:15px;line-height:1.55}.reader h3{text-align:center;margin:4px 0 16px}.reader-controls{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.pill{border:2px solid var(--ink);border-radius:999px;padding:9px;text-align:center;font-size:11px;font-weight:800}
-.bigtime{font-size:48px;font-weight:800;text-align:center;margin:28px 0 8px}.center{text-align:center}.prayers{display:grid;grid-template-columns:1fr auto;gap:0}.prayers div{border-bottom:1px solid #777;padding:10px 4px}.stat{border:2px solid var(--ink);border-radius:8px;padding:12px;margin-bottom:8px}.stat strong{font-size:28px}.heat{display:grid;grid-template-columns:repeat(13,1fr);gap:2px;margin-top:8px}.heat i{aspect-ratio:1;background:#ddd}.heat i:nth-child(3n),.heat i:nth-child(7n){background:#111}.heat i:nth-child(5n){background:#888}
-.calc{font-family:ui-monospace,monospace;font-size:23px;border:2px solid var(--ink);padding:14px;text-align:right;margin-bottom:10px}.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.key{border:2px solid var(--ink);border-radius:8px;padding:16px 2px;text-align:center;font-weight:900}
-.qr{width:230px;height:230px;margin:18px auto;background:repeating-conic-gradient(#111 0 25%,#eee 0 50%) 0/18px 18px;border:10px solid #fff;outline:2px solid #111}
-.gamegrid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:16px auto;max-width:330px}.gamecell{aspect-ratio:1;border:2px solid #111;border-radius:7px;display:grid;place-items:center;font-weight:900;font-size:22px}.minegrid{display:grid;grid-template-columns:repeat(6,1fr);gap:1px;margin:10px auto;max-width:350px}.minecell{aspect-ratio:1;border:1px solid #111;background:#ddd;display:grid;place-items:center;font-weight:900}
-.arabic{direction:rtl;font-family:serif;font-size:28px;line-height:2;text-align:right}.muted{color:#666;font-size:11px}.tabs{display:flex;gap:5px;margin-bottom:10px}.tabs button{flex:1;border:2px solid #111;background:transparent;border-radius:8px;padding:8px;font-weight:800}.tabs button.active{background:#111;color:#fff}
-.toast{position:absolute;left:50%;bottom:55px;transform:translateX(-50%);background:#111;color:#fff;padding:8px 12px;border-radius:6px;font-size:11px;display:none}.toast.show{display:block}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111;font-family:Arial,Helvetica,sans-serif}
+#viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#screen{position:absolute;width:480px;height:800px;transform-origin:top left;background:#fff;color:#000;overflow:hidden;user-select:none;touch-action:manipulation}
+.status{position:absolute;left:18px;right:18px;top:10px;height:24px;font-size:13px;line-height:24px}
+.status .clock{float:left}.status .battery{float:right;display:flex;gap:6px;align-items:center}
+.bat{width:18px;height:11px;border:2px solid #000;position:relative}.bat:after{content:"";position:absolute;right:-4px;top:2px;width:2px;height:5px;background:#000}.bat i{display:block;height:100%;width:77%;background:#000}
+.header{position:absolute;left:0;top:5px;width:480px;height:84px;border-bottom:3px solid #000}
+.header .title{position:absolute;left:18px;right:18px;bottom:15px;font-size:25px;font-weight:700;line-height:28px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.header .status{top:5px}
+.homeStatus{position:absolute;left:18px;right:18px;top:8px;height:28px;font-size:13px}
+.homeStatus .clock{float:left}.homeStatus .battery{float:right;display:flex;gap:6px;align-items:center}
+.hints{position:absolute;left:0;right:0;bottom:0;height:40px;display:grid;grid-template-columns:repeat(4,1fr);align-items:center;border-top:1px solid #000;font-size:12px;text-align:center;background:#fff}
+.hint{height:40px;display:flex;align-items:center;justify-content:center;font-weight:600}
+.content{position:absolute;left:0;right:0;top:89px;bottom:40px;overflow:hidden}
+.menu{position:absolute;left:0;right:0}
+.menuRow{position:absolute;left:18px;width:444px;height:46px;border-radius:7px;display:flex;align-items:center;padding:0 12px;gap:10px;font-size:18px}
+.menuRow.sel,.listRow.sel{background:#dedede}
+.menuRow .ico{width:32px;height:32px;display:grid;place-items:center;font-size:24px;font-weight:400}
+.list{position:absolute;left:20px;right:20px;overflow:hidden}
+.listRow{height:40px;border-radius:6px;display:flex;align-items:center;padding:0 8px;font-size:17px;position:relative}
+.listRow .right{margin-left:auto;font-size:13px}
+.listRow.subtitle{height:60px;align-items:flex-start;padding-top:8px}.listRow.subtitle small{display:block;font-size:12px;margin-top:5px}
+.tabbar{height:48px;display:flex;align-items:center;gap:8px;padding:0 20px;border-bottom:1px solid #000}
+.tab{height:32px;padding:0 12px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px}.tab.on{background:#dedede;font-weight:700}
+.searchIcon{position:absolute;right:18px;bottom:14px;width:28px;height:28px;border:3px solid #000;border-radius:50%}.searchIcon:after{content:"";position:absolute;width:12px;height:3px;background:#000;right:-8px;bottom:-4px;transform:rotate(45deg)}
+.homeCarousel{position:absolute;left:0;top:50px;width:480px;height:286px}
+.homeTitle{position:absolute;top:2px;left:40px;right:40px;text-align:center;font-size:17px;font-weight:700;line-height:20px;max-height:40px;overflow:hidden}
+.cover{position:absolute;border:1px solid #000;border-radius:7px;background:#fff;overflow:hidden}
+.cover.active{border-width:3px}.cover .coverTop{position:absolute;left:0;right:0;top:0;height:34%;background:#fff;display:grid;place-items:center;font-size:25px}.cover .coverBottom{position:absolute;left:0;right:0;top:34%;bottom:0;background:#000}
+.homeProgress{position:absolute;top:260px;left:120px;right:120px;text-align:center;font-size:13px}
+.dots{position:absolute;bottom:5px;left:0;right:0;display:flex;justify-content:center;gap:5px}.dot{width:5px;height:5px;border:1px solid #000}.dot.on{background:#000}
+.homeMenu{position:absolute;left:0;right:0;top:342px;bottom:40px}
+.grid{position:absolute;left:20px;right:20px;top:151px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.bookCard{height:118px;border:1px solid #000;border-radius:6px;position:relative;text-align:center;padding:48px 5px 5px;font-size:12px;overflow:hidden}
+.bookCard.sel{border-width:3px;background:#dedede}.bookCard .cue{position:absolute;width:32px;height:32px;border:1px solid #000;border-radius:3px;left:50%;top:10px;transform:translateX(-50%)}.bookCard b{display:block;font-size:12px;line-height:14px;max-height:28px;overflow:hidden}.bookCard small{position:absolute;bottom:8px;left:4px;right:4px;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.readout{position:absolute;right:20px;bottom:49px;font-size:12px}
+.readerPage{position:absolute;inset:0 0 40px 0;padding:36px 34px 44px;font-family:Georgia,"Times New Roman",serif;font-size:19px;line-height:1.55}
+.readerPage h2{text-align:center;font-size:20px;margin:18px 0 28px}.readerPage p{margin:0 0 17px;text-align:justify}.readerStatus{position:absolute;left:14px;right:14px;bottom:48px;height:24px;border-top:1px solid #000;padding-top:6px;font-family:Arial,sans-serif;font-size:11px;display:flex;justify-content:space-between}
+.turnZone{position:absolute;top:0;bottom:40px;width:30%;z-index:5}.turnZone.left{left:0}.turnZone.right{right:0}.menuZone{position:absolute;left:30%;right:30%;top:0;bottom:40px;z-index:5}
+.toolbar{position:absolute;left:18px;right:18px;bottom:54px;height:120px;border:2px solid #000;border-radius:8px;background:#fff;z-index:10;padding:10px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.tool{border:1px solid #000;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;gap:8px}.tool .ico{font-size:24px}
+.popup{position:absolute;left:20px;right:20px;top:132px;bottom:78px;border:2px solid #000;border-radius:6px;background:#fff;z-index:15;padding:18px;overflow:hidden}
+.popupTitle{font-size:20px;font-weight:700;padding-bottom:12px;border-bottom:1px solid #000;margin-bottom:10px}
+.scroll{overflow:auto;height:calc(100% - 50px);-ms-overflow-style:none;scrollbar-width:none}.scroll::-webkit-scrollbar{display:none}
+.keyboard{position:absolute;left:14px;right:14px;bottom:46px;height:330px}.textField{position:absolute;left:36px;right:36px;top:116px;height:54px;border-bottom:2px solid #000;font-size:18px;padding:16px 8px;white-space:nowrap;overflow:hidden}.keys{display:grid;grid-template-columns:repeat(10,1fr);gap:0;height:250px}.key{border:1px solid #000;display:grid;place-items:center;font-size:15px}.key.wide{grid-column:span 2}.key.space{grid-column:span 5}
+.prayerRows{position:absolute;left:20px;right:20px;top:113px}.prayerRows .listRow{font-family:monospace;font-size:16px}
+.gameBoard{position:absolute;left:30px;right:30px;top:150px;display:grid}.mineBoard{grid-template-columns:repeat(6,1fr);gap:2px}.mineCell{aspect-ratio:1;border:1px solid #000;background:#eee;display:grid;place-items:center;font-size:18px;font-weight:700}.mineCell.open{background:#fff}.gameControls{position:absolute;left:40px;right:40px;bottom:64px;display:grid;grid-template-columns:1fr 1fr;gap:12px}.gameBtn{height:48px;border:1px solid #000;border-radius:6px;display:grid;place-items:center;font-weight:700}
+.board2048{grid-template-columns:repeat(4,1fr);gap:6px;top:180px}.tile2048{aspect-ratio:1;border:2px solid #000;border-radius:6px;display:grid;place-items:center;font-size:24px;font-weight:700}
+.qr{width:142px;height:142px;border:8px solid #fff;outline:1px solid #000;background-image:linear-gradient(90deg,#000 10px,transparent 10px),linear-gradient(#000 10px,transparent 10px);background-size:23px 23px}
+.transferBody{position:absolute;left:20px;right:20px;top:150px;font-size:16px}.transferRow{display:flex;align-items:center;gap:20px;margin-bottom:35px}.transferText{font-size:15px;line-height:1.45}
+.stats{position:absolute;left:20px;right:20px;top:110px}.statBox{border-bottom:1px solid #000;padding:14px 0;font-size:15px}.statBox b{font-size:30px}
+.heat{display:grid;grid-template-columns:repeat(13,1fr);gap:3px;margin-top:12px}.heat i{height:11px;border:1px solid #000}.heat i.on{background:#000}.heat i.mid{background:#999}
+.toast{position:absolute;left:50%;bottom:58px;transform:translateX(-50%);background:#000;color:#fff;border-radius:5px;padding:8px 13px;font-size:13px;z-index:30;white-space:nowrap}
 </style>
 </head>
 <body>
-<div class="shell">
-<p class="note">X4 Pro+ UX simulator — interface validation only, not hardware validation.</p>
-<div class="device"><div id="screen" class="screen"></div></div>
-</div>
+<div id="viewport"><div id="screen"></div></div>
 <script>
-const S=document.getElementById('screen');
-const state={page:'home',book:1,focus:25*60,running:false,break:false,calc:'',gamescore:3240};
-const books=[
- {t:'The Psychology of Money',a:'Morgan Housel',p:72},
- {t:'The Qur’an',a:'Reading copy',p:38},
- {t:'The Gentlemen',a:'Notes & ideas',p:21},
- {t:'Atomic Habits',a:'James Clear',p:84},
- {t:'Deep Work',a:'Cal Newport',p:55},
- {t:'The Almanack',a:'Naval Ravikant',p:61},
- {t:'China Journal',a:'Travel notes',p:46},
- {t:'FP&A Playbook',a:'Reference',p:17},
- {t:'Designing Interfaces',a:'Reference',p:33}
+var S=document.getElementById("screen");
+var state={
+ screen:"home",stack:[],carousel:0,selectedBook:0,libraryTab:0,readerPage:0,readerMenu:false,
+ focusSeconds:1500,focusRunning:false,focusBreak:false,focusSessions:3,
+ studyReveal:-1,calcHistory:["12*4 = 48","1500/12 = 125"],wallet:["Boarding Pass","Membership"],
+ mineMode:"DIG",mineStarted:false,mineFlags:{},mineOpen:{},mineWins:3,mineLosses:1,
+ board2048:[2,4,8,16,0,2,4,8,0,0,16,32,2,4,128,256],score2048:3240,best2048:9216
+};
+var timer=null;
+var books=[
+ {title:"The Psychology of Money",author:"Morgan Housel",progress:"72% • 1h 18m",path:"/Books/Psychology of Money.epub"},
+ {title:"Atomic Habits",author:"James Clear",progress:"84% • 32m",path:"/Books/Atomic Habits.epub"},
+ {title:"Deep Work",author:"Cal Newport",progress:"55% • 2h 04m",path:"/Books/Deep Work.epub"},
+ {title:"The Almanack",author:"Eric Jorgenson",progress:"61% • 1h 44m",path:"/Books/The Almanack.epub"},
+ {title:"China Journal",author:"Mukhtaar",progress:"46% • 38m",path:"/Books/China Journal.txt"},
+ {title:"Quran",author:"",progress:"38%",path:"/Books/Quran/Quran.epub"},
+ {title:"FP&A Playbook",author:"Reference",progress:"17%",path:"/Books/FP&A Playbook.epub"},
+ {title:"Designing Interfaces",author:"Reference",progress:"33%",path:"/Books/Designing Interfaces.epub"},
+ {title:"Notes",author:"",progress:"21%",path:"/Books/Notes.txt"}
 ];
-function header(title){return '<div class="header"><span>'+title+'</span><small>21:25&nbsp;&nbsp;▮▮▮</small></div>'}
-function footer(back='HOME',ok='SELECT',up='↑',down='↓'){return '<div class="footer"><span>'+back+'</span><span>'+ok+'</span><span>'+up+'</span><span>'+down+'</span></div>'}
-function layout(title,body,foot=footer()){S.innerHTML=header(title)+'<div class="content">'+body+'</div>'+foot+'<div id="toast" class="toast"></div>'}
-function row(label,sub,go){return '<div class="row" onclick="'+go+'"><span>'+label+(sub?'<div class="sub">'+sub+'</div>':'')+'</span><b>›</b></div>'}
-function go(p){state.page=p;render()}
+function esc(x){return String(x).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function status(){return '<div class="status"><span class="clock">21 Sep&nbsp;&nbsp;22:46</span><span class="battery"><span>77%</span><span class="bat"><i></i></span></span></div>'}
+function header(title,search){return '<div class="header">'+status()+'<div class="title">'+esc(title)+'</div>'+(search?'<div class="searchIcon" data-act="search"></div>':'')+'</div>'}
+function hints(a,b,c,d){return '<div class="hints"><div class="hint" data-act="back">'+(a||"")+'</div><div class="hint" data-act="select">'+(b||"")+'</div><div class="hint" data-act="up">'+(c||"")+'</div><div class="hint" data-act="down">'+(d||"")+'</div></div>'}
+function push(screen,extra){state.stack.push({screen:state.screen,extra:extra||null});state.screen=screen;render()}
+function back(){if(state.readerMenu){state.readerMenu=false;render();return}if(state.stack.length){var p=state.stack.pop();state.screen=p.screen;render()}else{state.screen="home";render()}}
 function home(){
- const b=books[state.book];
- layout('X4 Pro+','<div class="hero"><div class="carousel">'+
-  books.map((x,i)=>'<div class="cover '+(i===state.book?'focus':'')+'" onclick="state.book='+i+';render()">'+x.t+'</div>').slice(Math.max(0,state.book-1),state.book+2).join('')+
-  '</div><div class="dots">○ ● ○</div><b>'+b.t+'</b><div class="sub">'+b.a+' · '+b.p+'%</div><div class="bar"><i style="width:'+b.p+'%"></i></div></div>'+
-  '<div class="quick">'+
-  '<div class="tile" onclick="go(\'library\')"><b>▦</b>Library</div>'+
-  '<div class="tile" onclick="go(\'quran\')"><b>۞</b>Qur’an</div>'+
-  '<div class="tile" onclick="go(\'dashboard\')"><b>☷</b>Tools</div>'+
-  '<div class="tile" onclick="go(\'reader\')"><b>↗</b>Continue</div></div>');
+ var b=books[state.carousel],count=Math.min(5,books.length),left=(state.carousel+count-1)%count,right=(state.carousel+1)%count;
+ var rows=["Browse Files","Library","Reading Stats","X4 Pro+","File Transfer","Settings"];
+ var acts=["browser","library","stats","tools","transferNormal","settings"];
+ var icons=["□","▤","▥","▦","⇄","⚙"];
+ var menu="";
+ for(var i=0;i<rows.length;i++) menu+='<div class="menuRow" style="top:'+(i*50)+'px" data-act="'+acts[i]+'"><span class="ico">'+icons[i]+'</span><span>'+rows[i]+'</span></div>';
+ S.innerHTML='<div class="homeStatus"><span class="clock">21 Sep&nbsp;&nbsp;22:46</span><span class="battery"><span>77%</span><span class="bat"><i></i></span></span></div>'+
+ '<div class="homeCarousel">'+
+ '<div class="homeTitle">'+esc(b.title)+'</div>'+
+ '<div class="cover" style="left:98px;top:79px;width:92px;height:146px" data-act="carouselPrev"><div class="coverTop">▯</div><div class="coverBottom"></div></div>'+
+ '<div class="cover active" style="left:165px;top:44px;width:150px;height:208px" data-act="openCarousel"><div class="coverTop">▯</div><div class="coverBottom"></div></div>'+
+ '<div class="cover" style="left:290px;top:79px;width:92px;height:146px" data-act="carouselNext"><div class="coverTop">▯</div><div class="coverBottom"></div></div>'+
+ '<div class="homeProgress">'+esc(b.progress)+'</div><div class="dots">'+Array.from({length:count},function(_,i){return '<i class="dot '+(i===state.carousel?"on":"")+'"></i>'}).join("")+'</div></div>'+
+ '<div class="homeMenu">'+menu+'</div>'+hints("RESUME","SELECT","↑","↓");
 }
-function dashboard(){layout('X4 Pro+',
- row('Library','visual 3×3 covers',"go('library')")+
- row('Qur’an Reader','/Books/Quran',"go('quran')")+
- row('Study Cards','clippings → cards',"go('study')")+
- row('Prayer','next: Isha 19:11',"go('prayer')")+
- row('Focus / Pomodoro','25 / 5',"go('focus')")+
- row('Games','Minesweeper · 2048',"go('games')")+
- row('Organizer','calendar · tasks · notes',"go('organizer')")+
- row('Utilities','wallet · calculator',"go('utilities')")+
- row('Phone / PC Transfer','one-tap hotspot',"go('transfer')"),footer('HOME','SELECT','↑','↓'))}
-function library(){layout('Library','<div class="tabs"><button class="active">Recent</button><button>Title</button><button>Author</button></div><div class="grid">'+books.map((b,i)=>'<div class="cover '+(i===state.book?'active':'')+'" onclick="state.book='+i+';go(\'reader\')">'+b.t+'<div class="bar" style="width:100%"><i style="width:'+b.p+'%"></i></div></div>').join('')+'</div>',footer('BACK','OPEN','↑','↓'))}
-function reader(){const b=books[state.book];layout(b.t,'<div class="reader"><h3>Chapter 7</h3><p>Reading on X4 Pro+ should remain quiet and deliberate. The reader is still the centre of the device; every added feature has to preserve that.</p><p>Page rendering, position persistence, bookmarks and navigation remain stock-parity gates before release.</p><p>This simulator validates layout and navigation only. E-ink refresh, PSRAM, touch geometry and actual book rendering require the physical device.</p></div><div class="reader-controls"><div class="pill" onclick="toast(\'Bookmark saved\')">Bookmark</div><div class="pill" onclick="toast(\'Clipping saved\')">Clip</div><div class="pill" onclick="go(\'stats\')">Stats</div></div>',footer('BACK','MENU','‹','›'))}
-function stats(){layout('Reading Stats','<div class="stat"><strong>14</strong><br>day current streak</div><div class="stat"><strong>42m</strong><br>read today · 286 WPM</div><div class="stat"><b>13-week rhythm</b><div class="heat">'+Array.from({length:91},()=>'<i></i>').join('')+'</div></div><div class="stat"><b>This book</b><br>72% · ~1h 18m remaining</div>',footer('BACK','','',''))}
-function quran(){layout('Qur’an Reader','<div class="arabic">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ<br>الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ<br>الرَّحْمَٰنِ الرَّحِيمِ</div><p class="muted">Arabic/RTL/tashkīl shown for UX preview. Physical panel/font validation remains required.</p>'+row('Saved Ayat / Notes','persistent notes',"go('study')"),footer('BACK','MENU','‹','›'))}
-function prayer(){layout('Prayer','<div class="prayers"><div>Fajr</div><div>04:38</div><div>Dhuhr</div><div>12:05</div><div>Asr</div><div>15:31</div><div>Maghrib</div><div>18:07</div><div>Isha</div><div>19:11</div></div><p class="muted">Example display only. Firmware calculates from configured latitude, longitude, UTC offset and Fajr/Isha angles.</p>'+row('Calculation settings','location / angles',"toast('Settings editor')"),footer('BACK','SELECT','',''))}
-let timer=null;function focus(){const m=String(Math.floor(state.focus/60)).padStart(2,'0'),s=String(state.focus%60).padStart(2,'0');layout('Focus / Pomodoro','<div class="bigtime">'+m+':'+s+'</div><div class="center">'+(state.break?'BREAK':'FOCUS')+' · '+(state.running?'RUNNING':'PAUSED')+'</div><br>'+row(state.running?'Pause':'Start / Resume','',"toggleFocus()")+row('Start 25 min Focus','',"state.focus=1500;state.break=false;state.running=true;tick();render()")+row('Start 5 min Break','',"state.focus=300;state.break=true;state.running=true;tick();render()")+row('Reset','',"state.focus=1500;state.break=false;state.running=false;render()"),footer('BACK','SELECT','',''))}
-function toggleFocus(){state.running=!state.running;if(state.running)tick();render()}function tick(){if(timer)clearInterval(timer);if(!state.running)return;timer=setInterval(()=>{if(!state.running)return;if(state.focus>0)state.focus--;else{state.running=false;state.break=!state.break;state.focus=state.break?300:1500;clearInterval(timer);toast('Session complete')}if(state.page==='focus')focus()},1000)}
-function organizer(){layout('Organizer',row('Calendar','events',"toast('Calendar')")+row('Tasks','3 open',"toast('Tasks')")+row('Notes','persistent',"toast('Notes')")+row('Cards','quick cards',"toast('Cards')")+row('Clippings','reader captures',"go('study')"),footer('BACK','SELECT','↑','↓'))}
-function study(){layout('Study Cards',row('What is EBIT?','tap to reveal',"toast('A: Earnings before interest and tax')")+row('China clipping','tap to reveal',"toast('A: travel note / answer')")+row('+ Add card','Question :: Answer',"toast('Keyboard editor')"),footer('BACK','SELECT','↑','↓'))}
-function utilities(){layout('Utilities',row('QR Wallet','boarding passes · memberships',"go('wallet')")+row('Calculator','expression history',"go('calculator')")+row('Saved Ayat / Notes','Qur’an notes',"go('study')"),footer('BACK','SELECT','↑','↓'))}
-function wallet(){layout('QR Wallet','<div class="qr" onclick="toast(\'Scannable QR payload\')"></div><div class="center"><b>Example Pass</b><br><span class="muted">tap QR / Back to close</span></div>',footer('BACK','','',''))}
-function calculator(){layout('Calculator','<div id="calc" class="calc">'+(state.calc||'0')+'</div><div class="keys">'+['7','8','9','/','4','5','6','*','1','2','3','-','0','.','=','+'].map(k=>'<div class="key" onclick="key(\''+k+'\')">'+k+'</div>').join('')+'</div>',footer('BACK','CLEAR','',''))}
-function key(k){if(k==='='){try{state.calc=String(Function('"use strict";return ('+state.calc+')')())}catch(e){state.calc='Error'}}else state.calc=(state.calc==='Error'?'':state.calc)+k;calculator()}
-function games(){layout('Games',row('Minesweeper','first tap safe · persistent W/L',"go('mines')")+row('2048','swipe-driven · best score',"go('g2048')"),footer('BACK','PLAY','↑','↓'))}
-function mines(){const cells=['','','1','F','','','1','1','2','','','','','','1','','*','','','2','2','','','','','','1','','','','','','','','','','','','','','','','','','','','',''];layout('Minesweeper','<div class="center"><b>Dig mode · Mines 6 · W 3 / L 1</b></div><div class="minegrid">'+cells.slice(0,48).map(x=>'<div class="minecell" onclick="this.textContent=this.textContent?this.textContent:Math.ceil(Math.random()*2)">'+x+'</div>').join('')+'</div><div class="quick"><div class="tile center">NEW GAME</div><div class="tile center">MODE: DIG</div></div>',footer('BACK','','',''))}
-function g2048(){const nums=[2,4,8,16,0,2,4,8,0,0,16,32,2,4,128,256];layout('2048','<div class="center"><b>Score '+state.gamescore+' · Best 9216</b><br><span class="muted">Swipe the board to move tiles</span></div><div class="gamegrid">'+nums.map(n=>'<div class="gamecell">'+(n||'')+'</div>').join('')+'</div><div class="row center" onclick="state.gamescore=0;render()">NEW GAME</div>',footer('BACK','','',''))}
-function transfer(){layout('Phone / PC Transfer','<div class="qr"></div><div class="center"><b>XPoint-Reader</b><br>1. Scan Wi-Fi QR<br>2. Scan/open upload URL<br>3. Send books from phone browser<br><br><span class="muted">Firmware path starts hotspot directly from the dashboard.</span></div>',footer('EXIT','','',''))}
-function settings(){layout('Settings',row('Display & frontlight','',"toast('Display settings')")+row('Reader','fonts · gestures',"toast('Reader settings')")+row('Connectivity','Wi-Fi · sync',"toast('Connectivity')")+row('Recovery status','safe_to_flash = no',"toast('PDF + ROM recovery gates remain')"),footer('BACK','SELECT','↑','↓'))}
-function toast(t){const el=document.getElementById('toast');if(!el)return;el.textContent=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1200)}
-function render(){({home,dashboard,library,reader,stats,quran,prayer,focus,organizer,study,utilities,wallet,calculator,games,mines,g2048,transfer,settings}[state.page]||home)()}
-S.addEventListener('dblclick',()=>go('settings'));
-render();
+function standardMenu(title,labels,acts,icons){
+ var body='<div class="menu" style="top:105px">';
+ for(var i=0;i<labels.length;i++)body+='<div class="menuRow" style="top:'+(i*50)+'px" data-act="'+acts[i]+'"><span class="ico">'+(icons?icons[i]:"")+'</span><span>'+labels[i]+'</span></div>';
+ body+='</div>';
+ S.innerHTML=header(title,false)+body+hints("BACK","SELECT","↑","↓");
+}
+function tools(){
+ standardMenu("X4 Pro+",["Library","Qur'an Reader","Study Cards","Prayer","Focus / Pomodoro","Games","Organizer","Utilities","Phone / PC Transfer"],
+ ["library","quranFolder","study","prayer","focus","games","organizer","utilities","transfer"],["▤","▯","◆","◴","◷","▦","◫","▦","⇄"]);
+}
+function organizer(){standardMenu("Organizer",["Calendar","Tasks","Notes","Cards","Clippings"],["calendar","tasks","notes","cards","clippings"],["◫","✓","≡","◆","≡"])}
+function utilities(){standardMenu("Utilities",["QR Wallet","Calculator","Saved Ayat / Notes"],["wallet","calculator","quranNotes"],["▦","≡","◆"])}
+function games(){standardMenu("Games",["Minesweeper","2048"],["mines","g2048"],["▦","▦"])}
+function browser(path){
+ var q=path||"/";
+ var rows=q==="/Books/Quran"?[
+  {n:"Quran.epub",sub:"EPUB",act:"openQuranBook"},{n:"Tafsir Notes.txt",sub:"TXT",act:"openQuranNotesFile"}
+ ]:[
+  {n:"Books",sub:"Folder",act:"booksFolder"},{n:"Quran",sub:"Folder",act:"quranFolder"},
+  {n:"Psychology of Money.epub",sub:"EPUB",act:"openBook0"},{n:"China Journal.txt",sub:"TXT",act:"openBook4"},
+  {n:"sample.xtc",sub:"XTC",act:"openXtc"}
+ ];
+ var html=header(q==="/"?"Browse Files":q,false)+'<div class="list" style="top:112px;bottom:48px">';
+ for(var i=0;i<rows.length;i++)html+='<div class="listRow subtitle" data-act="'+rows[i].act+'"><span>'+esc(rows[i].n)+'<small>'+rows[i].sub+'</small></span><span class="right">›</span></div>';
+ html+='</div>'+hints("BACK","OPEN","↑","↓");S.innerHTML=html;
+}
+function library(){
+ var tabs=["Recent","Title","Author"];var html=header("Library",true)+'<div class="tabbar" style="position:absolute;top:89px;left:0;right:0">';
+ for(var i=0;i<tabs.length;i++)html+='<div class="tab '+(i===state.libraryTab?"on":"")+'" data-act="libTab'+i+'">'+tabs[i]+'</div>';
+ html+='</div><div class="grid">';
+ for(var j=0;j<9;j++){var b=books[j];html+='<div class="bookCard" data-book="'+j+'"><span class="cue"></span><b>'+esc(b.title)+'</b><small>'+esc(b.author||"")+'</small></div>'}
+ html+='</div><div class="readout">1/9 books</div>'+hints("BACK","OPEN","↑","↓");S.innerHTML=html;
+}
+var pages=[
+ ["Chapter 7",["Wealth is what you don't see. Spending money to show people how much money you have is the fastest way to have less money.","The quiet part of building wealth is restraint. It is the difference between what you could spend and what you choose to keep.","Good decisions compound in the background long before they become visible."]],
+ ["Chapter 8",["The highest form of wealth is the ability to wake up every morning and say: I can do whatever I want today.","Controlling your time is the highest dividend money pays. It gives you room to think, to choose, and to change direction.","The value of flexibility is difficult to measure until the day you need it."]],
+ ["Chapter 9",["No one is impressed with your possessions as much as you are. People generally want respect and admiration from other people.","The paradox is that expensive things often attract attention to the thing itself, not to the person who owns it.","A durable life is built around choices that remain useful after the novelty disappears."]]
+];
+function reader(quran){
+ var b=quran?books[5]:books[state.selectedBook];var p=pages[state.readerPage%pages.length];
+ var body='<div class="readerPage"><h2>'+esc(quran?"سورة الفاتحة":p[0])+'</h2>';
+ if(quran)body+='<p dir="rtl" style="font-size:27px;line-height:2;text-align:right">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ<br>الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ<br>الرَّحْمَٰنِ الرَّحِيمِ<br>مَالِكِ يَوْمِ الدِّينِ<br>إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ</p>';
+ else for(var i=0;i<p[1].length;i++)body+='<p>'+esc(p[1][i])+'</p>';
+ body+='<div class="readerStatus"><span>'+esc(b.title)+'</span><span>'+(state.readerPage+1)+' / 3</span></div></div>'+
+ '<div class="turnZone left" data-act="pagePrev"></div><div class="menuZone" data-act="readerMenu"></div><div class="turnZone right" data-act="pageNext"></div>';
+ if(state.readerMenu)body+='<div class="toolbar"><div class="tool" data-act="contents"><span class="ico">≡</span>Contents</div><div class="tool" data-act="textMenu"><span class="ico">Aa</span>Text</div><div class="tool" data-act="bookStats"><span class="ico">▥</span>Stats</div><div class="tool" data-act="moreMenu"><span class="ico">•••</span>More</div></div>';
+ body+=hints("BACK","MENU","‹","›");S.innerHTML=body;
+}
+function contents(){
+ var rows=["Chapter 1","Chapter 2","Chapter 3","Chapter 4","Chapter 5","Chapter 6","Chapter 7","Chapter 8","Chapter 9"];
+ var html=header("Contents",false)+'<div class="list" style="top:105px;bottom:48px">';
+ for(var i=0;i<rows.length;i++)html+='<div class="listRow '+(i===6?"sel":"")+'" data-act="chapter'+i+'">'+rows[i]+'</div>';
+ html+='</div>'+hints("BACK","SELECT","↑","↓");S.innerHTML=html;
+}
+function textMenu(){
+ standardMenu("Text",["Font family","Font size","Line spacing","Margins","Alignment","Hyphenation"],
+ ["noop","noop","noop","noop","noop","noop"],["Aa","Aa","↕","↔","≡","-"]);
+}
+function moreMenu(){
+ standardMenu("More",["Bookmark","Save clipping","Auto page turn","Dictionary","Screenshot","Reading settings"],
+ ["bookmark","clip","noop","noop","noop","noop"],["◆","≡","▶","Aa","□","⚙"]);
+}
+function stats(){
+ var heat="";for(var i=0;i<91;i++)heat+='<i class="'+(i%7===0||i%11===0?"on":i%5===0?"mid":"")+'"></i>';
+ S.innerHTML=header("Reading Stats",false)+'<div class="stats"><div class="statBox"><b>14</b><br>day current streak</div><div class="statBox"><b>42m</b><br>read today</div><div class="statBox"><b>286</b><br>words per minute</div><div class="statBox">13-week rhythm<div class="heat">'+heat+'</div></div></div>'+hints("BACK","","","");
+}
+function genericList(title,items,add,kind){
+ var html=header(title,false)+'<div class="list" style="top:105px;bottom:48px">';
+ for(var i=0;i<items.length;i++)html+='<div class="listRow" data-act="'+kind+'Item'+i+'">'+esc(items[i])+'<span class="right">›</span></div>';
+ if(add)html+='<div class="listRow" data-act="'+kind+'Add">'+esc(add)+'</div>';
+ html+='</div>'+hints("BACK","SELECT","↑","↓");S.innerHTML=html;
+}
+function study(){genericList("Study Cards",["Q: What is EBIT?","Q: Why keep a safety margin?","Q: China trip note"],"+ Add card","study")}
+function quranNotes(){genericList("Saved Ayat / Notes",["Al-Fatihah 1:5 — note","Al-Baqarah 2:286 — note"],"+ Add note","qnote")}
+function clippings(){genericList("Clippings",["Psychology of Money — Wealth is what you don't see.","China Journal — Chengdu evening notes."],"+ Add clipping","cliplist")}
+function calendar(){genericList("Calendar",["22 Sep  Working Capital Meeting","25 Sep  Month-end close","30 Sep  Year-end"],"+ Add event","calendar")}
+function tasks(){genericList("Tasks",["[ ] Review fixed asset list","[x] EBIT estimate","[ ] Finish Build 30"],"+ Add task","task")}
+function notes(){genericList("Notes",["Inventory review notes","China edit ideas"],"+ Add note","note")}
+function cards(){genericList("Cards",["Month end","Travel","Ideas"],"+ Add card","card")}
+function focus(){
+ var m=Math.floor(state.focusSeconds/60),s=state.focusSeconds%60;
+ var rows=[(state.focusBreak?"Break ":"Focus ")+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0"),state.focusRunning?"Pause":"Start / Resume","Start 25 min Focus","Start 5 min Break","Reset to 25:00","Completed focus sessions: "+state.focusSessions];
+ var acts=["noop","focusToggle","focus25","focus5","focusReset","noop"];
+ var html=header("Focus / Pomodoro",false)+'<div class="list" style="top:105px;bottom:48px">';
+ for(var i=0;i<rows.length;i++)html+='<div class="listRow" data-act="'+acts[i]+'">'+esc(rows[i])+'</div>';
+ html+='</div>'+hints("BACK","SELECT","↑","↓");S.innerHTML=html;
+}
+function prayer(){
+ var rows=["Location -26.204, 28.047  UTC+2.0","Fajr      04:38","Dhuhr     12:05","Asr       15:31  (1x)","Maghrib   18:07","Isha      19:11","Edit location / calculation method"];
+ var html=header("Prayer",false)+'<div class="prayerRows">';
+ for(var i=0;i<rows.length;i++)html+='<div class="listRow" data-act="'+(i===6?"prayerEdit":"noop")+'">'+esc(rows[i])+'</div>';
+ html+='</div>'+hints("BACK","SELECT","","");S.innerHTML=html;
+}
+function wallet(){
+ var html=header("QR Wallet",false)+'<div class="list" style="top:105px;bottom:48px">';
+ for(var i=0;i<state.wallet.length;i++)html+='<div class="listRow" data-act="walletShow'+i+'">'+esc(state.wallet[i])+'<span class="right">›</span></div>';
+ html+='<div class="listRow" data-act="walletAdd">+ Add QR / pass payload</div></div>'+hints("BACK","SELECT","↑","↓");S.innerHTML=html;
+}
+function qrDisplay(label){
+ S.innerHTML=header(label,false)+'<div style="position:absolute;left:169px;top:255px" class="qr"></div><div style="position:absolute;left:20px;right:20px;top:425px;text-align:center;font-size:17px;font-weight:700">'+esc(label)+'</div>'+hints("BACK","","","");
+}
+function calculator(){
+ var html=header("Calculator",false)+'<div class="list" style="top:105px;bottom:48px">';
+ for(var i=0;i<state.calcHistory.length;i++)html+='<div class="listRow" data-act="calcEdit'+i+'">'+esc(state.calcHistory[i])+'</div>';
+ html+='<div class="listRow" data-act="calcAdd">Enter calculation</div></div>'+hints("BACK","SELECT","↑","↓");S.innerHTML=html;
+}
+function keyboard(title,value,saveAct){
+ var keys="QWERTYUIOPASDFGHJKLZXCVBNM".split("");var k="";
+ for(var i=0;i<keys.length;i++)k+='<div class="key" data-key="'+keys[i].toLowerCase()+'">'+keys[i]+'</div>';
+ k+='<div class="key wide" data-key="backspace">⌫</div><div class="key space" data-key=" ">SPACE</div><div class="key wide" data-key="done">OK</div>';
+ S.innerHTML=header(title,false)+'<div class="textField" id="editField">'+esc(value||"")+'</div><div class="keyboard"><div class="keys">'+k+'</div></div>'+hints("BACK","SAVE","","");
+ S.dataset.saveAct=saveAct||"";S.dataset.edit=value||"";
+}
+function mines(){
+ var html=header("Minesweeper",false)+'<div style="position:absolute;top:111px;left:20px;right:20px;text-align:center;font-size:14px">Mines 8&nbsp;&nbsp;&nbsp; W '+state.mineWins+' / L '+state.mineLosses+'&nbsp;&nbsp;&nbsp; '+state.mineMode+'</div><div class="gameBoard mineBoard">';
+ for(var i=0;i<48;i++){var v=state.mineOpen[i]?(i%11===0?"*":(i%3)+1):(state.mineFlags[i]?"F":"");html+='<div class="mineCell '+(state.mineOpen[i]?"open":"")+'" data-mine="'+i+'">'+v+'</div>'}
+ html+='</div><div class="gameControls"><div class="gameBtn" data-act="mineNew">NEW GAME</div><div class="gameBtn" data-act="mineMode">MODE: '+state.mineMode+'</div></div>'+hints("BACK","","","");S.innerHTML=html;
+}
+function g2048(){
+ var html=header("2048",false)+'<div style="position:absolute;top:120px;left:20px;right:20px;text-align:center;font-size:15px">Score '+state.score2048+'&nbsp;&nbsp;&nbsp; Best '+state.best2048+'</div><div class="gameBoard board2048">';
+ for(var i=0;i<16;i++)html+='<div class="tile2048">'+(state.board2048[i]||"")+'</div>';
+ html+='</div><div class="gameControls" style="grid-template-columns:1fr"><div class="gameBtn" data-act="2048New">NEW GAME</div></div>'+hints("BACK","","","");S.innerHTML=html;
+}
+function transfer(direct){
+ var title=direct?"Hotspot Mode":"File Transfer";
+ var html=header(title,false);
+ if(direct){
+ html+='<div style="position:absolute;left:20px;right:20px;top:89px;height:48px;border-bottom:1px solid #000;padding:14px 0;font-size:15px">XPoint-Reader</div><div class="transferBody"><div style="font-weight:700;margin-bottom:12px">Connect to Wi-Fi</div><div class="transferRow"><div class="qr"></div><div class="transferText">XPoint-Reader</div></div><div style="font-weight:700;margin-bottom:12px">Open in browser</div><div class="transferRow"><div class="qr"></div><div class="transferText">http://xpoint.local/<br><small>or http://192.168.4.1/</small></div></div></div>';
+ }else{
+ html+='<div class="menu" style="top:110px"><div class="menuRow" style="top:0" data-act="noop"><span class="ico">⌁</span>Join Network</div><div class="menuRow" style="top:50px" data-act="noop"><span class="ico">▦</span>Connect to Calibre</div><div class="menuRow" style="top:100px" data-act="transfer"><span class="ico">⌁</span>Create Hotspot</div><div class="menuRow" style="top:150px" data-act="noop"><span class="ico">⇄</span>USB Drive</div></div>';
+ }
+ html+=hints("EXIT","","","");S.innerHTML=html;
+}
+function settings(){
+ standardMenu("Settings",["Display","Reader","Buttons & touch","Wi-Fi & transfer","Library","Reading stats","Date & time","System"],
+ ["noop","noop","noop","noop","noop","noop","noop","noop"],["▣","Aa","◉","⌁","▤","▥","◷","⚙"]);
+}
+function toast(t){var e=document.createElement("div");e.className="toast";e.textContent=t;S.appendChild(e);setTimeout(function(){if(e.parentNode)e.parentNode.removeChild(e)},1000)}
+function render(){
+ if(state.screen==="home")home();
+ else if(state.screen==="tools")tools();
+ else if(state.screen==="organizer")organizer();
+ else if(state.screen==="utilities")utilities();
+ else if(state.screen==="games")games();
+ else if(state.screen==="browser")browser("/");
+ else if(state.screen==="quranFolder")browser("/Books/Quran");
+ else if(state.screen==="library")library();
+ else if(state.screen==="reader")reader(false);
+ else if(state.screen==="quranReader")reader(true);
+ else if(state.screen==="contents")contents();
+ else if(state.screen==="textMenu")textMenu();
+ else if(state.screen==="moreMenu")moreMenu();
+ else if(state.screen==="stats")stats();
+ else if(state.screen==="study")study();
+ else if(state.screen==="quranNotes")quranNotes();
+ else if(state.screen==="clippings")clippings();
+ else if(state.screen==="calendar")calendar();
+ else if(state.screen==="tasks")tasks();
+ else if(state.screen==="notes")notes();
+ else if(state.screen==="cards")cards();
+ else if(state.screen==="focus")focus();
+ else if(state.screen==="prayer")prayer();
+ else if(state.screen==="wallet")wallet();
+ else if(state.screen==="calculator")calculator();
+ else if(state.screen==="mines")mines();
+ else if(state.screen==="g2048")g2048();
+ else if(state.screen==="transfer")transfer(true);
+ else if(state.screen==="transferNormal")transfer(false);
+ else if(state.screen==="settings")settings();
+ else home();
+}
+function go(name){state.stack.push({screen:state.screen});state.screen=name;render()}
+function startFocus(){
+ if(timer)clearInterval(timer);
+ if(!state.focusRunning)return;
+ timer=setInterval(function(){if(!state.focusRunning)return;if(state.focusSeconds>0)state.focusSeconds--;else{state.focusRunning=false;if(!state.focusBreak)state.focusSessions++;state.focusBreak=!state.focusBreak;state.focusSeconds=state.focusBreak?300:1500;clearInterval(timer)}if(state.screen==="focus")render()},1000)
+}
+function mineTap(i){
+ if(state.mineMode==="FLAG"){state.mineFlags[i]=!state.mineFlags[i];render();return}
+ if(!state.mineStarted)state.mineStarted=true;state.mineOpen[i]=true;render()
+}
+function new2048(){state.board2048=[0,0,0,0,0,2,0,0,0,0,0,0,0,0,2,0];state.score2048=0;render()}
+function move2048(){state.score2048+=16;var a=state.board2048.filter(function(x){return x});while(a.length<16)a.push(0);state.board2048=a;render()}
+S.addEventListener("click",function(ev){
+ var card=ev.target.closest("[data-book]");if(card){state.selectedBook=parseInt(card.dataset.book,10);go("reader");return}
+ var mine=ev.target.closest("[data-mine]");if(mine){mineTap(parseInt(mine.dataset.mine,10));return}
+ var key=ev.target.closest("[data-key]");if(key){var k=key.dataset.key,v=S.dataset.edit||"";if(k==="backspace")v=v.slice(0,-1);else if(k==="done"){saveEditor();return}else v+=k;S.dataset.edit=v;var fld=document.getElementById("editField");if(fld)fld.textContent=v;return}
+ var el=ev.target.closest("[data-act]");if(!el)return;var a=el.dataset.act;
+ if(a==="back"){back();return}
+ if(a==="carouselPrev"){state.carousel=(state.carousel+4)%5;render();return}
+ if(a==="carouselNext"){state.carousel=(state.carousel+1)%5;render();return}
+ if(a==="openCarousel"){state.selectedBook=state.carousel;go("reader");return}
+ if(a==="browser"){go("browser");return}if(a==="booksFolder"){go("browser");return}if(a==="quranFolder"){go("quranFolder");return}
+ if(a==="library"){go("library");return}if(a==="stats"||a==="bookStats"){go("stats");return}if(a==="tools"){go("tools");return}
+ if(a==="settings"){go("settings");return}if(a==="transfer"){go("transfer");return}if(a==="transferNormal"){go("transferNormal");return}
+ if(a==="study"){go("study");return}if(a==="prayer"){go("prayer");return}if(a==="focus"){go("focus");return}if(a==="games"){go("games");return}
+ if(a==="organizer"){go("organizer");return}if(a==="utilities"){go("utilities");return}if(a==="wallet"){go("wallet");return}if(a==="calculator"){go("calculator");return}
+ if(a==="quranNotes"){go("quranNotes");return}if(a==="clippings"){go("clippings");return}if(a==="calendar"){go("calendar");return}if(a==="tasks"){go("tasks");return}if(a==="notes"){go("notes");return}if(a==="cards"){go("cards");return}
+ if(a==="mines"){go("mines");return}if(a==="g2048"){go("g2048");return}
+ if(a==="openQuranBook"){go("quranReader");return}if(a==="openQuranNotesFile"){go("notes");return}
+ if(a==="openBook0"){state.selectedBook=0;go("reader");return}if(a==="openBook4"){state.selectedBook=4;go("reader");return}if(a==="openXtc"){state.selectedBook=8;go("reader");return}
+ if(a==="readerMenu"){state.readerMenu=!state.readerMenu;render();return}if(a==="pagePrev"){state.readerPage=Math.max(0,state.readerPage-1);render();return}if(a==="pageNext"){state.readerPage=Math.min(2,state.readerPage+1);render();return}
+ if(a==="contents"){state.readerMenu=false;go("contents");return}if(a==="textMenu"){state.readerMenu=false;go("textMenu");return}if(a==="moreMenu"){state.readerMenu=false;go("moreMenu");return}
+ if(a==="bookmark"){toast("Bookmark saved");return}if(a==="clip"){toast("Clipping saved");return}
+ if(a.indexOf("libTab")===0){state.libraryTab=parseInt(a.slice(6),10);render();return}
+ if(a==="search"){keyboard("Search library","", "search");return}
+ if(a==="focusToggle"){state.focusRunning=!state.focusRunning;startFocus();render();return}
+ if(a==="focus25"){state.focusSeconds=1500;state.focusBreak=false;state.focusRunning=true;startFocus();render();return}
+ if(a==="focus5"){state.focusSeconds=300;state.focusBreak=true;state.focusRunning=true;startFocus();render();return}
+ if(a==="focusReset"){state.focusSeconds=1500;state.focusBreak=false;state.focusRunning=false;if(timer)clearInterval(timer);render();return}
+ if(a==="prayerEdit"){keyboard("Prayer settings","-26.2041,28.0473,120,18,17,1","prayer");return}
+ if(a.indexOf("walletShow")===0){qrDisplay(state.wallet[parseInt(a.slice(10),10)]);return}
+ if(a==="walletAdd"){keyboard("Add QR / pass payload","", "wallet");return}
+ if(a==="calcAdd"){keyboard("Enter calculation","", "calc");return}
+ if(a.indexOf("calcEdit")===0){var cv=state.calcHistory[parseInt(a.slice(8),10)].split(" = ")[0];keyboard("Enter calculation",cv,"calc");return}
+ if(a.indexOf("studyItem")===0){state.studyReveal=parseInt(a.slice(9),10);toast(["A: Earnings before interest and tax","A: To absorb remaining costs","A: Chengdu evening walk"][state.studyReveal]||"");return}
+ if(a==="studyAdd"){keyboard("Question :: Answer","", "study");return}
+ if(a==="qnoteAdd"||a==="cliplistAdd"||a==="calendarAdd"||a==="taskAdd"||a==="noteAdd"||a==="cardAdd"){keyboard("Add item","",a);return}
+ if(a==="mineNew"){state.mineStarted=false;state.mineOpen={};state.mineFlags={};render();return}if(a==="mineMode"){state.mineMode=state.mineMode==="DIG"?"FLAG":"DIG";render();return}
+ if(a==="2048New"){new2048();return}
+ if(a==="noop"){return}
+});
+function saveEditor(){
+ var v=S.dataset.edit||"",act=S.dataset.saveAct||"";
+ if(act==="wallet"&&v)state.wallet.push(v);
+ if(act==="calc"&&v){var result;try{result=Function('"use strict";return ('+v+')')()}catch(e){result="Error"}state.calcHistory.push(v+" = "+result)}
+ S.dataset.edit="";S.dataset.saveAct="";back()
+}
+var sx=0,sy=0;
+S.addEventListener("touchstart",function(e){if(e.touches.length){sx=e.touches[0].clientX;sy=e.touches[0].clientY}},{passive:true});
+S.addEventListener("touchend",function(e){if(state.screen!=="g2048"||!e.changedTouches.length)return;var dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;if(Math.max(Math.abs(dx),Math.abs(dy))>35)move2048()},{passive:true});
+function fit(){
+ var scale=Math.min(window.innerWidth/480,window.innerHeight/800);
+ S.style.transform="scale("+scale+")";
+ S.style.left=((window.innerWidth-480*scale)/2)+"px";
+ S.style.top=((window.innerHeight-800*scale)/2)+"px";
+}
+window.addEventListener("resize",fit);fit();render();
 </script>
 </body>
 </html>
