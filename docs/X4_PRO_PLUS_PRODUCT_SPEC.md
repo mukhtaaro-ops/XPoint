@@ -10,6 +10,7 @@ X4 Pro+ is the custom XTEINK X4 Pro firmware being built on the existing XPoint/
 - Useful offline: core reading, statistics, notes, tasks, cards and utilities work without Wi-Fi.
 - Recoverable: every release keeps the documented factory-backup / ROM-loader recovery route.
 - E-ink native: layouts favour low ghosting, low redraw area and deliberate touch targets.
+- Arabic/Qur'an is a release requirement: Arabic text must support right-to-left layout, contextual shaping/joining, tashkil/diacritics and a suitable embedded or user-selectable Arabic font before Qur'an support is marked complete.
 
 ## Home and library
 
@@ -30,6 +31,7 @@ X4 Pro+ is the custom XTEINK X4 Pro firmware being built on the existing XPoint/
 - [x] Bookmarks, dictionary, footnotes and chapter navigation.
 - [x] Custom fonts / TTF reader work.
 - [x] Focus-reading mode.
+- [ ] Arabic/RTL shaping and Qur'anic diacritic rendering validation.
 - [ ] Bionic Reading presentation mode.
 - [ ] Highlights and clippings browser.
 - [ ] Flashcards generated from highlights.
@@ -71,7 +73,7 @@ X4 Pro+ is the custom XTEINK X4 Pro firmware being built on the existing XPoint/
 - [ ] Pomodoro / focus timer.
 - [ ] QR / boarding-pass / membership-card wallet.
 - [ ] Prayer times and simple prayer dashboard.
-- [ ] Qur'an utility / saved ayat and reading shortcuts.
+- [ ] Qur'an utility / saved ayat and reading shortcuts (blocked on verified Arabic shaping/RTL/tashkil support).
 - [ ] Weather snapshot when online.
 - [ ] Selected e-ink games: Sudoku, 2048, Minesweeper, Solitaire/FreeCell, Chess and simple puzzles.
 
@@ -90,8 +92,9 @@ X4 Pro+ is the custom XTEINK X4 Pro firmware being built on the existing XPoint/
 
 - [x] Dedicated `x4-pro-plus` branch.
 - [x] GitHub Actions X4 Pro build artifact.
+- [x] Source smoke checks for X4 Pro target, carousel default/navigation and native tools wiring.
 - [ ] Real firmware simulator based on the source tree rather than a fake HTML mock.
-- [ ] Automated smoke tests for Home, reader navigation, stats persistence and settings migration.
+- [ ] Automated runtime smoke tests for Home, reader navigation, stats persistence and settings migration.
 - [ ] Release manifest with SHA-256 and exact flash/recovery instructions.
 
 ## Source inspirations
