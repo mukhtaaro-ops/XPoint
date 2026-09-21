@@ -28,11 +28,13 @@ X4 Pro+ is the custom XTEINK X4 Pro firmware being built on the existing XPoint/
 ## Reading
 
 - [x] EPUB / TXT / XTC reader foundation.
+- [ ] PDF stock-parity verification: open/render/page turn/navigation must match or improve on stock before release.
 - [x] Touch gestures and X4 Pro Home/frontlight controls.
 - [x] Bookmarks, dictionary, footnotes and chapter navigation.
 - [x] Custom fonts / TTF reader work.
 - [x] Focus-reading mode.
-- [ ] Arabic/RTL shaping and Qur'anic diacritic rendering validation.
+- [x] Arabic/RTL contextual shaping and Qur'anic-mark host regression coverage.
+- [ ] Physical X4 Pro validation of Arabic font rendering, joining and tashkil/diacritics.
 - [ ] Bionic Reading presentation mode.
 - [ ] Highlights and clippings browser.
 - [ ] Flashcards generated from highlights.
@@ -44,9 +46,9 @@ X4 Pro+ is the custom XTEINK X4 Pro firmware being built on the existing XPoint/
 - [x] Per-book reading statistics foundation.
 - [x] Global stats / Reading Rhythm / Finished Books foundation.
 - [ ] Daily and weekly heatmaps.
-- [ ] Reading streaks and personal records.
+- [x] Current/longest reading streak foundation and recent active-day summaries.
 - [ ] Daily / weekly reading goals.
-- [ ] Reading-speed history and ETA.
+- [x] WPM window, reading-speed foundation and per-book ETA / estimated finish date.
 - [ ] Achievement system.
 - [ ] Stats-first sleep screens.
 - [ ] Cover-centric per-book analytics browser.
@@ -69,12 +71,14 @@ X4 Pro+ is the custom XTEINK X4 Pro firmware being built on the existing XPoint/
 - [x] Tasks shell with completion state.
 - [x] Notes shell.
 - [x] Cards shell.
-- [ ] Study / spaced repetition (FSRS-style).
+- [x] Persistent question/answer Study Cards with tap-to-reveal.
+- [ ] FSRS-style scheduling / spaced-repetition queue.
 - [ ] Calculator.
 - [ ] Pomodoro / focus timer.
 - [ ] QR / boarding-pass / membership-card wallet.
 - [ ] Prayer times and simple prayer dashboard.
-- [ ] Qur'an utility / saved ayat and reading shortcuts (blocked on verified Arabic shaping/RTL/tashkil support).
+- [x] Qur'an reader shortcut with dedicated `/Books/Quran` folder plus persistent Saved Ayat / Notes.
+- [ ] Mark Qur'an rendering release-ready only after physical Arabic shaping/RTL/tashkil validation.
 - [ ] Weather snapshot when online.
 - [ ] Selected e-ink games: Sudoku, 2048, Minesweeper, Solitaire/FreeCell, Chess and simple puzzles.
 
@@ -93,7 +97,8 @@ X4 Pro+ is the custom XTEINK X4 Pro firmware being built on the existing XPoint/
 
 - [x] Dedicated `x4-pro-plus` branch.
 - [x] GitHub Actions X4 Pro build artifact.
-- [x] Source smoke checks for X4 Pro target, carousel default/navigation and native tools wiring.
+- [x] Source smoke checks for X4 Pro target, carousel default/navigation, native tools, Study/Qur'an wiring and Arabic invariants.
+- [x] Full host regression suite runs before X4 Pro firmware compilation.
 - [ ] Real firmware simulator based on the source tree rather than a fake HTML mock.
 - [ ] Automated runtime smoke tests for Home, reader navigation, stats persistence and settings migration.
 - [ ] Release manifest with SHA-256 and exact flash/recovery instructions.
