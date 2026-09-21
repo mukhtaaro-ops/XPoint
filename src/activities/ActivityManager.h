@@ -108,6 +108,7 @@ class ActivityManager {
   void goToX4PlusFocus();
   void goToX4PlusWallet();
   void goToX4PlusCalculator();
+  void goToX4PlusMinesweeper();
   void goToReader(std::string path, bool allowFastInitialRefresh = false);
   void goToSleep(bool fromTimeout = false);
   // Run the current activity's (and the whole stack's) onExit() WITHOUT
