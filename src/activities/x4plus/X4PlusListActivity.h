@@ -4,7 +4,7 @@
 #include "activities/UiListActivity.h"
 class X4PlusListActivity final : public UiListActivity {
  public:
-  enum class Mode : uint8_t { Calendar, Tasks, Notes, Cards, Study, Quran };
+  enum class Mode : uint8_t { Calendar, Tasks, Notes, Cards, Study, Quran, Clippings };
   X4PlusListActivity(GfxRenderer& renderer, MappedInputManager& mappedInput, Mode mode);
   void onEnter() override;
  private:
