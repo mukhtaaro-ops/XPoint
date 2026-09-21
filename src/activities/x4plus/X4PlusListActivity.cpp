@@ -112,11 +112,37 @@ void X4PlusListActivity::openEditor(const int index) {
   if (!editor) { LOG_ERR("X4P", "OOM: keyboard editor"); return; }
   startActivityForResult(std::move(editor), [this, index, creating](const ActivityResult& result) {
     if (result.isCancelled || !std::holds_alternative<KeyboardResult>(result.data)) return;
-    std::string text = std::get<KeyboardResult>(result.data).text; if (text.empty()) return;
+    std::string text = std::get<KeyboardResult>(result.data).text;
+    if (text.empty()) {
+      if (!creating && mode == Mode::Study && index >= 0 && index < static_cast<int>(items.size())) {
+        items.erase(items.begin() + index);
+        if (index < static_cast<int>(completed.size())) completed.erase(completed.begin() + index);
+        if (index < static_cast<int>(revealed.size())) revealed.erase(revealed.begin() + index);
+        save(); rebuildRows(); requestUpdate();
+      }
+      return;
+    }
     if (creating) { items.push_back(std::move(text)); completed.push_back(false); revealed.push_back(false); }
     else if (index >= 0 && index < static_cast<int>(items.size())) items[index] = std::move(text);
     save(); rebuildRows(); requestUpdate();
   });
+}
+void X4PlusListActivity::createStudyCardFromClipping(const int index) {
+  if (index < 0 || index >= static_cast<int>(items.size())) return;
+  static constexpr const char* kStudyPath = "/.crosspoint/x4plus-study.json";
+  JsonDocument doc;
+  PersistableStoreBase::readDocFromFile(kStudyPath, doc);
+  JsonArray values;
+  if (doc["items"].is<JsonArray>()) values = doc["items"].as<JsonArray>();
+  else values = doc["items"].to<JsonArray>();
+  JsonObject value = values.add<JsonObject>();
+  value["text"] = items[index] + " :: ";
+  value["done"] = false;
+  if (!PersistableStoreBase::writeDocToFile(kStudyPath, doc)) {
+    LOG_ERR("X4P", "Failed to create Study Card from clipping");
+    return;
+  }
+  activityManager.goToX4PlusStudy();
 }
 void X4PlusListActivity::activateIndex(const int index) {
   app.clearTapFlash();
@@ -128,10 +154,12 @@ void X4PlusListActivity::activateIndex(const int index) {
     revealed[index] = !revealed[index];
     rebuildRows(); requestUpdate(); return;
   }
+  if (mode == Mode::Clippings) { createStudyCardFromClipping(index); return; }
   openEditor(index);
 }
 void X4PlusListActivity::onRowLongPress(const int index) {
   if (index < 0 || index >= static_cast<int>(items.size())) return;
+  if (mode == Mode::Study) { openEditor(index); return; }
   items.erase(items.begin() + index); if (index < static_cast<int>(completed.size())) completed.erase(completed.begin() + index);
   if (index < static_cast<int>(revealed.size())) revealed.erase(revealed.begin() + index);
   save(); rebuildRows(); nav.selected = std::min(index, static_cast<int>(items.size())); requestUpdate();
