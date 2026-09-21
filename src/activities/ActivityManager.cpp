@@ -268,6 +268,9 @@ void ActivityManager::replaceActivity(std::unique_ptr<Activity>&& newActivity) {
 void ActivityManager::goToFileTransfer() {
   replaceActivity(std::make_unique<CrossPointWebServerActivity>(renderer, mappedInput));
 }
+void ActivityManager::goToPhoneTransfer() {
+  replaceActivity(std::make_unique<CrossPointWebServerActivity>(renderer, mappedInput, true));
+}
 
 void ActivityManager::goToUsbDrive() {
 #if FREEINK_CAP_USB_MSC
