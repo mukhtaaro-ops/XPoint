@@ -358,6 +358,11 @@ void ActivityManager::goToX4PlusPrayer() { openX4PlusList(*this, renderer, mappe
 void ActivityManager::goToX4PlusFocus() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Focus); }
 void ActivityManager::goToX4PlusWallet() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Wallet); }
 void ActivityManager::goToX4PlusCalculator() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Calculator); }
+void ActivityManager::goToX4PlusMinesweeper() {
+  auto activity = makeUniqueNoThrow<X4PlusMinesweeperActivity>(renderer, mappedInput);
+  if (!activity) return;
+  replaceActivity(std::move(activity));
+}
 
 void ActivityManager::goToBrowser() {
   const auto& servers = OPDS_STORE.getServers();
