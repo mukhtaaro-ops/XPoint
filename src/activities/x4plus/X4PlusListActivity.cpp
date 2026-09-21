@@ -25,6 +25,7 @@ const char* X4PlusListActivity::filePath() const {
     case Mode::Prayer: return "/.crosspoint/x4plus-prayer.json";
     case Mode::Focus: return "/.crosspoint/x4plus-focus.json";
     case Mode::Wallet: return "/.crosspoint/x4plus-wallet.json";
+    case Mode::Calculator: return "/.crosspoint/x4plus-calculator.json";
   }
   return "/.crosspoint/x4plus.json";
 }
@@ -40,6 +41,7 @@ const char* X4PlusListActivity::headerTitle() const {
     case Mode::Prayer: return "Prayer";
     case Mode::Focus: return "Focus / Pomodoro";
     case Mode::Wallet: return "QR Wallet";
+    case Mode::Calculator: return "Calculator";
   }
   return tr(STR_CROSSPOINT);
 }
@@ -55,6 +57,7 @@ const char* X4PlusListActivity::addLabel() const {
     case Mode::Prayer: return "Add prayer / reminder";
     case Mode::Focus: return "Add focus preset / goal";
     case Mode::Wallet: return "Add QR / pass payload";
+    case Mode::Calculator: return "Add calculation (e.g. 1250 * 1.15)";
   }
   return tr(STR_X4P_ADD_NOTE);
 }
