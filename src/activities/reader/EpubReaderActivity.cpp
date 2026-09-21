@@ -2407,6 +2407,9 @@ void EpubReaderActivity::finishTtfPageRender() {
   if (showDictionaryMessage) {
     GUI.drawPopup(renderer, dictionaryMessageTtf ? tr(STR_DICT_TTF_UNSUPPORTED) : tr(STR_DICT_NO_DICT_SET));
   }
+  if (showClippingMessage) {
+    GUI.drawPopup(renderer, "Clipping saved");
+  }
   if (overlay != Overlay::None && usesToolbarMenu()) {
     // The page just re-rendered under the overlay: refresh the snapshot that
     // backs panel->toolbar restores (any previous copy is stale).
