@@ -9,7 +9,7 @@ class X4PlusMenuActivity final : public Activity {
   void render(RenderLock&&) override;
 
  private:
-  static constexpr int kItemCount = 6;
+  static constexpr int kItemCount = 7;
   ButtonNavigator buttonNavigator;
   int selectedIndex = 0;
 
