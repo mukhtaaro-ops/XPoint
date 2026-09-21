@@ -77,27 +77,9 @@ jobs:
           test -s dist/X4_PRO_PLUS_RELEASE_CHECKLIST.md
           test -s dist/X4_PRO_PLUS_FACTORY_RECOVERY.md
           test -s dist/x4pro_plus_preflash.py
-          grep -q '^safe_to_flash=no
-      - uses: actions/upload-artifact@v7
-        with:
-          name: x4-pro-plus-x4pro
-          path: dist/
-          if-no-files-found: error
- dist/BUILD_MANIFEST.txt
-          grep -q '^pdf_stock_parity_verified=no
-      - uses: actions/upload-artifact@v7
-        with:
-          name: x4-pro-plus-x4pro
-          path: dist/
-          if-no-files-found: error
- dist/BUILD_MANIFEST.txt
-          grep -q '^forced_rom_recovery_verified=no
-      - uses: actions/upload-artifact@v7
-        with:
-          name: x4-pro-plus-x4pro
-          path: dist/
-          if-no-files-found: error
- dist/BUILD_MANIFEST.txt
+          grep -q '^safe_to_flash=no$' dist/BUILD_MANIFEST.txt
+          grep -q '^pdf_stock_parity_verified=no$' dist/BUILD_MANIFEST.txt
+          grep -q '^forced_rom_recovery_verified=no$' dist/BUILD_MANIFEST.txt
           python dist/x4pro_plus_preflash.py --help >/dev/null
           (cd dist && sha256sum -c SHA256SUMS.txt)
       - uses: actions/upload-artifact@v7
