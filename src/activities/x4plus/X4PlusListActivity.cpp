@@ -20,6 +20,7 @@ const char* X4PlusListActivity::filePath() const {
     case Mode::Cards: return "/.crosspoint/x4plus-cards.json";
     case Mode::Study: return "/.crosspoint/x4plus-study.json";
     case Mode::Quran: return "/.crosspoint/x4plus-quran.json";
+    case Mode::Clippings: return "/.crosspoint/x4plus-clippings.json";
   }
   return "/.crosspoint/x4plus.json";
 }
@@ -31,6 +32,7 @@ const char* X4PlusListActivity::headerTitle() const {
     case Mode::Cards: return tr(STR_X4P_CARDS);
     case Mode::Study: return "Study Cards";
     case Mode::Quran: return "Qur'an";
+    case Mode::Clippings: return "Clippings";
   }
   return tr(STR_CROSSPOINT);
 }
@@ -42,6 +44,7 @@ const char* X4PlusListActivity::addLabel() const {
     case Mode::Cards: return tr(STR_X4P_ADD_CARD);
     case Mode::Study: return "Add card: Question :: Answer";
     case Mode::Quran: return "Add ayah / note";
+    case Mode::Clippings: return "Add clipping";
   }
   return tr(STR_X4P_ADD_NOTE);
 }
