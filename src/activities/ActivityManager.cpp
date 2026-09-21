@@ -317,7 +317,7 @@ void ActivityManager::goToLibrary() {
     LOG_ERR("ACT", "OOM: library activity");
     return;
   }
-  replaceActivity(std::move(activity));
+  pushActivity(std::move(activity));
 }
 
 void ActivityManager::goToX4PlusMenu() {
@@ -331,7 +331,7 @@ void openX4PlusList(ActivityManager& manager, GfxRenderer& renderer, MappedInput
                     X4PlusListActivity::Mode mode) {
   auto activity = makeUniqueNoThrow<X4PlusListActivity>(renderer, mappedInput, mode);
   if (!activity) { LOG_ERR("ACT", "OOM: X4 Pro+ activity"); return; }
-  manager.replaceActivity(std::move(activity));
+  manager.pushActivity(std::move(activity));
 }
 }
 void ActivityManager::goToX4PlusCalendar() { openX4PlusList(*this, renderer, mappedInput, X4PlusListActivity::Mode::Calendar); }
@@ -361,7 +361,7 @@ void ActivityManager::goToX4PlusCalculator() { openX4PlusList(*this, renderer, m
 void ActivityManager::goToX4PlusMinesweeper() {
   auto activity = makeUniqueNoThrow<X4PlusMinesweeperActivity>(renderer, mappedInput);
   if (!activity) return;
-  replaceActivity(std::move(activity));
+  pushActivity(std::move(activity));
 }
 void ActivityManager::goToX4Plus2048() {
   auto activity = makeUniqueNoThrow<X4Plus2048Activity>(renderer, mappedInput);
