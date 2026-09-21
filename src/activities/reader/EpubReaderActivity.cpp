@@ -17,6 +17,8 @@
 #include <esp_system.h>
 
 #include <algorithm>
+#include <ArduinoJson.h>
+#include <PersistableStore.h>
 #include <functional>
 #include <iterator>
 #include <limits>
@@ -1066,6 +1068,11 @@ void EpubReaderActivity::loop() {
     requestUpdate();
   }
 
+  if (showClippingMessage && (millis() - clippingMessageTime) >= ReaderUtils::BOOKMARK_MESSAGE_DURATION_MS) {
+    showClippingMessage = false;
+    requestUpdate();
+  }
+
 #if FREEINK_CAP_FRONTLIGHT
   // Frontlight side-swipe gestures (left edge: warmth, right edge: brightness).
   // Runs after detectTouchPageTurn() so the swipe state is available, and before
@@ -1599,6 +1606,10 @@ void EpubReaderActivity::onReaderMenuConfirm(EpubReaderMenuActivity::MenuAction 
     }
     case EpubReaderMenuActivity::MenuAction::TOGGLE_BOOKMARK: {
       addBookmark();
+      break;
+    }
+    case EpubReaderMenuActivity::MenuAction::SAVE_CLIPPING: {
+      saveCurrentPageClipping();
       break;
     }
 #ifdef READING_STATS_ENABLED
@@ -2347,6 +2358,9 @@ void EpubReaderActivity::renderBook() {
 
   if (showDictionaryMessage) {
     GUI.drawPopup(renderer, dictionaryMessageTtf ? tr(STR_DICT_TTF_UNSUPPORTED) : tr(STR_DICT_NO_DICT_SET));
+  }
+  if (showClippingMessage) {
+    GUI.drawPopup(renderer, "Clipping saved");
   }
 
   // Toolbar menu: overlay the toolbar / panel on top of the freshly rendered page.
@@ -5105,6 +5119,51 @@ void EpubReaderActivity::addBookmark() {
   if (!BookmarkFile::save(epub->getPath(), cachedBookmarks)) {
     LOG_ERR("ERS", "Failed to save bookmarks");
   }
+  requestUpdate();
+}
+
+void EpubReaderActivity::saveCurrentPageClipping() {
+  if (!epub) return;
+
+  std::string pageText;
+#if defined(CROSSPOINT_TTF_READER)
+  if (ttf_) {
+    if (ttfPage < 0 || ttfPage >= static_cast<int>(ttfPageCount)) return;
+    RenderLock lock;
+    const size_t mark = ttf_->scratch().mark();
+    freeink::book::Page page{};
+    if (ttf_->readPage(static_cast<uint16_t>(currentSpineIndex), static_cast<uint16_t>(ttfPage), &page)) {
+      for (uint16_t r = 0; r < page.runCount; ++r) pageText.append(page.runs[r].text, page.runs[r].len);
+    }
+    ttf_->scratch().release(mark);
+  } else
+#endif
+  if (section) {
+    const int currentPage = section->currentPage;
+    if (currentPage >= 0 && currentPage < section->pageCount) pageText = section->getTextFromSectionFile();
+  }
+
+  std::string summary = BookmarkUtil::sanitizeBookmarkSummary(pageText);
+  if (summary.empty()) return;
+  const std::string title = epub->getTitle();
+  if (!title.empty()) summary = title + " — " + summary;
+
+  static constexpr const char* kClippingsPath = "/.crosspoint/x4plus-clippings.json";
+  JsonDocument doc;
+  PersistableStoreBase::readDocFromFile(kClippingsPath, doc);
+  JsonArray values;
+  if (doc["items"].is<JsonArray>()) values = doc["items"].as<JsonArray>();
+  else values = doc["items"].to<JsonArray>();
+  JsonObject value = values.add<JsonObject>();
+  value["text"] = summary;
+  value["done"] = false;
+
+  if (!PersistableStoreBase::writeDocToFile(kClippingsPath, doc)) {
+    LOG_ERR("ERS", "Failed to save clipping");
+    return;
+  }
+  showClippingMessage = true;
+  clippingMessageTime = millis();
   requestUpdate();
 }
 
