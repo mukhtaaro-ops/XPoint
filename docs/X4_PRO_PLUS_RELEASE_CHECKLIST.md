@@ -8,6 +8,7 @@ This checklist is intentionally stricter than a green firmware compile. X4 Pro+ 
 - [ ] Full host regression suite passes.
 - [ ] `pio run -e x4pro -j1` succeeds.
 - [ ] Packaged firmware SHA-256 verification succeeds.
+- [ ] Firmware image is no larger than the X4 Pro app0 partition (0x640000 / 6,553,600 bytes).
 - [ ] Build artifact contains firmware, bootloader, partition table, ELF, map, manifest, recovery guide and this checklist.
 
 ## Stock-parity gates
