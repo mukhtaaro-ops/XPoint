@@ -28,7 +28,7 @@ X4 Pro+ is the custom XTEINK X4 Pro firmware being built on the existing XPoint/
 ## Reading
 
 - [x] EPUB / TXT / XTC reader foundation.
-- [ ] PDF stock-parity verification: open/render/page turn/navigation must match or improve on stock before release.
+- [ ] Native PDF runtime implementation. No compatible PDF reader exists in the current XPoint/X4 Pro upstream tree, so this remains a release blocker.\n- [ ] PDF stock-parity verification: open/render/page turn/navigation must match or improve on stock before release.
 - [x] Touch gestures and X4 Pro Home/frontlight controls.
 - [x] Bookmarks, dictionary, footnotes and chapter navigation.
 - [x] Custom fonts / TTF reader work.
@@ -83,7 +83,7 @@ X4 Pro+ is the custom XTEINK X4 Pro firmware being built on the existing XPoint/
 - [ ] Completion popup/alert polish and physical timing validation.
 - [x] Persistent QR / pass payload wallet.
 - [x] Render stored wallet payload as scannable QR from wallet row.
-- [x] Calculated Fajr/Dhuhr/Asr/Maghrib/Isha dashboard with editable latitude, longitude, UTC offset and Fajr/Isha angles.
+- [x] Calculated Fajr/Dhuhr/Asr/Maghrib/Isha dashboard with editable latitude, longitude, UTC offset, Fajr/Isha angles and selectable 1x/2x Asr shadow factor.
 - [x] Qur'an reader shortcut with dedicated `/Books/Quran` folder plus persistent Saved Ayat / Notes.
 - [ ] Mark Qur'an rendering release-ready only after physical Arabic shaping/RTL/tashkil validation.
 - [ ] Weather snapshot when online.
@@ -111,7 +111,7 @@ X4 Pro+ is the custom XTEINK X4 Pro firmware being built on the existing XPoint/
 - [x] Phone-playable UX simulator covering Home/carousel, 3x3 Library, reader, stats, Qur'an, prayer, Focus, utilities, games and transfer flows.
 - [ ] Real firmware/runtime simulator based on the source tree; the HTML simulator is UX validation only.
 - [ ] Automated runtime smoke tests for Home, reader navigation, stats persistence and settings migration.
-- [x] Release artifact manifest with SHA-256, exact factory/application offsets, recovery guide and explicit unsafe-to-flash flags.
+- [x] Release artifact manifest with SHA-256, exact factory/application offsets, recovery guide and explicit unsafe-to-flash flags.\n- [x] Build 30 memory report and software release audit packaged with every CI artifact; the audit cannot clear physical recovery/PDF gates.
 - [ ] Clear `safe_to_flash=no` only after PDF parity and forced-ROM recovery are physically verified.
 
 ## Source inspirations
