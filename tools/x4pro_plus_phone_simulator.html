@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>X4 Pro+ Phone Simulator</title>
+<style>
+:root{--ink:#111;--paper:#f4f1e8;--gray:#d8d5cc;--mid:#a6a39b}
+*{box-sizing:border-box}body{margin:0;background:#161616;color:#eee;font-family:system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh;display:grid;place-items:center;padding:16px}
+.shell{width:min(100%,430px)}.note{font-size:12px;color:#aaa;margin:0 0 10px;text-align:center}.device{background:#222;border-radius:24px;padding:14px;box-shadow:0 20px 70px #0008}
+.screen{aspect-ratio:3/5;background:var(--paper);color:var(--ink);border-radius:8px;overflow:hidden;position:relative;user-select:none;touch-action:manipulation}
+.header{height:54px;border-bottom:2px solid var(--ink);display:flex;align-items:center;justify-content:space-between;padding:0 14px;font-weight:800;letter-spacing:.03em}
+.header small{font-size:11px;font-weight:650}.content{height:calc(100% - 96px);overflow:auto;padding:12px}.footer{height:42px;border-top:2px solid var(--ink);position:absolute;bottom:0;left:0;right:0;display:flex;align-items:center;justify-content:space-around;font-size:11px;font-weight:700;background:var(--paper)}
+.row{min-height:52px;border:2px solid var(--ink);border-radius:8px;margin:0 0 8px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;font-weight:750;background:var(--paper)}.row:active,.tile:active,.pill:active{background:#111;color:#fff}
+.sub{font-size:11px;font-weight:500;color:#555}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.cover{aspect-ratio:2/3;border:2px solid var(--ink);border-radius:5px;padding:7px;display:flex;align-items:end;font-size:10px;font-weight:800;background:linear-gradient(145deg,#eee,#bbb)}
+.cover.active{outline:3px solid var(--ink);outline-offset:2px}.bar{height:7px;border:1px solid var(--ink);border-radius:4px;overflow:hidden;margin-top:5px}.bar>i{display:block;height:100%;background:var(--ink)}
+.hero{text-align:center;padding:8px 0 14px}.carousel{height:245px;display:flex;align-items:center;justify-content:center;gap:9px;overflow:hidden}.carousel .cover{width:92px;flex:0 0 auto}.carousel .cover.focus{width:128px}.dots{text-align:center;letter-spacing:4px;margin:8px}
+.quick{display:grid;grid-template-columns:1fr 1fr;gap:8px}.tile{border:2px solid var(--ink);border-radius:8px;min-height:72px;padding:10px;font-weight:800}.tile b{display:block;font-size:22px;margin-bottom:4px}
+.reader{font-family:Georgia,serif;font-size:15px;line-height:1.55}.reader h3{text-align:center;margin:4px 0 16px}.reader-controls{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.pill{border:2px solid var(--ink);border-radius:999px;padding:9px;text-align:center;font-size:11px;font-weight:800}
+.bigtime{font-size:48px;font-weight:800;text-align:center;margin:28px 0 8px}.center{text-align:center}.prayers{display:grid;grid-template-columns:1fr auto;gap:0}.prayers div{border-bottom:1px solid #777;padding:10px 4px}.stat{border:2px solid var(--ink);border-radius:8px;padding:12px;margin-bottom:8px}.stat strong{font-size:28px}.heat{display:grid;grid-template-columns:repeat(13,1fr);gap:2px;margin-top:8px}.heat i{aspect-ratio:1;background:#ddd}.heat i:nth-child(3n),.heat i:nth-child(7n){background:#111}.heat i:nth-child(5n){background:#888}
+.calc{font-family:ui-monospace,monospace;font-size:23px;border:2px solid var(--ink);padding:14px;text-align:right;margin-bottom:10px}.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.key{border:2px solid var(--ink);border-radius:8px;padding:16px 2px;text-align:center;font-weight:900}
+.qr{width:230px;height:230px;margin:18px auto;background:repeating-conic-gradient(#111 0 25%,#eee 0 50%) 0/18px 18px;border:10px solid #fff;outline:2px solid #111}
+.gamegrid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:16px auto;max-width:330px}.gamecell{aspect-ratio:1;border:2px solid #111;border-radius:7px;display:grid;place-items:center;font-weight:900;font-size:22px}.minegrid{display:grid;grid-template-columns:repeat(6,1fr);gap:1px;margin:10px auto;max-width:350px}.minecell{aspect-ratio:1;border:1px solid #111;background:#ddd;display:grid;place-items:center;font-weight:900}
+.arabic{direction:rtl;font-family:serif;font-size:28px;line-height:2;text-align:right}.muted{color:#666;font-size:11px}.tabs{display:flex;gap:5px;margin-bottom:10px}.tabs button{flex:1;border:2px solid #111;background:transparent;border-radius:8px;padding:8px;font-weight:800}.tabs button.active{background:#111;color:#fff}
+.toast{position:absolute;left:50%;bottom:55px;transform:translateX(-50%);background:#111;color:#fff;padding:8px 12px;border-radius:6px;font-size:11px;display:none}.toast.show{display:block}
+</style>
+</head>
+<body>
+<div class="shell">
+<p class="note">X4 Pro+ UX simulator — interface validation only, not hardware validation.</p>
+<div class="device"><div id="screen" class="screen"></div></div>
+</div>
+<script>
+const S=document.getElementById('screen');
+const state={page:'home',book:1,focus:25*60,running:false,break:false,calc:'',gamescore:3240};
+const books=[
+ {t:'The Psychology of Money',a:'Morgan Housel',p:72},
+ {t:'The Qur’an',a:'Reading copy',p:38},
+ {t:'The Gentlemen',a:'Notes & ideas',p:21},
+ {t:'Atomic Habits',a:'James Clear',p:84},
+ {t:'Deep Work',a:'Cal Newport',p:55},
+ {t:'The Almanack',a:'Naval Ravikant',p:61},
+ {t:'China Journal',a:'Travel notes',p:46},
+ {t:'FP&A Playbook',a:'Reference',p:17},
+ {t:'Designing Interfaces',a:'Reference',p:33}
+];
+function header(title){return '<div class="header"><span>'+title+'</span><small>21:25&nbsp;&nbsp;▮▮▮</small></div>'}
+function footer(back='HOME',ok='SELECT',up='↑',down='↓'){return '<div class="footer"><span>'+back+'</span><span>'+ok+'</span><span>'+up+'</span><span>'+down+'</span></div>'}
+function layout(title,body,foot=footer()){S.innerHTML=header(title)+'<div class="content">'+body+'</div>'+foot+'<div id="toast" class="toast"></div>'}
+function row(label,sub,go){return '<div class="row" onclick="'+go+'"><span>'+label+(sub?'<div class="sub">'+sub+'</div>':'')+'</span><b>›</b></div>'}
+function go(p){state.page=p;render()}
+function home(){
+ const b=books[state.book];
+ layout('X4 Pro+','<div class="hero"><div class="carousel">'+
+  books.map((x,i)=>'<div class="cover '+(i===state.book?'focus':'')+'" onclick="state.book='+i+';render()">'+x.t+'</div>').slice(Math.max(0,state.book-1),state.book+2).join('')+
+  '</div><div class="dots">○ ● ○</div><b>'+b.t+'</b><div class="sub">'+b.a+' · '+b.p+'%</div><div class="bar"><i style="width:'+b.p+'%"></i></div></div>'+
+  '<div class="quick">'+
+  '<div class="tile" onclick="go(\'library\')"><b>▦</b>Library</div>'+
+  '<div class="tile" onclick="go(\'quran\')"><b>۞</b>Qur’an</div>'+
+  '<div class="tile" onclick="go(\'dashboard\')"><b>☷</b>Tools</div>'+
+  '<div class="tile" onclick="go(\'reader\')"><b>↗</b>Continue</div></div>');
+}
+function dashboard(){layout('X4 Pro+',
+ row('Library','visual 3×3 covers',"go('library')")+
+ row('Qur’an Reader','/Books/Quran',"go('quran')")+
+ row('Study Cards','clippings → cards',"go('study')")+
+ row('Prayer','next: Isha 19:11',"go('prayer')")+
+ row('Focus / Pomodoro','25 / 5',"go('focus')")+
+ row('Games','Minesweeper · 2048',"go('games')")+
+ row('Organizer','calendar · tasks · notes',"go('organizer')")+
+ row('Utilities','wallet · calculator',"go('utilities')")+
+ row('Phone / PC Transfer','one-tap hotspot',"go('transfer')"),footer('HOME','SELECT','↑','↓'))}
+function library(){layout('Library','<div class="tabs"><button class="active">Recent</button><button>Title</button><button>Author</button></div><div class="grid">'+books.map((b,i)=>'<div class="cover '+(i===state.book?'active':'')+'" onclick="state.book='+i+';go(\'reader\')">'+b.t+'<div class="bar" style="width:100%"><i style="width:'+b.p+'%"></i></div></div>').join('')+'</div>',footer('BACK','OPEN','↑','↓'))}
+function reader(){const b=books[state.book];layout(b.t,'<div class="reader"><h3>Chapter 7</h3><p>Reading on X4 Pro+ should remain quiet and deliberate. The reader is still the centre of the device; every added feature has to preserve that.</p><p>Page rendering, position persistence, bookmarks and navigation remain stock-parity gates before release.</p><p>This simulator validates layout and navigation only. E-ink refresh, PSRAM, touch geometry and actual book rendering require the physical device.</p></div><div class="reader-controls"><div class="pill" onclick="toast(\'Bookmark saved\')">Bookmark</div><div class="pill" onclick="toast(\'Clipping saved\')">Clip</div><div class="pill" onclick="go(\'stats\')">Stats</div></div>',footer('BACK','MENU','‹','›'))}
+function stats(){layout('Reading Stats','<div class="stat"><strong>14</strong><br>day current streak</div><div class="stat"><strong>42m</strong><br>read today · 286 WPM</div><div class="stat"><b>13-week rhythm</b><div class="heat">'+Array.from({length:91},()=>'<i></i>').join('')+'</div></div><div class="stat"><b>This book</b><br>72% · ~1h 18m remaining</div>',footer('BACK','','',''))}
+function quran(){layout('Qur’an Reader','<div class="arabic">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ<br>الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ<br>الرَّحْمَٰنِ الرَّحِيمِ</div><p class="muted">Arabic/RTL/tashkīl shown for UX preview. Physical panel/font validation remains required.</p>'+row('Saved Ayat / Notes','persistent notes',"go('study')"),footer('BACK','MENU','‹','›'))}
+function prayer(){layout('Prayer','<div class="prayers"><div>Fajr</div><div>04:38</div><div>Dhuhr</div><div>12:05</div><div>Asr</div><div>15:31</div><div>Maghrib</div><div>18:07</div><div>Isha</div><div>19:11</div></div><p class="muted">Example display only. Firmware calculates from configured latitude, longitude, UTC offset and Fajr/Isha angles.</p>'+row('Calculation settings','location / angles',"toast('Settings editor')"),footer('BACK','SELECT','',''))}
+let timer=null;function focus(){const m=String(Math.floor(state.focus/60)).padStart(2,'0'),s=String(state.focus%60).padStart(2,'0');layout('Focus / Pomodoro','<div class="bigtime">'+m+':'+s+'</div><div class="center">'+(state.break?'BREAK':'FOCUS')+' · '+(state.running?'RUNNING':'PAUSED')+'</div><br>'+row(state.running?'Pause':'Start / Resume','',"toggleFocus()")+row('Start 25 min Focus','',"state.focus=1500;state.break=false;state.running=true;tick();render()")+row('Start 5 min Break','',"state.focus=300;state.break=true;state.running=true;tick();render()")+row('Reset','',"state.focus=1500;state.break=false;state.running=false;render()"),footer('BACK','SELECT','',''))}
+function toggleFocus(){state.running=!state.running;if(state.running)tick();render()}function tick(){if(timer)clearInterval(timer);if(!state.running)return;timer=setInterval(()=>{if(!state.running)return;if(state.focus>0)state.focus--;else{state.running=false;state.break=!state.break;state.focus=state.break?300:1500;clearInterval(timer);toast('Session complete')}if(state.page==='focus')focus()},1000)}
+function organizer(){layout('Organizer',row('Calendar','events',"toast('Calendar')")+row('Tasks','3 open',"toast('Tasks')")+row('Notes','persistent',"toast('Notes')")+row('Cards','quick cards',"toast('Cards')")+row('Clippings','reader captures',"go('study')"),footer('BACK','SELECT','↑','↓'))}
+function study(){layout('Study Cards',row('What is EBIT?','tap to reveal',"toast('A: Earnings before interest and tax')")+row('China clipping','tap to reveal',"toast('A: travel note / answer')")+row('+ Add card','Question :: Answer',"toast('Keyboard editor')"),footer('BACK','SELECT','↑','↓'))}
+function utilities(){layout('Utilities',row('QR Wallet','boarding passes · memberships',"go('wallet')")+row('Calculator','expression history',"go('calculator')")+row('Saved Ayat / Notes','Qur’an notes',"go('study')"),footer('BACK','SELECT','↑','↓'))}
+function wallet(){layout('QR Wallet','<div class="qr" onclick="toast(\'Scannable QR payload\')"></div><div class="center"><b>Example Pass</b><br><span class="muted">tap QR / Back to close</span></div>',footer('BACK','','',''))}
+function calculator(){layout('Calculator','<div id="calc" class="calc">'+(state.calc||'0')+'</div><div class="keys">'+['7','8','9','/','4','5','6','*','1','2','3','-','0','.','=','+'].map(k=>'<div class="key" onclick="key(\''+k+'\')">'+k+'</div>').join('')+'</div>',footer('BACK','CLEAR','',''))}
+function key(k){if(k==='='){try{state.calc=String(Function('"use strict";return ('+state.calc+')')())}catch(e){state.calc='Error'}}else state.calc=(state.calc==='Error'?'':state.calc)+k;calculator()}
+function games(){layout('Games',row('Minesweeper','first tap safe · persistent W/L',"go('mines')")+row('2048','swipe-driven · best score',"go('g2048')"),footer('BACK','PLAY','↑','↓'))}
+function mines(){const cells=['','','1','F','','','1','1','2','','','','','','1','','*','','','2','2','','','','','','1','','','','','','','','','','','','','','','','','','','','',''];layout('Minesweeper','<div class="center"><b>Dig mode · Mines 6 · W 3 / L 1</b></div><div class="minegrid">'+cells.slice(0,48).map(x=>'<div class="minecell" onclick="this.textContent=this.textContent?this.textContent:Math.ceil(Math.random()*2)">'+x+'</div>').join('')+'</div><div class="quick"><div class="tile center">NEW GAME</div><div class="tile center">MODE: DIG</div></div>',footer('BACK','','',''))}
+function g2048(){const nums=[2,4,8,16,0,2,4,8,0,0,16,32,2,4,128,256];layout('2048','<div class="center"><b>Score '+state.gamescore+' · Best 9216</b><br><span class="muted">Swipe the board to move tiles</span></div><div class="gamegrid">'+nums.map(n=>'<div class="gamecell">'+(n||'')+'</div>').join('')+'</div><div class="row center" onclick="state.gamescore=0;render()">NEW GAME</div>',footer('BACK','','',''))}
+function transfer(){layout('Phone / PC Transfer','<div class="qr"></div><div class="center"><b>XPoint-Reader</b><br>1. Scan Wi-Fi QR<br>2. Scan/open upload URL<br>3. Send books from phone browser<br><br><span class="muted">Firmware path starts hotspot directly from the dashboard.</span></div>',footer('EXIT','','',''))}
+function settings(){layout('Settings',row('Display & frontlight','',"toast('Display settings')")+row('Reader','fonts · gestures',"toast('Reader settings')")+row('Connectivity','Wi-Fi · sync',"toast('Connectivity')")+row('Recovery status','safe_to_flash = no',"toast('PDF + ROM recovery gates remain')"),footer('BACK','SELECT','↑','↓'))}
+function toast(t){const el=document.getElementById('toast');if(!el)return;el.textContent=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1200)}
+function render(){({home,dashboard,library,reader,stats,quran,prayer,focus,organizer,study,utilities,wallet,calculator,games,mines,g2048,transfer,settings}[state.page]||home)()}
+S.addEventListener('dblclick',()=>go('settings'));
+render();
+</script>
+</body>
+</html>
