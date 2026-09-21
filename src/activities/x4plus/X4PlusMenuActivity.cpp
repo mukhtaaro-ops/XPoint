@@ -10,7 +10,7 @@
 #include "components/UITheme.h"
 
 namespace {
-constexpr std::array<UIIcon, 11> kIcons = {Recent, Bookmark, Text, Blocks, Bookmark, Book, Bookmark, Text, Recent, Clock, Blocks};
+constexpr std::array<UIIcon, 11> kIcons = {Recent, Bookmark, Text, Blocks, Bookmark, Book, Bookmark, Text, Recent, Recent, Blocks};
 }
 
 X4PlusMenuActivity::X4PlusMenuActivity(GfxRenderer& renderer, MappedInputManager& mappedInput)
