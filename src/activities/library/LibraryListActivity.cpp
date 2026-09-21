@@ -827,8 +827,11 @@ void LibraryListActivity::buildCoverGrid(UiScreen& screen) {
 
     // Book-spine/cover cue. Real cover thumbnails replace this fallback once
     // the index exposes a stable cached-cover path for every row.
-    const auto icon = listIconFor(UITheme::getFileIcon(fileName), 32);
-    renderer.drawBitmap(icon.data, x + (cardW - 32) / 2, y + 10, 32, 32);
+    // Keep the first visual-grid pass renderer-native and allocation-free.
+    // The cover frame itself is the fallback cue until indexed thumbnail paths
+    // are plumbed into the library rows.
+    const int cueX = x + (cardW - 32) / 2;
+    renderer.drawRoundedRect(cueX, y + 10, 32, 32, 1, 3, true);
     const auto lines = renderer.wrappedText(UI_10_FONT_ID, title.c_str(), cardW - 10, 2, EpdFontFamily::BOLD);
     int ty = y + 48;
     for (const auto& line : lines) {
