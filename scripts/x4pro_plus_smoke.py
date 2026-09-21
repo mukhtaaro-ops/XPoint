@@ -9,9 +9,10 @@ checks = {
     "platformio.ini": ["[env:x4pro]"],
     "src/CrossPointSettings.h": ["LYRA_3_COVERS"],
     "src/activities/home/HomeActivity.cpp": ["X4PLUS_TOOLS", "LYRA_3_COVERS"],
+    "src/activities/library/LibraryListActivity.cpp": ["buildHeader", "buildTabBar", "openSearch", "LibraryListActivity"],
     "src/components/themes/lyra/Lyra3CoversTheme.cpp": ["drawRecentBookCover", "carousel", "centre"],
     "lib/I18n/translations/english.yaml": ["X4 Pro+ Carousel"],
-    "docs/X4_PRO_PLUS_PRODUCT_SPEC.md": ["X4 Pro+ Cover Carousel", "Qur'an", "Arabic"],
+    "docs/X4_PRO_PLUS_PRODUCT_SPEC.md": ["X4 Pro+ Cover Carousel", "Qur'an", "Arabic", "Visual library foundation"],
 }
 
 failed = False
