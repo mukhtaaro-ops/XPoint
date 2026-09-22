@@ -6,10 +6,10 @@
 <title>X4 Pro+</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;width:100%;min-height:100%;background:#eee}
+html,body{font-family:Arial,Helvetica,sans-serif;color:#111;background:#fff}
 body{font-family:Arial,Helvetica,sans-serif;color:#111;display:flex;justify-content:center;align-items:flex-start;padding:8px 0;overflow:auto}
-#stage{position:relative;width:min(100vw,480px);height:min(166.6667vw,800px);max-width:480px;max-height:800px;background:#fff;overflow:hidden}
-#device{position:absolute;left:0;top:0;width:480px;height:800px;background:#fff;overflow:hidden;user-select:none;touch-action:manipulation;transform-origin:top left}
+#stage{position:relative;width:480px;height:800px;background:#fff;overflow:hidden;transform-origin:top left}
+#device{position:absolute;left:0;top:0;width:480px;height:800px;background:#fff;overflow:hidden;user-select:none;touch-action:manipulation}
 .status{position:absolute;left:18px;right:18px;top:7px;height:20px;font-size:12px;line-height:20px}
 .status .time{float:left}.status .battery{float:right;display:flex;align-items:center;gap:5px}
 .bat{width:16px;height:12px;border:1.5px solid #111;position:relative}.bat:after{content:"";position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#111}.bat i{display:block;height:100%;width:82%;background:#111}
@@ -101,13 +101,13 @@ var books=[
  {t:'Notes',a:'Personal',p:'12% • 28m',arabic:false}
 ];
 function scale(){
- var stage=document.getElementById('stage'),dev=document.getElementById('device');
+ var stage=document.getElementById('stage');
  var s=Math.min(window.innerWidth/480,1);
- stage.style.width=(480*s)+'px';
- stage.style.height=(800*s)+'px';
- dev.style.transform='scale('+s+')';
+ stage.style.transform='scale('+s+')';
+ document.body.style.width=(480*s)+'px';
+ document.body.style.height=(800*s)+'px';
 }
-window.addEventListener('resize',scale);scale();
+window.addEventListener('resize',scale);
 function status(){
  return '<div class="status"><span class="time">07:10</span><span class="battery">82% <span class="bat"><i></i></span></span></div>';
 }
@@ -360,7 +360,7 @@ function startTimer(){
  if(ftimer)clearInterval(ftimer);
  ftimer=setInterval(function(){if(!state.focusRun)return;if(state.focus>0)state.focus--;else{if(!state.focusBreak)state.focusSessions++;state.focusBreak=!state.focusBreak;state.focus=state.focusBreak?300:1500;state.focusRun=false;clearInterval(ftimer)}if(state.page==='focus')render()},1000);
 }
-render();
+try{render();scale();}catch(e){document.body.innerHTML='<pre style="padding:16px;white-space:pre-wrap;font:14px monospace">X4 Pro+ preview error\n'+String(e)+'<\/pre>';}
 })();
 </script>
 </body>
