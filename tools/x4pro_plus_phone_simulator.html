@@ -6,10 +6,10 @@
 <title>X4 Pro+</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111}
-body{font-family:Arial,Helvetica,sans-serif;color:#111}
-#stage{position:absolute;left:50%;top:50%;width:480px;height:800px;transform-origin:center center}
-#device{position:absolute;inset:0;width:480px;height:800px;background:#fff;overflow:hidden;user-select:none;touch-action:manipulation}
+html,body{margin:0;width:100%;min-height:100%;background:#eee}
+body{font-family:Arial,Helvetica,sans-serif;color:#111;display:flex;justify-content:center;align-items:flex-start;padding:8px 0;overflow:auto}
+#stage{position:relative;width:min(100vw,480px);height:min(166.6667vw,800px);max-width:480px;max-height:800px;background:#fff;overflow:hidden}
+#device{position:absolute;left:0;top:0;width:480px;height:800px;background:#fff;overflow:hidden;user-select:none;touch-action:manipulation;transform-origin:top left}
 .status{position:absolute;left:18px;right:18px;top:7px;height:20px;font-size:12px;line-height:20px}
 .status .time{float:left}.status .battery{float:right;display:flex;align-items:center;gap:5px}
 .bat{width:16px;height:12px;border:1.5px solid #111;position:relative}.bat:after{content:"";position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#111}.bat i{display:block;height:100%;width:82%;background:#111}
@@ -101,8 +101,11 @@ var books=[
  {t:'Notes',a:'Personal',p:'12% • 28m',arabic:false}
 ];
 function scale(){
- var s=Math.min(window.innerWidth/480,window.innerHeight/800);
- document.getElementById('stage').style.transform='translate(-50%,-50%) scale('+s+')';
+ var stage=document.getElementById('stage'),dev=document.getElementById('device');
+ var s=Math.min(window.innerWidth/480,1);
+ stage.style.width=(480*s)+'px';
+ stage.style.height=(800*s)+'px';
+ dev.style.transform='scale('+s+')';
 }
 window.addEventListener('resize',scale);scale();
 function status(){
