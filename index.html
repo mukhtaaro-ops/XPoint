@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>X4 Pro+</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;min-height:100%;background:#eee}
+body{font-family:Arial,Helvetica,sans-serif;color:#111;display:flex;justify-content:center;align-items:flex-start;padding:8px 0;overflow:auto}
+#stage{position:relative;width:min(100vw,480px);height:min(166.6667vw,800px);max-width:480px;max-height:800px;background:#fff;overflow:hidden}
+#device{position:absolute;left:0;top:0;width:480px;height:800px;background:#fff;overflow:hidden;user-select:none;touch-action:manipulation;transform-origin:top left}
+.status{position:absolute;left:18px;right:18px;top:7px;height:20px;font-size:12px;line-height:20px}
+.status .time{float:left}.status .battery{float:right;display:flex;align-items:center;gap:5px}
+.bat{width:16px;height:12px;border:1.5px solid #111;position:relative}.bat:after{content:"";position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#111}.bat i{display:block;height:100%;width:82%;background:#111}
+.header{position:absolute;left:0;top:5px;width:480px;height:84px;border-bottom:3px solid #111}
+.header .title{position:absolute;left:18px;right:18px;bottom:13px;font-size:24px;font-weight:700;line-height:28px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.header .right{position:absolute;right:18px;bottom:17px;font-size:11px}
+.homeHeader{position:absolute;left:0;top:5px;width:480px;height:45px}
+.hints{position:absolute;left:0;bottom:0;width:480px;height:40px;border-top:1px solid #111;display:grid;grid-template-columns:repeat(4,1fr);background:#fff;font-size:11px;font-weight:700}
+.hints button{border:0;background:#fff;color:#111;font:inherit;padding:0;display:flex;align-items:center;justify-content:center}
+.hints button:active{background:#ddd}
+.menu{position:absolute;left:0;right:0;overflow:hidden}
+.menuRow{position:absolute;left:18px;right:18px;height:46px;border-radius:7px;display:flex;align-items:center;padding:0 12px;font-size:16px;font-weight:600}
+.menuRow:active,.menuRow.sel{background:#d7d7d7}
+.menuRow .mi{width:32px;height:32px;margin-right:10px;display:grid;place-items:center;font-size:23px;font-weight:400}
+.listArea{position:absolute;left:20px;right:20px;top:105px;bottom:40px;overflow:hidden}
+.listRow{height:40px;border-bottom:1px solid #d4d4d4;display:flex;align-items:center;padding:0 8px;font-size:15px}
+.listRow:active,.listRow.sel{background:#dedede;border-radius:6px}
+.listRow .value{margin-left:auto;font-size:12px;color:#444;padding-left:8px}
+.tabs{height:48px;display:flex;align-items:center;gap:8px;padding:0 20px;border-bottom:1px solid #bbb}
+.tab{height:34px;padding:0 14px;border:1px solid #111;border-radius:6px;background:#fff;font-weight:600}
+.tab.on{background:#111;color:#fff}
+.homeCarousel{position:absolute;left:0;top:50px;width:480px;height:286px}
+.homeBookTitle{position:absolute;left:40px;right:40px;top:2px;text-align:center;font-weight:700;font-size:16px;line-height:19px;max-height:38px;overflow:hidden}
+.cover{position:absolute;border:1px solid #111;border-radius:7px;background:#fff;overflow:hidden}
+.cover.focus{border-width:3px}
+.cover .topIcon{position:absolute;left:50%;top:18px;transform:translateX(-50%);font-size:28px}
+.cover .bottomFill{position:absolute;left:0;right:0;top:33.333%;bottom:0;background:#111}
+.cover .bottomFill span{position:absolute;left:8px;right:8px;bottom:12px;color:#fff;font-size:11px;line-height:13px;font-weight:700;text-align:center}
+.homeProgress{position:absolute;left:0;right:0;top:260px;text-align:center;font-size:12px}
+.dots{position:absolute;left:0;right:0;bottom:5px;display:flex;justify-content:center;gap:5px}
+.dot{width:5px;height:5px;border:1px solid #111}.dot.on{background:#111}
+.libraryBody{position:absolute;left:20px;right:20px;top:145px;bottom:72px}
+.libraryGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.bookCard{height:118px;border:1px solid #111;border-radius:6px;padding:9px 5px 4px;text-align:center;font-size:11px;overflow:hidden}
+.bookCard:active{background:#ddd;border-width:3px}
+.bookCue{width:32px;height:32px;border:1px solid #111;border-radius:3px;margin:0 auto 5px;position:relative}
+.bookCue:after{content:"";position:absolute;left:7px;right:7px;top:8px;bottom:8px;border:1px solid #111}
+.bookCard b{display:block;font-size:11px;line-height:13px;max-height:26px;overflow:hidden}
+.bookCard small{display:block;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}
+.positionReadout{position:absolute;right:20px;bottom:44px;font-size:10px}
+.readerPage{position:absolute;inset:0 0 40px 0;padding:34px 30px 42px;background:#fff;font-family:Georgia,"Times New Roman",serif;font-size:18px;line-height:1.52;overflow:hidden}
+.readerPage .chapter{text-align:center;font-size:16px;font-weight:700;margin:0 0 20px}
+.readerPage .statusbar{position:absolute;bottom:8px;left:20px;right:20px;font-family:Arial,sans-serif;font-size:10px;display:flex;justify-content:space-between;border-top:1px solid #111;padding-top:6px}
+.readerPage.ar{direction:rtl;font-family:"Noto Naskh Arabic","Noto Sans Arabic",serif;font-size:27px;line-height:1.9;text-align:right}
+.readerToolbar{position:absolute;left:18px;right:18px;bottom:55px;height:86px;background:#fff;border:2px solid #111;border-radius:7px;display:grid;grid-template-columns:repeat(4,1fr);z-index:5}
+.readerToolbar button{border:0;border-right:1px solid #aaa;background:#fff;font-weight:700}.readerToolbar button:last-child{border-right:0}.readerToolbar button:active{background:#ddd}
+.gameStatus{position:absolute;top:101px;left:12px;right:12px;text-align:center;font-size:14px}
+.mineBoard{position:absolute;display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(8,1fr)}
+.mineCell{border:1px solid #111;background:#ddd;display:grid;place-items:center;font-size:18px;font-weight:700}
+.mineCell.open{background:#fff}
+.gameBtn{position:absolute;border:2px solid #111;border-radius:8px;background:#fff;font-weight:700;font-size:13px}.gameBtn:active{background:#ddd}
+.g2048{position:absolute;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);gap:4px}
+.tile2048{border:2px solid #111;border-radius:8px;display:grid;place-items:center;font-size:22px;font-weight:700}
+.subHeader{position:absolute;left:0;right:0;top:89px;height:48px;border-bottom:1px solid #111;padding:0 20px;display:flex;align-items:center;font-size:14px;font-weight:600}
+.transferBody{position:absolute;left:20px;right:20px;top:155px;bottom:40px}
+.qr{width:112px;height:112px;border:8px solid #fff;outline:1px solid #111;background:
+linear-gradient(90deg,#111 10px,transparent 10px) 0 0/22px 22px,
+linear-gradient(#111 10px,transparent 10px) 0 0/22px 22px,
+repeating-conic-gradient(#111 0 25%,#fff 0 50%) 7px 7px/14px 14px}
+.transferRow{display:flex;align-items:center;gap:20px;margin:22px 0}
+.transferText{font-size:14px;line-height:1.55}
+.centerText{position:absolute;left:20px;right:20px;top:220px;text-align:center;font-size:17px}
+.keyboard{position:absolute;left:14px;right:14px;bottom:42px;height:312px;border-top:2px solid #111;padding-top:10px;background:#fff}
+.kbField{position:absolute;left:28px;right:28px;top:118px;height:54px;border:2px solid #111;border-radius:6px;padding:14px;font-size:17px;overflow:hidden}
+.keys{display:grid;grid-template-columns:repeat(10,1fr);gap:3px}
+.key{height:44px;border:1px solid #111;border-radius:5px;background:#fff;font-size:13px}.key:active{background:#ddd}
+.key.wide{grid-column:span 2}
+.modal{position:absolute;z-index:10;left:40px;right:40px;top:220px;background:#fff;border:2px solid #111;border-radius:7px;padding:20px;text-align:center}
+.modal .qr{margin:10px auto 18px}
+.small{font-size:11px}.bold{font-weight:700}
+</style>
+</head>
+<body>
+<div id="stage"><div id="device"></div></div>
+<script>
+(function(){
+var D=document.getElementById('device');
+var stack=[];
+var state={page:'home',book:0,readerArabic:false,focus:1500,focusRun:false,focusBreak:false,focusSessions:0,calcHistory:['1250 * 1.15 = 1437.5'],settingsTab:0,wallet:['Boarding Pass','Gym Membership'],mineFlag:false,mineWins:3,mineLosses:1,score:3240,best:9216};
+var books=[
+ {t:'The Psychology of Money',a:'Morgan Housel',p:'72% • 1h 18m',arabic:false},
+ {t:'The Qur’an',a:'Reading copy',p:'38% • 3h 04m',arabic:true},
+ {t:'Atomic Habits',a:'James Clear',p:'84% • 42m',arabic:false},
+ {t:'Deep Work',a:'Cal Newport',p:'55% • 2h 16m',arabic:false},
+ {t:'The Almanack',a:'Naval Ravikant',p:'61% • 1h 41m',arabic:false},
+ {t:'China Journal',a:'Travel notes',p:'46% • 55m',arabic:false},
+ {t:'FP&A Playbook',a:'Reference',p:'17% • 4h 02m',arabic:false},
+ {t:'Designing Interfaces',a:'Reference',p:'33% • 5h 11m',arabic:false},
+ {t:'Notes',a:'Personal',p:'12% • 28m',arabic:false}
+];
+function scale(){
+ var stage=document.getElementById('stage'),dev=document.getElementById('device');
+ var s=Math.min(window.innerWidth/480,1);
+ stage.style.width=(480*s)+'px';
+ stage.style.height=(800*s)+'px';
+ dev.style.transform='scale('+s+')';
+}
+window.addEventListener('resize',scale);scale();
+function status(){
+ return '<div class="status"><span class="time">07:10</span><span class="battery">82% <span class="bat"><i></i></span></span></div>';
+}
+function header(title,right){
+ return '<div class="header">'+status()+'<div class="title">'+esc(title||'')+'</div>'+(right?'<div class="right">'+esc(right)+'</div>':'')+'</div>';
+}
+function homeHeader(){return '<div class="homeHeader">'+status()+'</div>'}
+function hints(a,b,c,d){
+ return '<div class="hints"><button onclick="X.back()">'+esc(a||'')+'</button><button onclick="X.confirm()">'+esc(b||'')+'</button><button onclick="X.up()">'+esc(c||'')+'</button><button onclick="X.down()">'+esc(d||'')+'</button></div>';
+}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function nav(p,data){stack.push({page:state.page,book:state.book,readerArabic:state.readerArabic});state.page=p;if(data)Object.assign(state,data);render()}
+function back(){if(stack.length){var p=stack.pop();state.page=p.page;state.book=p.book;state.readerArabic=p.readerArabic;render()}else{state.page='home';render()}}
+function icon(n){var m={folder:'▱',library:'▦',stats:'▥',blocks:'▦',transfer:'⇄',settings:'⚙',book:'▤',bookmark:'▮',recent:'◷',text:'≡'};return m[n]||'□'}
+function menuScreen(title,items){
+ var top=105,s='<div>'+header(title)+'</div><div class="menu" style="top:'+top+'px;bottom:40px">';
+ items.forEach(function(it,i){s+='<div class="menuRow" style="top:'+(i*50)+'px" onclick="'+it.go+'"><span class="mi">'+icon(it.ic)+'</span><span>'+esc(it.t)+'</span></div>'});
+ s+='</div>'+hints('BACK','SELECT','↑','↓');D.innerHTML=s;
+}
+function listScreen(title,rows){
+ var s=header(title)+'<div class="listArea">';
+ rows.forEach(function(r){s+='<div class="listRow" onclick="'+(r.go||'')+'"><span>'+esc(r.t)+'</span>'+(r.v?'<span class="value">'+esc(r.v)+'</span>':'')+'</div>'});
+ s+='</div>'+hints('BACK','SELECT','↑','↓');D.innerHTML=s;
+}
+function coverMarkup(b,x,y,w,h,focus){
+ return '<div class="cover '+(focus?'focus':'')+'" style="left:'+x+'px;top:'+y+'px;width:'+w+'px;height:'+h+'px"><div class="topIcon">▤</div><div class="bottomFill"><span>'+esc(b.t)+'</span></div></div>';
+}
+function home(){
+ var b=books[state.book],n=books.length,l=(state.book+n-1)%n,r=(state.book+1)%n;
+ var s=homeHeader()+'<div class="homeCarousel" onclick="void(0)"><div class="homeBookTitle">'+esc(b.t)+'</div>';
+ s+=coverMarkup(books[l],67,79,92,146,false);
+ s+=coverMarkup(b,165,44,150,208,true);
+ s+=coverMarkup(books[r],321,79,92,146,false);
+ s+='<div style="position:absolute;left:0;top:44px;width:160px;height:208px" onclick="X.rotate(-1)"></div>';
+ s+='<div style="position:absolute;left:160px;top:44px;width:160px;height:208px" onclick="X.openBook()"></div>';
+ s+='<div style="position:absolute;right:0;top:44px;width:160px;height:208px" onclick="X.rotate(1)"></div>';
+ s+='<div class="homeProgress">'+esc(b.p)+'</div><div class="dots">';
+ for(var i=0;i<n;i++)s+='<i class="dot '+(i===state.book?'on':'')+'"></i>';
+ s+='</div></div>';
+ var items=[
+  ['Browse Files','folder',"X.nav('files')"],['Library','library',"X.nav('library')"],['Reading Stats','stats',"X.nav('stats')"],
+  ['X4 Pro+','blocks',"X.nav('x4')"],['File Transfer','transfer',"X.nav('filetransfer')"],['Settings','settings',"X.nav('settings')"]
+ ];
+ s+='<div class="menu" style="top:342px;bottom:40px">';
+ items.forEach(function(it,i){s+='<div class="menuRow" style="top:'+(i*50)+'px" onclick="'+it[2]+'"><span class="mi">'+icon(it[1])+'</span><span>'+it[0]+'</span></div>'});
+ s+='</div>'+hints('RESUME','SELECT','↑','↓');D.innerHTML=s;
+}
+function files(path){
+ var title=path||'Files';
+ var rows=path==='/Books/Quran'?[
+  {t:'Al-Quran.epub',v:'EPUB',go:"X.openQuranBook()"},
+  {t:'Quran Notes.txt',v:'TXT',go:"X.openQuranBook()"},
+  {t:'..',v:'',go:"X.back()"}
+ ]:[
+  {t:'Books',v:'',go:"X.nav('books')"},
+  {t:'Documents',v:'',go:"X.toast('Documents')"},
+  {t:'Read',v:'',go:"X.toast('Read')"},
+  {t:'Screenshots',v:'',go:"X.toast('Screenshots')"}
+ ];
+ listScreen(title,rows);
+}
+function booksFolder(){
+ listScreen('/Books',[
+  {t:'Quran',go:"X.nav('quranfiles')"},
+  {t:'The Psychology of Money.epub',v:'EPUB',go:"X.selectBook(0)"},
+  {t:'Atomic Habits.epub',v:'EPUB',go:"X.selectBook(2)"},
+  {t:'Deep Work.epub',v:'EPUB',go:"X.selectBook(3)"}
+ ]);
+}
+function library(){
+ var s=header('Library')+'<div class="tabs" style="position:absolute;left:0;right:0;top:89px"><button class="tab on">Title</button><button class="tab">Author</button><button class="tab">Recent</button><button class="tab" style="margin-left:auto">⌕</button></div>';
+ s+='<div class="libraryBody"><div class="libraryGrid">';
+ books.forEach(function(b,i){s+='<div class="bookCard" onclick="X.selectBook('+i+')"><div class="bookCue"></div><b>'+esc(b.t)+'</b><small>'+esc(b.a)+'</small></div>'});
+ s+='</div></div><div class="positionReadout">'+(state.book+1)+'/'+books.length+' books</div>'+hints('BACK','OPEN','↑','↓');D.innerHTML=s;
+}
+function x4(){
+ menuScreen('X4 Pro+',
+  [{t:'Library',ic:'book',go:"X.nav('library')"},{t:"Qur'an Reader",ic:'book',go:"X.nav('quranfiles')"},{t:'Study Cards',ic:'bookmark',go:"X.nav('study')"},
+   {t:'Prayer',ic:'recent',go:"X.nav('prayer')"},{t:'Focus / Pomodoro',ic:'recent',go:"X.nav('focus')"},{t:'Games',ic:'blocks',go:"X.nav('games')"},
+   {t:'Organizer',ic:'recent',go:"X.nav('organizer')"},{t:'Utilities',ic:'blocks',go:"X.nav('utilities')"},{t:'Phone / PC Transfer',ic:'blocks',go:"X.nav('transfer')"}]);
+}
+function organizer(){menuScreen('Organizer',[
+ {t:'Calendar',ic:'recent',go:"X.nav('calendar')"},{t:'Tasks',ic:'bookmark',go:"X.nav('tasks')"},{t:'Notes',ic:'text',go:"X.nav('notes')"},{t:'Cards',ic:'blocks',go:"X.nav('cards')"},{t:'Clippings',ic:'text',go:"X.nav('clippings')"}]);}
+function utilities(){menuScreen('Utilities',[
+ {t:'QR Wallet',ic:'blocks',go:"X.nav('wallet')"},{t:'Calculator',ic:'text',go:"X.nav('calculator')"},{t:'Saved Ayat / Notes',ic:'bookmark',go:"X.nav('qurannotes')"}]);}
+function games(){menuScreen('Games',[
+ {t:'Minesweeper',ic:'blocks',go:"X.nav('mines')"},{t:'2048',ic:'blocks',go:"X.nav('g2048')"}]);}
+function simple(mode){
+ var map={
+ calendar:['Calendar',[{t:'27 Sep  •  Working capital review'},{t:'30 Sep  •  Month end'},{t:'Add event',go:"X.edit('New event','calendar')"}]],
+ tasks:['Tasks',[{t:'[ ] Complete fixed asset review'},{t:'[x] EBIT submission'},{t:'Add task',go:"X.edit('New task','tasks')"}]],
+ notes:['Notes',[{t:'Inventory follow-up'},{t:'Working capital points'},{t:'Add note',go:"X.edit('New note','notes')"}]],
+ cards:['Cards',[{t:'Month-end checklist'},{t:'Travel checklist'},{t:'Add card',go:"X.edit('New card','cards')"}]],
+ study:['Study Cards',[{t:'Q: What is EBIT?',go:"X.reveal('A: Earnings before interest and tax')"},{t:'Q: Working capital formula',go:"X.reveal('A: Inventory + receivables - payables')"},{t:'Add card: Question :: Answer',go:"X.edit('Question :: Answer','study')"}]],
+ clippings:['Clippings',[{t:'The Psychology of Money — behavior matters more than knowledge',go:"X.nav('study')"},{t:'Add clipping',go:"X.edit('New clipping','clippings')"}]],
+ qurannotes:["Qur'an",[{t:'Al-Fatihah 1:1 — note'},{t:'Al-Baqarah 2:286 — saved ayah'},{t:'Add ayah / note',go:"X.edit('Ayah / note','qurannotes')"}]]
+ };
+ var d=map[mode];listScreen(d[0],d[1]);
+}
+function prayer(){
+ listScreen('Prayer',[
+  {t:'Location -26.204, 28.047  UTC+2.0'},
+  {t:'Fajr',v:'04:42'},
+  {t:'Dhuhr',v:'12:03'},
+  {t:'Asr',v:'15:28  (1x)'},
+  {t:'Maghrib',v:'18:07'},
+  {t:'Isha',v:'19:16'},
+  {t:'Edit location / calculation method',go:"X.edit('lat,lon,UTCmin,FajrAngle,IshaAngle,AsrShadow(1/2)','prayer')"}
+ ]);
+}
+var ftimer=null;
+function focus(){
+ var m=String(Math.floor(state.focus/60)).padStart(2,'0'),s=String(state.focus%60).padStart(2,'0');
+ listScreen('Focus / Pomodoro',[
+  {t:(state.focusBreak?'Break ':'Focus ')+m+':'+s},
+  {t:state.focusRun?'Pause':'Start / Resume',go:"X.focusToggle()"},
+  {t:'Start 25 min Focus',go:"X.focusStart(1500,false)"},
+  {t:'Start 5 min Break',go:"X.focusStart(300,true)"},
+  {t:'Reset to 25:00',go:"X.focusReset()"},
+  {t:'Completed focus sessions: '+state.focusSessions}
+ ]);
+}
+function wallet(){
+ var rows=state.wallet.map(function(x){return {t:x,go:"X.showQr('"+x.replace(/'/g,"\\'")+"')"}});
+ rows.push({t:'Add QR / pass payload',go:"X.edit('QR / pass payload','wallet')"});listScreen('QR Wallet',rows);
+}
+function calculator(){
+ var rows=state.calcHistory.map(function(x){return {t:x}});
+ rows.push({t:'Enter calculation',go:"X.edit('Calculation','calc')"});listScreen('Calculator',rows);
+}
+function reader(){
+ var b=books[state.book];
+ var s='<div class="readerPage '+(state.readerArabic?'ar':'')+'" onclick="X.readerMenu()">';
+ if(state.readerArabic){
+  s+='<div class="chapter">سُورَةُ ٱلْفَاتِحَةِ</div>';
+  s+='<p>بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</p><p>ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَٰلَمِينَ ۝ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ ۝ مَٰلِكِ يَوْمِ ٱلدِّينِ ۝ إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ۝ ٱهْدِنَا ٱلصِّرَٰطَ ٱلْمُسْتَقِيمَ</p>';
+ }else{
+  s+='<div class="chapter">Chapter 7</div><p>Good decisions are rarely about knowing every possible outcome. They are about building enough margin for error that the plan can survive what you did not predict.</p><p>That principle becomes more useful as the stakes rise. A little room to adapt can matter more than squeezing the last percentage point from a perfect-looking plan.</p><p>The best systems are the ones you can keep using when conditions change.</p>';
+ }
+ s+='<div class="statusbar"><span>'+esc(b.t)+'</span><span>72% &nbsp; 118 / 164</span></div></div>'+hints('BACK','MENU','‹','›');
+ D.innerHTML=s;
+}
+function readerMenu(){
+ if(document.getElementById('readerTools'))return;
+ var t=document.createElement('div');t.id='readerTools';t.className='readerToolbar';
+ t.innerHTML='<button onclick="X.toast(\\'Contents\\')">Contents</button><button onclick="X.toast(\\'Text\\')">Text</button><button onclick="X.nav(\\'bookstats\\')">Stats</button><button onclick="X.toast(\\'More\\')">More</button>';
+ D.appendChild(t);
+}
+function stats(){
+ listScreen('Reading Stats',[
+  {t:'Current streak',v:'14 days'},{t:'Today',v:'42 min'},{t:'Pages turned',v:'37'},{t:'Average pace',v:'286 WPM'},{t:'Books completed',v:'12'},{t:'Reading rhythm',v:'13 weeks'}
+ ]);
+}
+function bookstats(){
+ listScreen('This Book',[
+  {t:'Progress',v:'72%'},{t:'Reading time',v:'4h 18m'},{t:'Estimated remaining',v:'1h 18m'},{t:'Sessions',v:'9'},{t:'Pages turned',v:'164'}
+ ]);
+}
+function settings(){
+ var names=['Display','Reader','Controls','System'];
+ var content=[
+  [['UI Theme','X4 Pro+ Carousel'],['Frontlight','62%'],['Dark mode','Off'],['Refresh frequency','5 pages'],['Header clock','On']],
+  [['Text Settings',''],['Manage Fonts',''],['Font size','14'],['Line spacing','100%'],['Status Bar','Customise']],
+  [['Page buttons','Default'],['Home button','Configure'],['Long press','Skip chapter'],['Touch gestures','On']],
+  [['Clock',''],['KOReader Sync',''],['OPDS Servers',''],['Clear Reading Cache',''],['Rebuild Library Index',''],['Check Updates',''],['About',''],['Language','English']]
+ ];
+ var s=header('Settings','X4 Pro+')+'<div class="tabs" style="position:absolute;left:0;right:0;top:89px">';
+ names.forEach(function(n,i){s+='<button class="tab '+(state.settingsTab===i?'on':'')+'" onclick="X.settingTab('+i+')">'+n+'</button>'});
+ s+='</div><div class="listArea" style="top:145px">';
+ content[state.settingsTab].forEach(function(r){s+='<div class="listRow"><span>'+esc(r[0])+'</span><span class="value">'+esc(r[1])+'</span></div>'});
+ s+='</div>'+hints('BACK',names[(state.settingsTab+1)%4].toUpperCase(),'↑','↓');D.innerHTML=s;
+}
+function transfer(){
+ var s=header('Hotspot Mode')+'<div class="subHeader">XPoint-Reader</div><div class="transferBody">';
+ s+='<div class="bold">Connect phone to Wi-Fi</div><div class="transferRow"><div class="qr"></div><div class="transferText"><b>XPoint-Reader</b><br>Open network</div></div>';
+ s+='<div class="bold">Open upload page</div><div class="transferRow"><div class="qr"></div><div class="transferText"><b>http://xpoint.local/</b><br><span class="small">or http://192.168.4.1/</span></div></div></div>'+hints('EXIT','','','');D.innerHTML=s;
+}
+function filetransfer(){menuScreen('File Transfer',[
+ {t:'Join Network',ic:'transfer',go:"X.toast('Wi-Fi selection')"},{t:'Connect to Calibre',ic:'book',go:"X.toast('Calibre')"},{t:'Create Hotspot',ic:'transfer',go:"X.nav('transfer')"},{t:'USB Drive',ic:'blocks',go:"X.toast('USB Drive')"}]);}
+var mine=[];
+function mineInit(){
+ mine=[];for(var i=0;i<48;i++)mine.push({open:false,flag:false,n:0,m:false});
+ [5,11,20,26,35,43,45,47].forEach(function(i){mine[i].m=true});
+ for(var j=0;j<48;j++){var x=j%6,y=Math.floor(j/6),n=0;for(var yy=Math.max(0,y-1);yy<=Math.min(7,y+1);yy++)for(var xx=Math.max(0,x-1);xx<=Math.min(5,x+1);xx++){if(mine[yy*6+xx].m)n++}mine[j].n=n}
+}
+mineInit();
+function mines(){
+ var head=89,controlTop=702,boardTop=137,cell=65,boardW=390,left=45;
+ var s=header('Minesweeper')+'<div class="gameStatus">'+(state.mineFlag?'Flag mode':'Dig mode')+'   Mines 8   W '+state.mineWins+' / L '+state.mineLosses+'</div>';
+ s+='<div class="mineBoard" style="left:'+left+'px;top:'+boardTop+'px;width:'+boardW+'px;height:'+(cell*8)+'px">';
+ mine.forEach(function(c,i){var tx='';if(c.flag)tx='F';else if(c.open)tx=c.m?'*':(c.n||'');s+='<div class="mineCell '+(c.open?'open':'')+'" onclick="X.mineTap('+i+')">'+tx+'</div>'});s+='</div>';
+ s+='<button class="gameBtn" style="left:8px;top:'+controlTop+'px;width:228px;height:58px" onclick="X.mineNew()">NEW GAME</button>';
+ s+='<button class="gameBtn" style="left:244px;top:'+controlTop+'px;width:228px;height:58px" onclick="X.mineMode()">MODE: '+(state.mineFlag?'FLAG':'DIG')+'</button>'+hints('BACK','','','');D.innerHTML=s;
+}
+var board=[2,4,8,16,0,2,4,8,0,0,16,32,2,4,128,256];
+function g2048(){
+ var s=header('2048')+'<div class="gameStatus"><b>Score '+state.score+'   Best '+state.best+'</b><div style="margin-top:16px;font-weight:400">Swipe the board to move tiles</div></div>';
+ s+='<div id="b2048" class="g2048" style="left:44px;top:181px;width:392px;height:392px">';
+ board.forEach(function(n){s+='<div class="tile2048">'+(n||'')+'</div>'});s+='</div>';
+ s+='<button class="gameBtn" style="left:28px;top:694px;width:424px;height:54px" onclick="X.new2048()">NEW GAME</button>'+hints('BACK','','','');D.innerHTML=s;bindSwipe();
+}
+function bindSwipe(){
+ var e=document.getElementById('b2048');if(!e)return;var sx=0,sy=0;
+ e.ontouchstart=function(ev){sx=ev.touches[0].clientX;sy=ev.touches[0].clientY};
+ e.ontouchend=function(ev){var dx=ev.changedTouches[0].clientX-sx,dy=ev.changedTouches[0].clientY-sy;if(Math.abs(dx)+Math.abs(dy)>25){state.score+=16;board.unshift(board.pop());render()}};
+}
+function keyboard(title,returnPage){
+ var letters='QWERTYUIOPASDFGHJKLZXCVBNM'.split('');
+ var s=header(title)+'<input id="kbinput" class="kbField" autofocus><div class="keyboard"><div class="keys">';
+ letters.forEach(function(k){s+='<button class="key" onclick="X.kb(\\''+k.toLowerCase()+'\\')">'+k+'</button>'});
+ s+='<button class="key wide" onclick="X.kb(\\' \\')">SPACE</button><button class="key wide" onclick="X.kbBack()">⌫</button><button class="key wide" onclick="X.kbDone()">DONE</button></div></div>'+hints('CANCEL','DONE','','');
+ D.innerHTML=s;state.returnPage=returnPage||'x4';
+ setTimeout(function(){var i=document.getElementById('kbinput');if(i)i.focus()},50);
+}
+function reveal(msg){var m=document.createElement('div');m.className='modal';m.id='modal';m.innerHTML='<div style="font-size:18px;line-height:1.5">'+esc(msg)+'</div><button class="gameBtn" style="position:static;width:100%;height:46px;margin-top:18px" onclick="document.getElementById(\\'modal\\').remove()">CLOSE</button>';D.appendChild(m)}
+function showQr(name){var m=document.createElement('div');m.className='modal';m.id='modal';m.innerHTML='<b>'+esc(name)+'</b><div class="qr"></div><button class="gameBtn" style="position:static;width:100%;height:46px" onclick="document.getElementById(\\'modal\\').remove()">BACK</button>';D.appendChild(m)}
+function toast(t){var m=document.createElement('div');m.className='modal';m.id='modal';m.innerHTML='<div style="font-size:17px">'+esc(t)+'</div>';D.appendChild(m);setTimeout(function(){var e=document.getElementById('modal');if(e)e.remove()},800)}
+function render(){
+ var p=state.page;
+ if(p==='home')home();else if(p==='files')files('/');else if(p==='books')booksFolder();else if(p==='quranfiles')files('/Books/Quran');else if(p==='library')library();
+ else if(p==='x4')x4();else if(p==='organizer')organizer();else if(p==='utilities')utilities();else if(p==='games')games();
+ else if(['calendar','tasks','notes','cards','study','clippings','qurannotes'].indexOf(p)>=0)simple(p);
+ else if(p==='prayer')prayer();else if(p==='focus')focus();else if(p==='wallet')wallet();else if(p==='calculator')calculator();
+ else if(p==='reader')reader();else if(p==='stats')stats();else if(p==='bookstats')bookstats();else if(p==='settings')settings();
+ else if(p==='transfer')transfer();else if(p==='filetransfer')filetransfer();else if(p==='mines')mines();else if(p==='g2048')g2048();
+ else if(p==='keyboard')keyboard(state.kbTitle,state.returnPage);else home();
+}
+window.X={
+ nav:nav,back:back,confirm:function(){},up:function(){},down:function(){},
+ rotate:function(d){state.book=(state.book+d+books.length)%books.length;render()},
+ openBook:function(){state.readerArabic=books[state.book].arabic;nav('reader')},
+ selectBook:function(i){state.book=i;state.readerArabic=books[i].arabic;nav('reader')},
+ openQuranBook:function(){state.book=1;state.readerArabic=true;nav('reader')},
+ readerMenu:readerMenu,
+ reveal:reveal,showQr:showQr,toast:toast,
+ settingTab:function(i){state.settingsTab=i;render()},
+ focusToggle:function(){state.focusRun=!state.focusRun;if(state.focusRun)startTimer();render()},
+ focusStart:function(sec,br){state.focus=sec;state.focusBreak=br;state.focusRun=true;startTimer();render()},
+ focusReset:function(){state.focus=1500;state.focusBreak=false;state.focusRun=false;if(ftimer)clearInterval(ftimer);render()},
+ edit:function(title,ret){state.kbTitle=title;state.returnPage=ret;nav('keyboard')},
+ kb:function(c){var e=document.getElementById('kbinput');if(e){e.value+=c;e.focus()}},
+ kbBack:function(){var e=document.getElementById('kbinput');if(e){e.value=e.value.slice(0,-1);e.focus()}},
+ kbDone:function(){var e=document.getElementById('kbinput'),v=e?e.value:'';if(state.returnPage==='calc'&&v){try{var safe=v.replace(/[^0-9+\-*/(). ]/g,'');var ans=Function('"use strict";return ('+safe+')')();state.calcHistory.unshift(v+' = '+ans)}catch(err){state.calcHistory.unshift(v+' = Error')}state.returnPage='calculator'}state.page=state.returnPage||'x4';if(stack.length)stack.pop();render()},
+ mineTap:function(i){if(state.mineFlag){mine[i].flag=!mine[i].flag}else{mine[i].open=true;if(mine[i].m){state.mineLosses++;for(var j=0;j<mine.length;j++)if(mine[j].m)mine[j].open=true}}render()},
+ mineMode:function(){state.mineFlag=!state.mineFlag;render()},
+ mineNew:function(){mineInit();render()},
+ new2048:function(){board=[2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2];state.score=0;render()}
+};
+function startTimer(){
+ if(ftimer)clearInterval(ftimer);
+ ftimer=setInterval(function(){if(!state.focusRun)return;if(state.focus>0)state.focus--;else{if(!state.focusBreak)state.focusSessions++;state.focusBreak=!state.focusBreak;state.focus=state.focusBreak?300:1500;state.focusRun=false;clearInterval(ftimer)}if(state.page==='focus')render()},1000);
+}
+render();
+})();
+</script>
+</body>
+</html>
