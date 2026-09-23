@@ -1,7 +1,7 @@
 name: X4 Pro+ Build
 on:
   push:
-    branches: [x4-pro-plus, x4-pro-plus-build29]
+    branches: [x4-pro-plus, x4-pro-plus-build29, x4-pro-plus-build30]
   workflow_dispatch:
 concurrency:
   group: x4-pro-plus-${{ github.ref }}
@@ -27,6 +27,11 @@ jobs:
           enable-cache: false
       - name: X4 Pro+ source smoke checks
         run: python scripts/x4pro_plus_smoke.py
+      - name: Validate release tooling
+        run: |
+          python -m py_compile scripts/x4pro_plus_preflash.py scripts/x4pro_plus_release_audit.py
+          python scripts/x4pro_plus_preflash.py --help >/dev/null
+          python scripts/x4pro_plus_release_audit.py --help >/dev/null
       - name: Install PlatformIO Core
         run: |
           uv pip install --system -U https://github.com/pioarduino/platformio-core/archive/refs/tags/v6.2.0.zip
@@ -38,23 +43,42 @@ jobs:
           ctest --test-dir test/build --output-on-failure
       - name: Build X4 Pro+
         run: pio run -e x4pro -j1
-      - name: Package exact flash build
+      - name: Preserve exact firmware and record memory budget
         run: |
           mkdir -p dist
           cp .pio/build/x4pro/firmware.bin dist/x4-pro-plus-firmware.bin
+          pio run -e x4pro -j1 -t size | tee dist/MEMORY_REPORT.txt
+      - name: Package exact flash build
+        run: |
+          mkdir -p dist
           cp .pio/build/x4pro/bootloader.bin dist/
           cp .pio/build/x4pro/partitions.bin dist/
           cp .pio/build/x4pro/firmware.elf dist/
           cp .pio/build/x4pro/firmware.map dist/
-          (cd dist && sha256sum bootloader.bin firmware.elf firmware.map partitions.bin x4-pro-plus-firmware.bin > SHA256SUMS.txt)
+          cp docs/X4_PRO_PLUS_RELEASE_CHECKLIST.md dist/
+          cp docs/X4_PRO_PLUS_FACTORY_RECOVERY.md dist/
+          cp scripts/x4pro_plus_preflash.py dist/
+          cp scripts/x4pro_plus_release_audit.py dist/
+          cp tools/x4pro_plus_phone_simulator.html dist/
+          python scripts/x4pro_plus_release_audit.py --root . --firmware dist/x4-pro-plus-firmware.bin --output dist/RELEASE_STATUS.txt
+          (cd dist && sha256sum bootloader.bin firmware.elf firmware.map partitions.bin x4-pro-plus-firmware.bin X4_PRO_PLUS_RELEASE_CHECKLIST.md X4_PRO_PLUS_FACTORY_RECOVERY.md x4pro_plus_preflash.py x4pro_plus_release_audit.py x4pro_plus_phone_simulator.html MEMORY_REPORT.txt RELEASE_STATUS.txt > SHA256SUMS.txt)
           {
             echo "X4 Pro+ build manifest"
             echo "commit=${GITHUB_SHA}"
             echo "target=x4pro"
             echo "board=ESP32-S3 XTEINK X4 Pro"
             echo "artifact=x4-pro-plus-x4pro"
+            echo "app_flash_offset=0x00010000"
+            echo "factory_restore_offset=0x00000000"
             echo "factory_backup_required=yes"
+            echo "factory_backup_required_bytes=16777216"
+            echo "app_partition_bytes=6553600"
+            echo "firmware_bytes=$(stat -c%s dist/x4-pro-plus-firmware.bin)"
             echo "physical_hardware_tested=no"
+            echo "pdf_stock_parity_verified=no"
+            echo "forced_rom_recovery_verified=no"
+            echo "software_release_audit=PASS"
+            echo "safe_to_flash=no"
             echo ""
             cat dist/SHA256SUMS.txt
           } > dist/BUILD_MANIFEST.txt
@@ -65,6 +89,22 @@ jobs:
           test -s dist/partitions.bin
           test -s dist/firmware.elf
           test -s dist/firmware.map
+          test -s dist/X4_PRO_PLUS_RELEASE_CHECKLIST.md
+          test -s dist/X4_PRO_PLUS_FACTORY_RECOVERY.md
+          test -s dist/x4pro_plus_preflash.py
+          test -s dist/x4pro_plus_release_audit.py
+          test -s dist/x4pro_plus_phone_simulator.html
+          test -s dist/MEMORY_REPORT.txt
+          test -s dist/RELEASE_STATUS.txt
+          test "$(stat -c%s dist/x4-pro-plus-firmware.bin)" -le 6553600
+          grep -q '^safe_to_flash=no$' dist/BUILD_MANIFEST.txt
+          grep -q '^pdf_stock_parity_verified=no$' dist/BUILD_MANIFEST.txt
+          grep -q '^forced_rom_recovery_verified=no$' dist/BUILD_MANIFEST.txt
+          grep -q '^software_release_audit=PASS$' dist/BUILD_MANIFEST.txt
+          grep -q '^software_release_gates=PASS$' dist/RELEASE_STATUS.txt
+          grep -q '^safe_to_flash=no$' dist/RELEASE_STATUS.txt
+          python dist/x4pro_plus_preflash.py --help >/dev/null
+          python dist/x4pro_plus_release_audit.py --help >/dev/null
           (cd dist && sha256sum -c SHA256SUMS.txt)
       - uses: actions/upload-artifact@v7
         with:

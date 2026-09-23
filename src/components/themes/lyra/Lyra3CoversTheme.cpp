@@ -33,6 +33,7 @@ constexpr int kCentreOutline = 3;
 constexpr int kMenuIconSize = 32;
 constexpr int kMenuSidePadding = 18;
 constexpr int kMenuTextGap = 10;
+constexpr int kCarouselOuterMargin = 34;
 
 const uint8_t* iconForName(UIIcon icon) {
   switch (icon) {
@@ -52,8 +53,13 @@ const uint8_t* iconForName(UIIcon icon) {
 void drawFallbackCover(GfxRenderer& renderer, int x, int y, int w, int h, bool selected) {
   renderer.fillRoundedRect(x, y, w, h, kCornerRadius, Color::White);
   renderer.drawRoundedRect(x, y, w, h, selected ? kCentreOutline : 1, kCornerRadius, true);
-  renderer.fillRoundedRect(x, y + h / 3, w, (h * 2) / 3, kCornerRadius, false, false, true, true, Color::Black);
-  renderer.drawIcon(CoverIcon, x + (w - 32) / 2, y + 20, 32);
+  // A restrained editorial fallback rather than a large generic black block:
+  // the narrow spine gives the card a physical-book cue while leaving useful
+  // white space around the cover glyph.
+  renderer.fillRect(x + 1, y + 1, std::max(3, w / 18), h - 2, true);
+  renderer.drawIcon(CoverIcon, x + (w - 32) / 2, y + std::max(18, h / 5), 32);
+  const int ruleY = y + (h * 2) / 3;
+  renderer.fillRect(x + w / 5, ruleY, (w * 3) / 5, 1, true);
 }
 
 bool drawBookCover(GfxRenderer& renderer, const RecentBook& book, int x, int y, int w, int h, bool selected) {
@@ -94,7 +100,11 @@ void Lyra3CoversTheme::drawButtonMenu(GfxRenderer& renderer, Rect rect, int butt
   for (int i = 0; i < buttonCount; ++i) {
     const Rect tile{rect.x + kMenuSidePadding, rect.y + i * (rowH + gap), tileW, rowH};
     const bool selected = selectedIndex == i;
-    if (selected) renderer.fillRoundedRect(tile.x, tile.y, tile.width, tile.height, kCornerRadius, Color::LightGray);
+
+    // Lyra deliberately avoids the stock "large grey rounded button" look.
+    // Selection is a slim book-spine marker plus stronger type; separators keep
+    // the launcher readable on e-ink without filling large regions grey.
+    if (selected) renderer.fillRect(tile.x, tile.y + 5, 4, rowH - 10, true);
 
     int textX = tile.x + 12;
     if (rowIcon) {
@@ -107,9 +117,14 @@ void Lyra3CoversTheme::drawButtonMenu(GfxRenderer& renderer, Rect rect, int butt
     }
 
     const std::string label = buttonLabel(i);
+    const auto family = selected ? EpdFontFamily::BOLD : EpdFontFamily::REGULAR;
     const int lineH = renderer.getLineHeight(UI_12_FONT_ID);
     const int textY = tile.y + (rowH - lineH) / 2;
-    renderer.drawText(UI_12_FONT_ID, textX, textY, label.c_str(), true);
+    renderer.drawText(UI_12_FONT_ID, textX, textY, label.c_str(), true, family);
+
+    // Keep each launcher row visually anchored. The last few pixels are left
+    // clear so the rule never reads as a touch target.
+    if (i + 1 < buttonCount) renderer.fillRect(tile.x + 8, tile.y + rowH - 1, tile.width - 16, 1, true);
   }
 }
 
@@ -134,11 +149,11 @@ void Lyra3CoversTheme::drawRecentBookCover(GfxRenderer& renderer, Rect rect,
   if (!coverRendered) {
     renderer.fillRect(rect.x, rect.y, rect.width, rect.height, false);
 
-    const int titleMaxW = std::max(100, rect.width - 80);
+    const int titleMaxW = std::max(100, rect.width - 96);
     const auto titleLines = renderer.wrappedText(UI_12_FONT_ID, recentBooks[centre].title.c_str(), titleMaxW, 2,
                                                  EpdFontFamily::BOLD);
     const int titleLineH = renderer.getLineHeight(UI_12_FONT_ID);
-    int titleY = rect.y + 2;
+    int titleY = rect.y + 1;
     for (const auto& line : titleLines) {
       const int lineW = renderer.getTextWidth(UI_12_FONT_ID, line.c_str(), EpdFontFamily::BOLD);
       renderer.drawText(UI_12_FONT_ID, (renderer.getScreenWidth() - lineW) / 2, titleY, line.c_str(), true,
@@ -149,9 +164,13 @@ void Lyra3CoversTheme::drawRecentBookCover(GfxRenderer& renderer, Rect rect,
     const int centreX = (renderer.getScreenWidth() - kCentreCoverW) / 2;
     const int centreY = rect.y + 44;
     const int sideY = centreY + (kCentreCoverH - kSideCoverH) / 2 + 4;
-    const int leftX = std::max(10, centreX - kSideCoverW + 10);
-    const int rightX = std::min(renderer.getScreenWidth() - kSideCoverW - 10,
-                                centreX + kCentreCoverW - 10);
+
+    // Keep side covers completely inside the outer thirds used by HomeActivity
+    // touch routing. The old 83/305px positions straddled the 160/320px zone
+    // boundaries, which made a visually-right-cover tap sometimes target the
+    // centre zone and feel glitchy. These positions are symmetric and stable.
+    const int leftX = rect.x + kCarouselOuterMargin;
+    const int rightX = rect.x + rect.width - kCarouselOuterMargin - kSideCoverW;
 
     if (count > 1) {
       const int left = (centre + count - 1) % count;
@@ -168,20 +187,23 @@ void Lyra3CoversTheme::drawRecentBookCover(GfxRenderer& renderer, Rect rect,
     const std::string_view progress =
         centre < static_cast<int>(recentBookProgressLines.size()) ? recentBookProgressLines[centre] : kEmpty;
     if (!progress.empty() && progress != "-") {
-      const int progressW = renderer.getTextWidth(UI_10_FONT_ID, progress.data());
+      const int progressW = renderer.getTextWidth(UI_10_FONT_ID, progress.data(), EpdFontFamily::BOLD);
       renderer.drawText(UI_10_FONT_ID, (renderer.getScreenWidth() - progressW) / 2,
-                        centreY + kCentreCoverH + 7, progress.data(), true);
+                        centreY + kCentreCoverH + 7, progress.data(), true, EpdFontFamily::BOLD);
     }
 
-    // Small page dots make it obvious that the covers are a circular carousel.
-    constexpr int dot = 5;
-    constexpr int gap = 5;
+    // Page dots are capped to the recent-book carousel size and positioned as a
+    // quiet footer rather than competing with the cover art.
+    constexpr int dot = 4;
+    constexpr int gap = 6;
     const int dotsW = count * dot + (count - 1) * gap;
     int dotX = (renderer.getScreenWidth() - dotsW) / 2;
-    const int dotsY = rect.y + rect.height - 9;
+    const int dotsY = rect.y + rect.height - 8;
     for (int i = 0; i < count; ++i) {
-      if (i == centre) renderer.fillRect(dotX, dotsY, dot, dot, true);
-      else renderer.drawRect(dotX, dotsY, dot, dot, true);
+      if (i == centre)
+        renderer.fillRect(dotX, dotsY, dot, dot, true);
+      else
+        renderer.drawRect(dotX, dotsY, dot, dot, true);
       dotX += dot + gap;
     }
 
