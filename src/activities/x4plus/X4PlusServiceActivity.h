@@ -1,10 +1,12 @@
 #pragma once
 
 #include <array>
+#include <functional>
 #include <string>
 #include <vector>
 
 #include "activities/UiListActivity.h"
+#include "activities/util/KeyboardEntryActivity.h"
 
 class X4PlusServiceActivity final : public UiListActivity {
  public:
