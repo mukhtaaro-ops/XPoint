@@ -1,11 +1,15 @@
 #include "X4PlusMenuActivity.h"
 
 #include <I18n.h>
+#include <Memory.h>
+
 #include <algorithm>
 #include <climits>
 #include <string>
 
 #include "activities/ActivityManager.h"
+#include "activities/x4plus/X4PlusQuran13Activity.h"
+#include "activities/x4plus/X4PlusServiceActivity.h"
 #include "components/UITheme.h"
 
 X4PlusMenuActivity::X4PlusMenuActivity(GfxRenderer& renderer, MappedInputManager& mappedInput)
@@ -14,8 +18,10 @@ X4PlusMenuActivity::X4PlusMenuActivity(GfxRenderer& renderer, MappedInputManager
 int X4PlusMenuActivity::itemCount() const {
   switch (page) {
     case Page::Dashboard: return 9;
+    case Page::Reading: return 5;
+    case Page::Faith: return 5;
     case Page::Organizer: return 5;
-    case Page::Utilities: return 3;
+    case Page::Utilities: return 6;
     case Page::Games: return 2;
   }
   return 0;
@@ -24,8 +30,10 @@ int X4PlusMenuActivity::itemCount() const {
 const char* X4PlusMenuActivity::pageTitle() const {
   switch (page) {
     case Page::Dashboard: return "X4 Pro+";
-    case Page::Organizer: return "Organizer";
-    case Page::Utilities: return "Utilities";
+    case Page::Reading: return "Reader & Library";
+    case Page::Faith: return "Faith";
+    case Page::Organizer: return "Planner";
+    case Page::Utilities: return "Tools";
     case Page::Games: return "Games";
   }
   return "X4 Pro+";
@@ -34,9 +42,17 @@ const char* X4PlusMenuActivity::pageTitle() const {
 const char* X4PlusMenuActivity::itemLabel(const int index) const {
   switch (page) {
     case Page::Dashboard: {
-      static const char* labels[] = {"Library", "Qur'an Reader", "Study Cards", "Prayer", "Focus / Pomodoro",
-                                     "Games", "Organizer", "Utilities", "Phone / PC Transfer"};
+      static const char* labels[] = {"Daily Brief", "Reader & Library", "Faith", "Planner", "INK AI",
+                                     "Tools", "Games", "Phone / PC Transfer", "Settings"};
       return index >= 0 && index < 9 ? labels[index] : "";
+    }
+    case Page::Reading: {
+      static const char* labels[] = {"Library", "Study Cards", "Clippings", "Reading Stats", "Phone / PC Transfer"};
+      return index >= 0 && index < 5 ? labels[index] : "";
+    }
+    case Page::Faith: {
+      static const char* labels[] = {"13-line Qur'an", "Salaah", "Ramadan", "Saved Ayat / Notes", "Salaah Settings"};
+      return index >= 0 && index < 5 ? labels[index] : "";
     }
     case Page::Organizer:
       switch (index) {
@@ -48,8 +64,9 @@ const char* X4PlusMenuActivity::itemLabel(const int index) const {
         default: return "";
       }
     case Page::Utilities: {
-      static const char* labels[] = {"QR Wallet", "Calculator", "Saved Ayat / Notes"};
-      return index >= 0 && index < 3 ? labels[index] : "";
+      static const char* labels[] = {"Focus / Pomodoro", "QR Wallet", "Calculator", "Maps / Trip Packs", "News Brief",
+                                     "Connected Services"};
+      return index >= 0 && index < 6 ? labels[index] : "";
     }
     case Page::Games: {
       static const char* labels[] = {"Minesweeper", "2048"};
@@ -62,16 +79,24 @@ const char* X4PlusMenuActivity::itemLabel(const int index) const {
 UIIcon X4PlusMenuActivity::itemIcon(const int index) const {
   switch (page) {
     case Page::Dashboard: {
-      static constexpr UIIcon icons[] = {Book, Book, Bookmark, Recent, Recent, Blocks, Recent, Blocks, Blocks};
+      static constexpr UIIcon icons[] = {Recent, Book, Bookmark, Text, Blocks, Blocks, Blocks, Transfer, Settings};
       return icons[std::clamp(index, 0, 8)];
+    }
+    case Page::Reading: {
+      static constexpr UIIcon icons[] = {Library, Bookmark, Text, Chart, Transfer};
+      return icons[std::clamp(index, 0, 4)];
+    }
+    case Page::Faith: {
+      static constexpr UIIcon icons[] = {Book, Recent, Recent, Bookmark, Settings};
+      return icons[std::clamp(index, 0, 4)];
     }
     case Page::Organizer: {
       static constexpr UIIcon icons[] = {Recent, Bookmark, Text, Blocks, Text};
       return icons[std::clamp(index, 0, 4)];
     }
     case Page::Utilities: {
-      static constexpr UIIcon icons[] = {Blocks, Text, Bookmark};
-      return icons[std::clamp(index, 0, 2)];
+      static constexpr UIIcon icons[] = {Recent, Blocks, Text, Recent, Text, Settings};
+      return icons[std::clamp(index, 0, 5)];
     }
     case Page::Games: {
       static constexpr UIIcon icons[] = {Blocks, Blocks};
@@ -88,18 +113,47 @@ void X4PlusMenuActivity::openPage(const Page next) {
 }
 
 void X4PlusMenuActivity::activateSelection() {
+  auto openService = [this](const X4PlusServiceActivity::Mode mode) {
+    auto activity = makeUniqueNoThrow<X4PlusServiceActivity>(renderer, mappedInput, mode);
+    if (activity) activityManager.pushActivity(std::move(activity));
+  };
+  auto openQuran13 = [this] {
+    auto activity = makeUniqueNoThrow<X4PlusQuran13Activity>(renderer, mappedInput);
+    if (activity) activityManager.pushActivity(std::move(activity));
+  };
+
   switch (page) {
     case Page::Dashboard:
       switch (selectedIndex) {
+        case 0: openService(X4PlusServiceActivity::Mode::DailyBrief); break;
+        case 1: openPage(Page::Reading); break;
+        case 2: openPage(Page::Faith); break;
+        case 3: openPage(Page::Organizer); break;
+        case 4: openService(X4PlusServiceActivity::Mode::Ai); break;
+        case 5: openPage(Page::Utilities); break;
+        case 6: openPage(Page::Games); break;
+        case 7: activityManager.goToPhoneTransfer(); break;
+        case 8: activityManager.goToSettings(); break;
+        default: break;
+      }
+      break;
+    case Page::Reading:
+      switch (selectedIndex) {
         case 0: activityManager.goToLibrary(); break;
-        case 1: activityManager.goToX4PlusQuran(); break;
-        case 2: activityManager.goToX4PlusStudy(); break;
-        case 3: activityManager.goToX4PlusPrayer(); break;
-        case 4: activityManager.goToX4PlusFocus(); break;
-        case 5: openPage(Page::Games); break;
-        case 6: openPage(Page::Organizer); break;
-        case 7: openPage(Page::Utilities); break;
-        case 8: activityManager.goToPhoneTransfer(); break;
+        case 1: activityManager.goToX4PlusStudy(); break;
+        case 2: activityManager.goToX4PlusClippings(); break;
+        case 3: activityManager.goToReadingStats(); break;
+        case 4: activityManager.goToPhoneTransfer(); break;
+        default: break;
+      }
+      break;
+    case Page::Faith:
+      switch (selectedIndex) {
+        case 0: openQuran13(); break;
+        case 1: openService(X4PlusServiceActivity::Mode::Prayer); break;
+        case 2: openService(X4PlusServiceActivity::Mode::Ramadan); break;
+        case 3: activityManager.goToX4PlusQuranNotes(); break;
+        case 4: openService(X4PlusServiceActivity::Mode::PrayerSettings); break;
         default: break;
       }
       break;
@@ -115,9 +169,12 @@ void X4PlusMenuActivity::activateSelection() {
       break;
     case Page::Utilities:
       switch (selectedIndex) {
-        case 0: activityManager.goToX4PlusWallet(); break;
-        case 1: activityManager.goToX4PlusCalculator(); break;
-        case 2: activityManager.goToX4PlusQuranNotes(); break;
+        case 0: activityManager.goToX4PlusFocus(); break;
+        case 1: activityManager.goToX4PlusWallet(); break;
+        case 2: activityManager.goToX4PlusCalculator(); break;
+        case 3: openService(X4PlusServiceActivity::Mode::Maps); break;
+        case 4: openService(X4PlusServiceActivity::Mode::News); break;
+        case 5: openService(X4PlusServiceActivity::Mode::Connections); break;
         default: break;
       }
       break;
